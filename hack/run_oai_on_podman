@@ -80,21 +80,21 @@ run_component oai-hss:1.0.1 3868 \
     -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
     -h hss.openair4G.eur
 
-# run_component oai-mme:1.0.1 3870 \
-#     -e MY_POD_IP="127.0.0.1" \
-#     -e MME_SERVICE="mme.openair4G.eur" \
-#     -e MME_REALM="openair4G.eur" \
-#     -e MME_GID="4" \
-#     -e MME_CODE="1" \
-#     -e MCC="208" \
-#     -e MNC="92" \
-#     -e TAC="1" \
-#     -e SGW_IP="127.0.0.1" \
-#     -e HSS_SERVICE="hss.openair4G.eur" \
-#     -e HSS_REALM="openair4G.eur" \
-#     -e HSS_HOSTNAME="hss" \
-#     -p 3870:3870 -p 5870:5870 -p 2123:2123 \
-#     -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
-#     -h mme.openair4G.eur
+run_component oai-mme:1.0.1 3870 \
+    -e MY_POD_IP="127.0.1.1" \
+    -e MME_SERVICE="mme.openair4G.eur" \
+    -e MME_REALM="openair4G.eur" \
+    -e MME_GID="4" \
+    -e MME_CODE="1" \
+    -e MCC="208" \
+    -e MNC="92" \
+    -e TAC="1" \
+    -e SGW_IP="sgw.openair4G.eur" \
+    -e HSS_SERVICE="hss.openair4G.eur" \
+    -e HSS_REALM="openair4G.eur" \
+    -e HSS_HOSTNAME="hss" \
+    -p 3870:3870 -p 5870:5870 -p 2123:2123 \
+    -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
+    -h mme.openair4G.eur
 
 info "All services started."
