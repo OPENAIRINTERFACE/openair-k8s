@@ -53,6 +53,7 @@ run_component() {
 
     info "Starting $CONTAINER_NAME container."
     shift 2 # remove image and liveness port from args
+    echo -ne "podman run -d --net=host --name $CONTAINER_NAME $@ $IMAGE\n"
     podman run -d --net=host --name $CONTAINER_NAME "$@" $IMAGE
 
     # block until container is running and service binds to port
