@@ -35,10 +35,10 @@ hack/build_images oai-enb:v1.0.0 oai-ue:master
 ```
 
 ### Pushing to a Registry
-To push the OAI images to an external registry, e.g. quay.io:
+To push the OAI images to an external registry, e.g. oai-hss to quay.io:
 ```sh
 podman login quay.io
-podman push
+podman push oai-hss:1.0.1 quay.io/my_organisation/oai-hss:1.0.1
 ```
 
 ### Cleaning
