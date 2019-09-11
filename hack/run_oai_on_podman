@@ -58,7 +58,7 @@ run_component() {
 
     # block until container is running and service binds to port
     wait_until_running $CONTAINER_NAME
-    wait_for_socket 127.0.0.1 $LIVENESS_PORT
+    wait_for_socket 127.0.1.1 $LIVENESS_PORT
 }
 
 run_component mariadb:10.2 3306 \
@@ -69,7 +69,7 @@ run_component mariadb:10.2 3306 \
     -p 3306:3306
 
 run_component oai-hss:1.0.1 3868 \
-    -e MYSQL_SERVER=127.0.0.1 \
+    -e MYSQL_SERVER=127.0.1.1 \
     -e MYSQL_DATABASE=hss_db \
     -e MYSQL_USER=root \
     -e MYSQL_PASSWORD=rootpass \
