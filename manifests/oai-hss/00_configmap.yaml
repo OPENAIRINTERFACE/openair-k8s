@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hss-config
+data:
+  op_key: "1006020f0a478bf6b699f15c062e42b3"
+  identity: "hss.openair4G.eur"
+  realm: "openair4G.eur"
+
+

@@ -1,0 +1,17 @@
+resources:
+- 00_configmap.yaml
+- 01_service.yaml
+- 01_deployment.yaml
+
+namespace: oai
+
+secretGenerator:
+- name: hss-tls-secret
+  namespace: oai
+  files:
+  - certs/hss.cacert.pem
+  - certs/hss.cert.pem
+  - certs/hss.key.pem
+  type: "Opaque"
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if ! command -v kubectl >/dev/null 2>&1; then
+    echo >&2 "Could not find 'kubectl' command."
+    exit 1
+fi
+
+if ! command -v kustomize >/dev/null 2>&1; then
+    echo >&2 "Could not find 'kustomize' command."
+    exit 1
+fi
+
+kustomize build manifests | kubectl apply -f -

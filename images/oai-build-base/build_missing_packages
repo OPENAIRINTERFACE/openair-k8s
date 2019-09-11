@@ -1,0 +1,96 @@
+#!/bin/bash
+
+set -x
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+
+function build_install_asn1c_oai {
+    rm -rf /tmp/asn1c_oai
+    git clone https://gitlab.eurecom.fr/oai/asn1c.git /tmp/asn1c_oai
+    cd /tmp/asn1c_oai
+    git checkout 0a7524184f16e7093990a31d8d4db487a16e5782
+    autoreconf -iv
+    ./configure --program-suffix=_oai
+    make -j`nproc`
+    make install
+    mv /usr/local/share/asn1c /usr/local/share/asn1c_oai
+}
+
+function build_install_asn1c_cn {
+    rm -rf /tmp/asn1c_cn
+    git clone https://gitlab.eurecom.fr/oai/asn1c.git /tmp/asn1c_cn
+    cd /tmp/asn1c_cn
+    ./configure --program-suffix=_cn
+    make -j`nproc`
+    make install
+    mv /usr/local/share/asn1c /usr/local/share/asn1c_cn
+}
+
+function build_install_uhd {
+    rm -rf /tmp/uhd
+    git clone https://github.com/EttusResearch/uhd.git /tmp/uhd
+    cd /tmp/uhd
+    git checkout tags/v3.13.0.2
+    mkdir -p host/build
+    cd host/build
+    cmake ../
+    make -j`nproc`
+    make test
+    make install
+    ldconfig
+}
+
+function build_install_freediameter {
+    rm -rf /tmp/freediameter
+    GIT_SSL_NO_VERIFY=true git clone --branch=eurecom-1.2.0 https://gitlab.eurecom.fr/oai/freediameter.git /tmp/freediameter
+    cd /tmp/freediameter
+    patch -p1 < ${SCRIPT_DIR}/patches/freediameter_eurecom-1.2.0_0001-S6a-dictionary-add-CLR-Flags.patch
+    patch -p1 < ${SCRIPT_DIR}/patches/freediameter_compatibility-1.2.0_patch_0001-S6a-dictionary-avp493.patch
+    patch -p1 < ${SCRIPT_DIR}/patches/freediameter-1.x_api-fix.patch
+    mkdir -p build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local ../
+    make -j`nproc`
+    make install
+}
+
+function build_install_liblfds {
+    rm -rf /tmp/liblfds*
+    git clone https://github.com/liblfds/liblfds.git /tmp/liblfds
+    cd /tmp/liblfds/liblfds/liblfds7.1.0/liblfds710/build/gcc_gnumake
+    make so_dbg
+    make so_install
+}
+
+function build_install_double-conversion {
+    rm -rf /tmp/double-conversion
+    git clone --depth=1 --branch=v3.1.5 https://github.com/google/double-conversion.git /tmp/double-conversion
+    cd /tmp/double-conversion
+    cmake .
+    make -j`nproc`
+    make install
+}
+
+function build_install_folly {
+    rm -rf /tmp/folly
+    git clone --depth=1 --branch=v2019.06.17.00 https://github.com/facebook/folly.git /tmp/folly
+    git clone --depth=1 --branch=release-1.8.0 https://github.com/google/googletest.git /tmp/folly/folly/test/gtest
+    cd /tmp/folly
+    patch -p1 < ${SCRIPT_DIR}/patches/folly-gflagslib-fix.patch
+    mkdir -p _build
+    cd _build
+    cmake ..
+    make -j`nproc`
+    make install
+}
+
+
+(cd /usr/bin && ln -s python2 python)
+build_install_asn1c_oai
+build_install_asn1c_cn
+build_install_uhd
+uhd_images_downloader
+build_install_freediameter
+build_install_liblfds
+build_install_double-conversion
+build_install_folly

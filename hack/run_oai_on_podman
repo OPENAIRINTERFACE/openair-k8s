@@ -1,0 +1,99 @@
+#!/bin/bash
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+wait_until_running() {
+    local CONTAINER_NAME=$1
+
+    TIMEOUT=30
+    until [ "$(podman inspect -t container -f {{.State.Running}} ${CONTAINER_NAME})" == "true" ] || [ $TIMEOUT -le 0 ]; do
+        echo -ne "  Waiting ${TIMEOUT}s for $CONTAINER_NAME to transition to state Running.\033[0K\r"
+        sleep 1;
+        (( TIMEOUT-- ))
+    done
+    if [ $TIMEOUT -le 0 ]; then
+        info "$CONTAINER_NAME failed to start."
+        exit 1
+    fi
+}
+
+wait_for_socket() {
+    local HOST=$1
+    local PORT=$2
+
+    TIMEOUT=30
+    until nc -z $HOST $PORT || [ $TIMEOUT -le 0 ]; do
+        echo -ne "  Waiting ${TIMEOUT}s for port $PORT on host $HOST to open.\033[0K\r"
+        sleep 1;
+        (( TIMEOUT-- ))
+    done
+    if [ $TIMEOUT -le 0 ]; then
+        info "Port $PORT on host $HOST failed to open."
+        exit 1
+    fi
+}
+
+run_component() {
+    local IMAGE=$1
+    local LIVENESS_PORT=$2
+
+    local CONTAINER_NAME=${IMAGE%:*}
+    if [ "$(podman ps -a -q -f name=$CONTAINER_NAME)" ]; then
+        if [ "$(podman inspect -f {{.State.Running}} ${CONTAINER_NAME})" == "true" ]; then
+             info "$CONTAINER_NAME container already running."
+             return
+        fi
+        info "Removing existing $CONTAINER_NAME container."
+        podman rm -f mariadb 2> /dev/null
+    fi
+
+    info "Starting $CONTAINER_NAME container."
+    shift 2 # remove image and liveness port from args
+    podman run -d --net=host --name $CONTAINER_NAME "$@" $IMAGE
+
+    # block until container is running and service binds to port
+    wait_until_running $CONTAINER_NAME
+    wait_for_socket 127.0.0.1 $LIVENESS_PORT
+}
+
+run_component mariadb:10.2 3306 \
+    -e MYSQL_DB=db \
+    -e MYSQL_USER=user \
+    -e MYSQL_PASSWORD=userpass \
+    -e MYSQL_ROOT_PASSWORD=rootpass \
+    -p 3306:3306
+
+run_component oai-hss:1.0.1 3868 \
+    -e MYSQL_SERVER=127.0.0.1 \
+    -e MYSQL_DATABASE=hss_db \
+    -e MYSQL_USER=root \
+    -e MYSQL_PASSWORD=rootpass \
+    -e HSS_OP_KEY="11111111111111111111" \
+    -e HSS_SERVICE="hss.openair4G.eur" \
+    -e HSS_REALM="openair4G.eur" \
+    -p 3868:3868 -p 5868:5868 \
+    -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
+    -h hss.openair4G.eur
+
+# run_component oai-mme:1.0.1 3870 \
+#     -e MY_POD_IP="127.0.0.1" \
+#     -e MME_SERVICE="mme.openair4G.eur" \
+#     -e MME_REALM="openair4G.eur" \
+#     -e MME_GID="4" \
+#     -e MME_CODE="1" \
+#     -e MCC="208" \
+#     -e MNC="92" \
+#     -e TAC="1" \
+#     -e SGW_IP="127.0.0.1" \
+#     -e HSS_SERVICE="hss.openair4G.eur" \
+#     -e HSS_REALM="openair4G.eur" \
+#     -e HSS_HOSTNAME="hss" \
+#     -p 3870:3870 -p 5870:5870 -p 2123:2123 \
+#     -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
+#     -h mme.openair4G.eur
+
+info "All services started."

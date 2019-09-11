@@ -1,0 +1,54 @@
+#!/bin/bash
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+usage() {
+    echo "Deletes all OAI images and prunes unnamed/unused images.
+    
+usage: $(basename $0) [-h] [-k] [-p]
+  -k|--keep-base:  do not delete oai-build-base image 
+  -p|--prune-only: only prunes images without deleting OAI images 
+  -h|--help:       prints this help message"
+    exit 1
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -h|--help)
+        usage
+        ;;
+    -k|--keep-base)
+        KEEP_BASE=true
+        shift # past argument
+        ;;
+    -p|--prune-only)
+        PRUNE_ONLY=true
+        shift # past argument
+        ;;
+    *) # unknown option
+    shift # past argument
+    ;;
+    esac
+done
+
+info "Pruning images"
+podman image prune
+if [ ! "$PRUNE_ONLY" = true ]; then
+    if [ "$KEEP_BASE" = true ]; then
+        info "Deleting OAI images, except for oai-build-base"
+        podman image rm -f $(podman image list -a | grep -e "^localhost/oai-" | grep -v "oai-build-base" | awk '{print $3}' | xargs)
+    else
+        info "Deleting OAI images"
+        podman image rm -f $(podman image list -a | grep -e "^localhost/oai-" | awk '{print $3}' | xargs)
+    fi
+    RETRIES=5
+    until ! podman image rm -f $(podman image list -a | grep -e "^<none>" | awk '{print $3}' | xargs) || [ $RETRIES -le 0 ]; do
+        info "Deleting orphaned images ($RETRIES retries left)"
+        sleep 1
+        (( RETRIES-- ))
+    done
+fi

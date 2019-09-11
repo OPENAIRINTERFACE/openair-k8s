@@ -1,0 +1,10 @@
+--- a/src/openflow/controller/ArpApplication.h
++++ b/src/openflow/controller/ArpApplication.h
+@@ -138,7 +138,7 @@ private:
+   //uint8_t arp_ha_[ETH_ALEN];
+   //uint8_t arp_pa_[4];
+   std::unordered_map<in_addr_t, std::string> learning_arp;
+-  std::set<in_addr_t, std::string> ue_arp;
++//  std::set<in_addr_t, std::string> ue_arp;
+   const sgi_arp_boot_cache_t * sgi_arp_boot_cache_;
+ };

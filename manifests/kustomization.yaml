@@ -1,0 +1,6 @@
+resources:
+- 00_namespace.yaml
+- mariadb
+- oai-hss
+
+namespace: oai

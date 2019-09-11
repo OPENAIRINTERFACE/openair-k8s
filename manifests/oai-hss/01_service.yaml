@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: oai-hss
+  name: oai-hss
+spec:
+  type: ClusterIP
+  ports:
+  - name: oai-hss
+    port: 3868
+    protocol: TCP
+    targetPort: 3868
+  - name: oai-hss-secure
+    port: 5868
+    protocol: TCP
+    targetPort: 5868
+  selector:
+    app: oai-hss

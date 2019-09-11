@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-hss
+  labels:
+    app: oai-hss
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-hss
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-hss
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_SERVER
+          value: "mariadb"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database-name
+              name: mariadb-secret
+        - name: MYSQL_USER
+          value: "root"
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: database-root-password
+              name: mariadb-secret
+        - name: HSS_OP_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: op_key
+              name: hss-config
+        - name: HSS_SERVICE
+          valueFrom:
+            configMapKeyRef:
+              key: identity
+              name: hss-config
+        - name: HSS_REALM
+          valueFrom:
+            configMapKeyRef:
+              key: realm
+              name: hss-config
+        image: quay.io/fzdarsky/oai-hss:1.0.1
+        imagePullPolicy: IfNotPresent
+        name: oai-hss
+        ports:
+        - containerPort: 3868
+          protocol: TCP
+        - containerPort: 5868
+          protocol: TCP
+        resources:
+          limits:
+            memory: 512Mi
+        volumeMounts:
+        - name: certs
+          mountPath: "/opt/oai-hss/certs"
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: certs
+        secret:
+          secretName: hss-tls-secret

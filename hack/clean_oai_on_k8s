@@ -1,0 +1,49 @@
+#!/bin/bash
+
+NAMESPACE={$NAMESPACE:-oai}
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+usage() {
+    echo "Deletes the 'oai' namespace and all its contained resources.
+    
+usage: $(basename $0) [-n <namespace>]
+  -n|--namespace: use specified namespace instead of 'oai'
+  -h|--help:      prints this help message"
+    exit 1
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -h|--help)
+        usage
+        ;;
+    -n|--namespace)
+        NAMESPACE=$1
+        if [ "$NAMESPACE" == "kubeadmin" ]; then
+            echo >&2 "Refusing to delete 'kubeadmin' namespace."
+            exit 1
+        fi
+        shift 2 # past key and argument
+        ;;
+    *) # unknown option
+    shift # past argument
+    ;;
+    esac
+done
+
+if ! command -v kubectl >/dev/null 2>&1; then
+    echo >&2 "Could not find 'kubectl' command."
+    exit 1
+fi
+
+kubectl delete -n "$NAMESPACE" --all deployments
+kubectl delete -n "$NAMESPACE" --all services
+kubectl delete -n "$NAMESPACE" --all secrets
+kubectl delete -n "$NAMESPACE" --all configmaps
+kubectl delete ns "$NAMESPACE"
+

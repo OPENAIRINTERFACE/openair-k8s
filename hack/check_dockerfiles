@@ -1,0 +1,55 @@
+#!/bin/bash
+
+IMAGES=$(find images -type f -name Dockerfile | sed 's|images/||g' | sed 's|/Dockerfile||g' | xargs)
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+usage() {
+    echo "Checks Dockerfiles of specified OAI images. If no image is specified, checks all images' Dockerfiles.
+    
+usage: $(basename $0) [-h] [IMAGE1 [IMAGE2 [...]]]
+  -h|--help:        prints this help message
+  
+available images:
+  $IMAGES"
+    exit 1
+}
+
+check_dockerfile() {
+    local IMAGE=$1
+
+    info "Checking images/$i/Dockerfile"
+    podman run --rm --privileged -v $PWD:/root/ \
+        projectatomic/dockerfile-lint \
+        dockerfile_lint -f images/$IMAGE/Dockerfile
+}
+
+# parse command line args
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -h|--help)
+        usage
+        ;;
+        *) # unknown option
+        POSITIONAL+=("$key") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# if there are positional args, interpret them as list of inmages to build
+if [ $# -ne 0 ]; then
+  IMAGES=$*
+fi
+
+# check all specified images' Dockerfiles
+for i in $IMAGES; do
+    check_dockerfile $i
+done

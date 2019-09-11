@@ -1,0 +1,84 @@
+#!/bin/bash
+
+REGISTRY=${REGISTRY:-registry.redhat.io}
+BUILD_ARGS=${BUILD_ARGS:-"--no-cache"}
+IMAGES=$(find images -type f -name Dockerfile | sed 's|images/||g' | sed 's|/Dockerfile||g' | xargs)
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+usage() {
+    echo "Builds specified OAI images. If no image is specified, builds all images.
+    
+usage: $(basename $0) [-h] [-f] [IMAGE1 [IMAGE2 [...]]]
+  -f|--force-build: (re)builds image even when it already exists
+  -h|--help:        prints this help message
+  
+available images:
+  $IMAGES"
+    exit 1
+}
+
+build_image() {
+    local IMAGE=$1
+    local TAG=$2
+    local CLEAN_TAG=$(echo $TAG | sed -r 's/^v([0-9])/\1/')
+
+    podman image exists $IMAGE:$CLEAN_TAG
+    if [ $? -eq 0 ] && [ ! "$FORCE" = true ]; then
+        info "Skipping existing image $IMAGE:$CLEAN_TAG (use '-f' to override)"
+    else
+        info "Building image $IMAGE:$CLEAN_TAG"
+        podman image build \
+            --net=host \
+            $BUILD_ARGS \
+            --build-arg GIT_TAG=$TAG \
+            -t $IMAGE:$CLEAN_TAG \
+            images/$IMAGE
+    fi
+}
+
+# parse command line args
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -h|--help)
+        usage
+        ;;
+        -f|--force-build)
+        FORCE=true
+        shift # past argument
+        ;;
+        *) # unknown option
+        POSITIONAL+=("$key") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# if there are positional args, interpret them as list of inmages to build
+if [ $# -ne 0 ]; then
+  IMAGES=$*
+fi
+
+podman login ${REGISTRY}
+
+# oai-build-base is a common dependency; ensure it's always included first
+IMAGES="oai-build-base ${IMAGES/oai-build-base /}"
+
+# build all specified images
+for i in $IMAGES; do
+    # if image was specified in 'image:git_tag' format, use this
+    IMG=${i%:*}
+    TAG=${i#*:}
+    # if no git_tag specified, grep default from Dockerfile
+    if [ "$IMG" = "$TAG" ]; then
+        TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile)        
+    fi
+    build_image $IMG $TAG
+done

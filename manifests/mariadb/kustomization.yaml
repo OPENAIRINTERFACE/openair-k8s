@@ -1,0 +1,6 @@
+resources:
+- 00_secret.yaml
+- 01_deployment.yaml
+- 01_service.yaml
+
+namespace: oai
