@@ -9,7 +9,7 @@ EOF
 if ! mysql -h ${MYSQL_SERVER} -u ${MYSQL_USER} -e "use ${MYSQL_DATABASE};" 2>/dev/null; then
     echo "Creating database ${MYSQL_DATABASE} on ${MYSQL_SERVER} and initializing tables."
     mysql -h ${MYSQL_SERVER} -u ${MYSQL_USER} -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
-    mysql -h ${MYSQL_SERVER} -u ${MYSQL_USER} "${MYSQL_DATABASE}"" < /opt/oai-hss/bin/oai_db.sql
+    mysql -h ${MYSQL_SERVER} -u ${MYSQL_USER} "${MYSQL_DATABASE}" < /opt/oai-hss/bin/oai_db.sql
 fi
 
 sed -i \
