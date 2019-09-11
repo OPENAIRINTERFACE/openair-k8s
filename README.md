@@ -56,6 +56,12 @@ hack/check_dockerfiles
 
 ## Running OAI on Podman
 ### Prerequisites
+OAI containers will run with host networking (```--net=host```) and communicate via the loopback ```127.0.1.1```. To ensure the services' names can be properly resolved, add the following to ```/etc/hosts```:
+```
+127.0.1.1	hss hss.openair4G.eur
+127.0.1.1	mme mme.openair4G.eur
+127.0.1.1	sgw sgw.openair4G.eur
+```
 
 ### Running
 To test the OAI container images on your local machine, you can run them in podman like this:
