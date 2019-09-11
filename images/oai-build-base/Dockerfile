@@ -9,7 +9,7 @@ ARG GIT_TAG=latest
 
 WORKDIR /root
 
-RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
+RUN yum -y install --enablerepo="codeready-builder-for-rhel-8-x86_64-rpms" \
         git make cmake gcc gcc-c++ autoconf automake bc bison flex libtool patch \
         atlas-devel \
         blas \
@@ -40,7 +40,7 @@ RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
         libusb-devel \
         libusbx-devel \
         libxml2-devel \
-        libXpm-devel \ 
+        libXpm-devel \
         libxslt-devel \
         libyaml-devel \
         lksctp-tools \
@@ -70,6 +70,8 @@ RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
     && pip2 install --user mako pexpect
 
 # RUN git clone https://gist.github.com/2190472.git /opt/ssh
+
+RUN git config --global  http.proxy http://:@proxy.eurecom.fr:8080
 
 # build packages not present in RHEL/EPEL repos
 COPY patches patches/
