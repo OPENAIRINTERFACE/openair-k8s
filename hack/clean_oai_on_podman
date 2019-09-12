@@ -1,3 +1,3 @@
 #!/bin/bash
 
-podman rm -f oai-mme oai-hss mariadb
+podman rm -f oai-spgwc oai-mme oai-hss mariadb

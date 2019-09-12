@@ -98,6 +98,12 @@ run_component oai-mme:1.0.1 3870 \
     -h mme.openair4G.eur
 
 run_component oai-spgwc:1.0.0 2123 \
+    -e SGW_S11_INTERFACE="eno1" \
+    -e SGW_S5S8_INTERFACE="eno1" \
+    -e PGW_S5S8_INTERFACE="eno1" \
+    -e PGW_SX_INTERFACE="eno1" \
+    -e UE_IP_ADDRESS_POOL="10.0.23.1 - 10.0.23.240" \
+    -e UE_DNS_SERVER="8.8.8.8" \
     -p 2123:2123 -p 8805:8805 \
     -h spgwc.openair4G.eur
 
