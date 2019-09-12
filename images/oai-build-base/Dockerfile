@@ -71,7 +71,7 @@ RUN yum -y install --enablerepo="codeready-builder-for-rhel-8-x86_64-rpms" \
 
 # RUN git clone https://gist.github.com/2190472.git /opt/ssh
 
-RUN git config --global  http.proxy http://:@proxy.eurecom.fr:8080
+RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
 
 # build packages not present in RHEL/EPEL repos
 COPY patches patches/

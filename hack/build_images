@@ -36,6 +36,7 @@ build_image() {
             --net=host \
             $BUILD_ARGS \
             --build-arg GIT_TAG=$TAG \
+	    --build-arg EURECOM_PROXY=$PROXY\
             -t $IMAGE:$CLEAN_TAG \
             images/$IMAGE
     fi
