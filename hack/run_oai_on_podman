@@ -97,4 +97,8 @@ run_component oai-mme:1.0.1 3870 \
     -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
     -h mme.openair4G.eur
 
+run_component oai-spgwc:1.0.0 2123 \
+    -p 2123:2123 -p 8805:8805 \
+    -h spgwc.openair4G.eur
+
 info "All services started."

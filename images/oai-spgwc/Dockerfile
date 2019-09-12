@@ -21,7 +21,7 @@ LABEL name="oai-spgwc" \
       io.openshift.non-scalable="true"
 
 RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
-    PKGLIST="boost libconfig libevent libgflags-devel libglog-devel iproute iputils procps-ng bind-utils" && \
+    PKGLIST="boost libconfig libevent gflags-devel glog-devel iproute iputils procps-ng bind-utils" && \
     # yum -y update-minimal --setopt=tsflags=nodocs --security --sec-severity=Important --sec-severity=Critical && \
     yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} && \
     yum -y clean all
@@ -29,6 +29,8 @@ RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
 ENV APP_ROOT=/opt/oai-spgwc
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openair-cn-cups/build/spgw_c/build/spgwc ${APP_ROOT}/bin/
+COPY scripts ${APP_ROOT}/bin/
+COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} /etc/passwd
@@ -36,7 +38,8 @@ USER 10001
 WORKDIR ${APP_ROOT}
 
 # expose ports
-# EXPOSE 3868/tcp 5868/tcp
+EXPOSE 2123/tcp 8805/tcp
 
-CMD ["-h"]
-ENTRYPOINT ["${APP_ROOT}/bin/spgwc"]
+CMD ["/opt/oai-spgwc/bin/spgwc", "-c", "/opt/oai-spgwc/etc/spgwc.conf"]
+ENTRYPOINT ["/opt/oai-spgwc/bin/entrypoint.sh"]
+
