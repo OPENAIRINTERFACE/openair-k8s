@@ -9,9 +9,8 @@ ARG GIT_TAG=latest
 
 WORKDIR /root
 
-RUN subscription-manager repos
-
-RUN yum install --disableplugin=subscription-manager --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
+#RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
+RUN yum install -y \
         git make cmake gcc gcc-c++ autoconf automake bc bison flex libtool patch \
         atlas-devel \
         blas \
