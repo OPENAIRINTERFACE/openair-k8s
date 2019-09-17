@@ -9,8 +9,7 @@ ARG GIT_TAG=latest
 
 WORKDIR /root
 
-#RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
-RUN yum install -y \
+RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
         git make cmake gcc gcc-c++ autoconf automake bc bison flex libtool patch \
         atlas-devel \
         blas \
