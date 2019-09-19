@@ -9,7 +9,19 @@ ARG GIT_TAG=latest
 
 WORKDIR /root
 
-RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
+
+# Copy entitlements
+COPY ./etc-pki-entitlement /etc/pki/entitlement
+# Copy subscription manager configurations
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
+# Delete /etc/rhsm-host to use entitlements from the build container
+RUN rm /etc/rhsm-host && \
+    # Initialize /etc/yum.repos.d/redhat.repo
+    # See https://access.redhat.com/solutions/1443553
+    yum repolist --disablerepo=* && \
+    subscription-manager repos --enable <enabled-repo> && \
+    yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
         git make cmake gcc gcc-c++ autoconf automake bc bison flex libtool patch \
         atlas-devel \
         blas \
@@ -64,10 +76,14 @@ RUN yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
         vim-common \
         xz-devel \
         zlib-devel \
-    && yum install --disableplugin=subscription-manager -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
-    && yum install --disableplugin=subscription-manager -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-devel-1.2.4-5.el7.x86_64.rpm \
+    && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
+    && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-devel-1.2.4-5.el7.x86_64.rpm \
     && yum clean all -y \
-    && pip2 install --user mako pexpect
+    && pip2 install --user mako pexpect && \
+
+    # Remove entitlements and Subscription Manager configs
+    rm -rf /etc/pki/entitlement && \
+    rm -rf /etc/rhsm
 
 # RUN git clone https://gist.github.com/2190472.git /opt/ssh
 
