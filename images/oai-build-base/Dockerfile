@@ -20,8 +20,8 @@ RUN rm /etc/rhsm-host && \
     # Initialize /etc/yum.repos.d/redhat.repo
     # See https://access.redhat.com/solutions/1443553
     yum repolist --disablerepo=* && \
-    subscription-manager repos --enable <enabled-repo> && \
-    yum install --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms -y \
+    subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
+    yum install -y \
         git make cmake gcc gcc-c++ autoconf automake bc bison flex libtool patch \
         atlas-devel \
         blas \
