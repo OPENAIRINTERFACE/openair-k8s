@@ -76,6 +76,9 @@ RUN rm /etc/rhsm-host && \
         vim-common \
         xz-devel \
         zlib-devel \
+        adobe-mappings-pdf \
+        libmcpp \
+        jbig2dec-libs
     && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
     && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-devel-1.2.4-5.el7.x86_64.rpm \
     && yum clean all -y \
