@@ -23,43 +23,12 @@ RUN rm /etc/rhsm-host && \
     subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
     yum install -y \
         git make cmake gcc gcc-c++ autoconf automake bc bison flex libtool patch \
-        atlas-devel \
-        blas \
-        blas-devel \
-        boost \
-        boost-devel \
-        bzip2-devel \
-        check \
-        check-devel \
-        elfutils-libelf-devel \
-        gflags-devel \
-        glog-devel \
-        gmp-devel \
-        gnutls-devel \
-        guile-devel \
-        kernel-devel \
-        kernel-headers \
-        lapack \
-        lapack-devel \
-        libasan \
-        libconfig-devel \
-        libevent-devel \
-        libffi-devel \
-        libgcrypt-devel \
-        libidn-devel \
-        libidn2-devel  \
-        libtool \
-        libusb-devel \
-        libusbx-devel \
-        libxml2-devel \
-        libXpm-devel \ 
-        libxslt-devel \
-        libyaml-devel \
-        lksctp-tools \
-        lksctp-tools-devel \
-        lz4-devel \
-        mariadb-devel \
-        nettle-devel \
+        atlas-devel blas blas-devel boost boost-devel bzip2-devel check check-devel \
+        elfutils-libelf-devel flags-devel glog-devel gmp-devel gnutls-devel guile-devel \
+        kernel-devel kernel-headers lapack lapack-devel libasan libconfig-devel \
+        libevent-devel libffi-devel libgcrypt-devel libidn-devel libidn2-devel  \
+        libtool libusb-devel libusbx-devel libxml2-devel libXpm-devel libxslt-devel \
+        libyaml-devel lksctp-tools lksctp-tools-devel lz4-devel mariadb-devel nettle-devel \
         openssh-clients \
         openssh-server \
         openssl \
@@ -78,7 +47,7 @@ RUN rm /etc/rhsm-host && \
         zlib-devel \
         adobe-mappings-pdf \
         libmcpp \
-        jbig2dec-libs
+        jbig2dec-libs \
     && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
     && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-devel-1.2.4-5.el7.x86_64.rpm \
     && yum clean all -y \
