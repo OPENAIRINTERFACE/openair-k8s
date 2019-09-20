@@ -1,4 +1,4 @@
-FROM localhost/oai-build-base AS builder
+FROM oai-build-base AS builder
 
 ARG GIT_TAG=v1.0.1
 
@@ -22,11 +22,27 @@ LABEL name="oai-hss" \
       io.openshift.non-scalable="true" \
       io.openshift.wants="mariadb"
 
-RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
+
+# Copy entitlements
+COPY ./etc-pki-entitlement /etc/pki/entitlement
+# Copy subscription manager configurations
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
+# Delete /etc/rhsm-host to use entitlements from the build container
+RUN rm /etc/rhsm-host && \
+    # Initialize /etc/yum.repos.d/redhat.repo
+    # See https://access.redhat.com/solutions/1443553
+    yum repolist --disablerepo=* && \
+    subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
     PKGLIST="libconfig libidn mariadb-devel lksctp-tools mysql iproute iputils procps-ng bind-utils" && \
     # yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
-    yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} && \
+    yum -y install --setopt=tsflag=nodocs ${PKGLIST} && \
     yum -y clean all
+
+    # Remove entitlements and Subscription Manager configs
+    rm -rf /etc/pki/entitlement && \
+    rm -rf /etc/rhsm
+
 
 ENV APP_ROOT=/opt/oai-hss
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
