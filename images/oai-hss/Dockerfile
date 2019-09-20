@@ -29,11 +29,10 @@ COPY ./etc-pki-entitlement /etc/pki/entitlement
 COPY ./rhsm-conf /etc/rhsm
 COPY ./rhsm-ca /etc/rhsm/ca
 # Delete /etc/rhsm-host to use entitlements from the build container
-
-  # Initialize /etc/yum.repos.d/redhat.repo
-  # See https://access.redhat.com/solutions/1443553
-
-RUN yum repolist --disablerepo=* && \
+RUN rm /etc/rhsm-host && \
+    # Initialize /etc/yum.repos.d/redhat.repo
+    # See https://access.redhat.com/solutions/1443553
+    yum repolist --disablerepo=* && \
     subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
     PKGLIST="libconfig libidn mariadb-devel lksctp-tools mysql iproute iputils procps-ng bind-utils" && \
     # yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
