@@ -37,7 +37,7 @@ RUN rm /etc/rhsm-host && \
     PKGLIST="libconfig libidn mariadb-devel lksctp-tools mysql iproute iputils procps-ng bind-utils" && \
     # yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
     yum -y install --setopt=tsflag=nodocs ${PKGLIST} && \
-    yum -y clean all
+    yum -y clean all && \
 
     # Remove entitlements and Subscription Manager configs
     rm -rf /etc/pki/entitlement && \
