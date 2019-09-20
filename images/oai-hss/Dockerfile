@@ -13,7 +13,7 @@ RUN cd openair-cn/scripts \
     && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_hss -v
 
 
-FROM registry.redhat.io/ubi8/ubi
+FROM image-registry.openshift-image-registry.svc:5000/openshift/ubi
 LABEL name="oai-hss" \
       version="$GIT_TAG" \
       maintainer="Frank A. Zdarsky <fzdarsky@redhat.com>" \
