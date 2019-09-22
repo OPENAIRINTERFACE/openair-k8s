@@ -1,0 +1,19 @@
+{"common": {
+    "fdcfg": "/opt/oai-hss/etc/hss_rel14_fd.conf",
+    "originhost": "${HSS_HOST}",
+    "originrealm": "${HSS_REALM}" 
+ },
+ "hss": {
+    "gtwhost": "*",
+    "gtwport" : 9080,
+    "restport" : 9081,
+    "casssrv": "${DB_SERVER}", 
+    "cassusr": "${DB_USER}",
+    "casspwd": "${DB_PASSWORD}",
+    "cassdb" : "${DB_NAME}",
+    "randv"  : true,
+    "optkey" : "${OP_KEY}",
+    "reloadkey"  : false,
+    "roamallow"  : "${ROAMING_ALLOWED}"
+ }
+}

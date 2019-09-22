@@ -1,0 +1,18 @@
+--- a/scripts/build_hss_rel14
++++ b/scripts/build_hss_rel14
+@@ -121,10 +121,11 @@ function main()
+   fi
+ 
+   if [ $var_check_install_oai_software -gt 0 ];then
+-    update_package_db
+-    [[ $? -ne 0 ]] && return $?
+-    
+-    check_install_hss_software  $force
++    #update_package_db
++    #[[ $? -ne 0 ]] && return $?
++    #
++    #check_install_hss_software  $force
++    init_submodules
+     if [ $? -ne 0 ]; then
+         echo_error "Error: HSS software installation failed"
+         return 1
