@@ -4,6 +4,7 @@ ARG GIT_TAG=v1.0.1
 
 WORKDIR /root
 
+ENV FREEDIAMETER_INCLUDE_DIR=/tmp/freediameter
 RUN git clone --depth=1 --branch=$GIT_TAG https://github.com/OPENAIRINTERFACE/openair-cn.git
 COPY patches patches/
 RUN patch -p1 -d openair-cn < patches/enable_sudo-less_build.patch
