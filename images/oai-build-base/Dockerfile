@@ -44,6 +44,8 @@ RUN rm /etc/rhsm-host && \
 
 # RUN git clone https://gist.github.com/2190472.git /opt/ssh
 
+RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
+
 # build packages not present in RHEL/EPEL repos
 COPY patches patches/
 COPY ./build_missing_packages .
