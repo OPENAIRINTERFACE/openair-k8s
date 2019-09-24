@@ -31,12 +31,12 @@ RUN rm /etc/rhsm-host && \
         libyaml-devel lksctp-tools lksctp-tools-devel lz4-devel mariadb-devel nettle-devel \
         openssh-clients openssh-server openssl openssl-devel pkgconfig protobuf protobuf-c \
         protobuf-c-compiler protobuf-c-devel psmisc python2 python2-docutils python2-requests \
-        vim-common xz-devel zlib-devel \
-        adobe-mappings-pdf libmcpp jbig2dec-libs \
-    && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
-    && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-devel-1.2.4-5.el7.x86_64.rpm \
-    && yum clean all -y \
-    && pip2 install --user mako pexpect && \
+        vim-common xz-devel zlib-devel && \
+    yum install -y adobe-mappings-pdf libmcpp jbig2dec-libs && \
+    yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm && \
+    yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-devel-1.2.4-5.el7.x86_64.rpm && \
+    yum clean all -y && \
+    pip2 install --user mako pexpect && \
 
     # Remove entitlements and Subscription Manager configs
     rm -rf /etc/pki/entitlement && \
