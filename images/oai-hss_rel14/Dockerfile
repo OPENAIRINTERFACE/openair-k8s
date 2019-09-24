@@ -37,6 +37,8 @@ ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openair-cn/build/hss_rel14/bin/hss ${APP_ROOT}/bin/oai_hss
 COPY --from=builder /usr/local/lib/libfd* /lib64
 COPY --from=builder /usr/local/lib/freeDiameter/* /usr/local/lib/freeDiameter/
+COPY --from=builder /usr/local/lib64/libcassandra* /lib64
+COPY --from=builder /usr/local/lib64/libuv.so /lib64
 COPY scripts ${APP_ROOT}/bin/
 COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
@@ -46,7 +48,7 @@ USER 10001
 WORKDIR ${APP_ROOT}
 
 # expose ports configured in hss_fd.conf
-EXPOSE 3868/tcp 5868/tcp
+EXPOSE 9042/tcp 5868/tcp 9080/tcp 9081/tcp
 
 VOLUME ["${APP_ROOT}/certs"]
 
