@@ -1,4 +1,4 @@
-FROM oai-build-base:latest AS builder
+FROM kustomize-oai/oai-build-base AS builder
 
 ARG GIT_TAG=v1.0.1
 
