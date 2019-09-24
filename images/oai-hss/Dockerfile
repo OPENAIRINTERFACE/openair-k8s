@@ -1,4 +1,4 @@
-FROM oai-build-base AS builder
+FROM oai-build-base:latest AS builder
 
 ARG GIT_TAG=v1.0.1
 
