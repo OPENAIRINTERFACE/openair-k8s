@@ -1,4 +1,4 @@
-FROM kustomize-oai/oai-build-base AS builder
+FROM image-registry.openshift-image-registry.svc:5000/kustomize-oai/oai-build-base AS builder
 
 ARG GIT_TAG=v1.0.1
 
