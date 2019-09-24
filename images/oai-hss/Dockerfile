@@ -1,10 +1,9 @@
-FROM image-registry.openshift-image-registry.svc:5000/kustomize-oai/oai-build-base AS builder
+FROM oai-build-base AS builder
 
 ARG GIT_TAG=v1.0.1
 
 WORKDIR /root
 
-#ENV FREEDIAMETER_INCLUDE_DIR=/tmp/freediameter
 RUN git clone --depth=1 --branch=$GIT_TAG https://github.com/OPENAIRINTERFACE/openair-cn.git
 COPY patches patches/
 RUN patch -p1 -d openair-cn < patches/enable_sudo-less_build.patch
@@ -14,7 +13,7 @@ RUN cd openair-cn/scripts \
     && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_hss -v
 
 
-FROM image-registry.openshift-image-registry.svc:5000/openshift/ubi
+FROM ubi8/ubi
 LABEL name="oai-hss" \
       version="$GIT_TAG" \
       maintainer="Frank A. Zdarsky <fzdarsky@redhat.com>" \
