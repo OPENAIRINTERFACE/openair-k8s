@@ -61,22 +61,38 @@ run_component() {
     wait_for_socket 127.0.1.1 $LIVENESS_PORT
 }
 
-run_component mariadb:10.2 3306 \
-    -e MYSQL_DB=db \
-    -e MYSQL_USER=user \
-    -e MYSQL_PASSWORD=userpass \
-    -e MYSQL_ROOT_PASSWORD=rootpass \
-    -p 3306:3306
+# for pre-Rel14 HSS
+# run_component mariadb:10.2 3306 \
+#     -e MYSQL_DB=db \
+#     -e MYSQL_USER=user \
+#     -e MYSQL_PASSWORD=userpass \
+#     -e MYSQL_ROOT_PASSWORD=rootpass \
+#     -p 3306:3306
 
-run_component oai-hss:1.0.1 3868 \
-    -e MYSQL_SERVER=127.0.1.1 \
-    -e MYSQL_DATABASE=hss_db \
-    -e MYSQL_USER=root \
-    -e MYSQL_PASSWORD=rootpass \
-    -e HSS_OP_KEY="11111111111111111111" \
-    -e HSS_SERVICE="hss.openair4G.eur" \
-    -e HSS_REALM="openair4G.eur" \
-    -p 3868:3868 -p 5868:5868 \
+# run_component oai-hss:1.0.1 3868 \
+#     -e MYSQL_SERVER=127.0.1.1 \
+#     -e MYSQL_DATABASE=hss_db \
+#     -e MYSQL_USER=root \
+#     -e MYSQL_PASSWORD=rootpass \
+#     -e HSS_OP_KEY="11111111111111111111" \
+#     -e HSS_SERVICE="hss.openair4G.eur" \
+#     -e HSS_REALM="openair4G.eur" \
+#     -p 3868:3868 -p 5868:5868 \
+#     -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
+#     -h hss.openair4G.eur
+
+run_component cassandra:3.11 9042 \
+    -p 9042:9042
+
+run_component oai-hss_rel14:master 3868 \
+    -e DB_FQDN=127.0.1.1 \
+    -e DB_NAME=vhss \
+    -e DB_USER=cassandra \
+    -e DB_PASSWORD=cassandra \
+    -e OP_KEY="11111111111111111111" \
+    -e HSS_FQDN="hss.openair4G.eur" \
+    -e ROAMING_ALLOWED="true" \
+    -p 3868:3868 -p 5868:5868 -p 9080:9080 -p 9081:9081 \
     -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
     -h hss.openair4G.eur
 

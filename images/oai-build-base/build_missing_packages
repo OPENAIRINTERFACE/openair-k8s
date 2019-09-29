@@ -84,6 +84,16 @@ function build_install_folly {
     make install
 }
 
+function build_install_libuv {
+    rm -rf /tmp/libuv
+    git clone --depth=1 --branch=v1.23.1 https://github.com/libuv/libuv.git /tmp/libuv
+    cd /tmp/libuv
+    mkdir -p build
+    cd build
+    cmake ..
+    make -j`nproc`
+    make install
+}
 
 (cd /usr/bin && ln -s python2 python)
 build_install_asn1c_oai
@@ -94,3 +104,4 @@ build_install_freediameter
 build_install_liblfds
 build_install_double-conversion
 build_install_folly
+build_install_libuv

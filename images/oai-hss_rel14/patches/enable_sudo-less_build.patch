@@ -1,0 +1,8 @@
+--- a/build/tools/build_helper
++++ b/build/tools/build_helper
+@@ -38,7 +38,7 @@ case "$OS_DISTRO" in
+   ubuntu) OS_BASEDISTRO="debian"; INSTALLER="apt-get"; CMAKE="cmake" ;;
+ esac
+ 
+-SUDO='sudo -S -E'
++SUDO=''
