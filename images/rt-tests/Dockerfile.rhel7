@@ -1,0 +1,14 @@
+FROM registry.redhat.io/ubi7/ubi
+
+RUN REPOLIST=rhel-7-server-rt-rpms \
+    PKGLIST="kernel-tools rt-tests rteval" && \
+    yum -y install --enablerepo ${REPOLIST} ${PKGLIST} && \
+    yum -y clean all
+
+USER 0
+ENV APP_ROOT=/opt/rt-tests
+ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
+COPY scripts ${APP_ROOT}
+WORKDIR ${APP_ROOT}
+
+ENTRYPOINT ["/opt/rt-tests/entrypoint.sh"]

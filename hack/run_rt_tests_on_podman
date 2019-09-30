@@ -1,0 +1,20 @@
+#!/bin/bash
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+source /etc/os-release
+PLATFORM=${PLATFORM_ID#*:}
+
+podman image exists rt-tests.${PLATFORM}
+if [ $? -ne 0 ]; then
+    info "Building rt-tests.${PLATFORM} image"
+    podman build -f Dockerfile.rh${PLATFORM} -t rt-tests.${PLATFORM} images/rt-tests
+fi
+
+info "Running rt-tests.${PLATFORM} image"
+#podman run --device=/dev/cpu --cap-add=SYS_RAWIO rt-tests.${PLATFORM}
+podman run --privileged rt-tests.${PLATFORM}
