@@ -1,4 +1,5 @@
-FROM localhost/oai-build-base AS builder
+ARG REGISTRY=localhost
+FROM $REGISTRY/oai-build-base AS builder
 
 ARG GIT_TAG=master
 
