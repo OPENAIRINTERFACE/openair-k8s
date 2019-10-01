@@ -52,7 +52,7 @@ USER 10001
 WORKDIR ${APP_ROOT}
 
 # expose ports
-EXPOSE 3870/tcp 5870/tcp 2123/tcp
+EXPOSE 3870/tcp 5870/tcp 2123/udp
 
 VOLUME ["${APP_ROOT}/certs"]
 
