@@ -1,0 +1,50 @@
+{
+  "option": {
+    "id": "url",
+    "type": "string"
+  },
+  "services": [
+    {
+      "id": "logger",
+      "commands": [
+        {
+          "id": "describe_loggers"
+        },
+        {
+          "id": "set_logger_level",
+          "options": [
+            {
+              "id": "name",
+              "type": "string"
+            },
+            {
+              "id": "level",
+              "type": "integer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stats",
+      "commands": [
+        {
+          "id": "describe_stats_frequency"
+        },
+        {
+          "id": "describe_stats_live"
+        },
+        {
+          "id": "set_stats_frequency",
+          "options": [
+            {
+              "id": "frequency",
+              "type": "integer"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
