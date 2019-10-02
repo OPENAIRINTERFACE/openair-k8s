@@ -26,13 +26,13 @@
     "logqsize": 8192,
     "statlogsize": 20,
     "statlognumber": 5,
-    "statlogname": "logs/hss_stat.log",
+    "statlogname": "/tmp/hss_stat.log",
     "auditlogsize": 20,
     "auditlognumber": 5,
-    "auditlogname": "logs/hss_audit.log",
+    "auditlogname": "/tmp/hss_audit.log",
     "statfreq": 2000,
     "numworkers": 4,
     "concurrent": 10,
-    "ossfile": "conf/oss.json"    
+    "ossfile": "oss.json"    
  }
 }
