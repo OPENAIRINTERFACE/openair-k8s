@@ -58,7 +58,7 @@ run_component() {
 
     # block until container is running and service binds to port
     wait_until_running $CONTAINER_NAME
-    wait_for_socket 127.0.1.1 $LIVENESS_PORT
+    wait_for_socket 127.0.0.1 $LIVENESS_PORT
 }
 
 # for pre-Rel14 HSS
@@ -82,10 +82,22 @@ run_component() {
 #     -h hss.openair4G.eur
 
 run_component cassandra:3.11 9042 \
-    -p 9042:9042
+    -e CASSANDRA_DC=DC1 \
+    -e CASSANDRA_RACK=RACK1 \
+    -e CASSANDRA_CLUSTER_NAME=OAI_HSS \
+    -e CASSANDRA_ENDPOINT_SNITCH="GossipingPropertyFileSnitch" \
+    -p 9042:9042 
 
-run_component oai-hss_rel14:master 3868 \
-    -e DB_FQDN=127.0.1.1 \
+info 'Provisioning...(Datacenter name is hardcoded in CQL)'
+IP_CASSANDRA=`sudo podman exec -it cassandra ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
+SCRIPT=$(readlink -f $0)
+THIS_SCRIPT_PATH=`dirname $SCRIPT`
+PROVISION_SCRIPT=$THIS_SCRIPT_PATH/../images/oai-cassandra/scripts/init_prov.sh    
+$PROVISION_SCRIPT -n cassandra -i $IP_CASSANDRA
+info 'Provisioning done'
+    
+run_component oai-hss_rel14:k8s 3868 \
+    -e DB_FQDN=$IP_CASSANDRA \
     -e DB_NAME=vhss \
     -e DB_USER=cassandra \
     -e DB_PASSWORD=cassandra \
@@ -96,31 +108,31 @@ run_component oai-hss_rel14:master 3868 \
     -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
     -h hss.openair4G.eur
 
-run_component oai-mme:1.0.1 3870 \
-    -e MY_POD_IP="127.0.1.1" \
-    -e MME_SERVICE="mme.openair4G.eur" \
-    -e MME_REALM="openair4G.eur" \
-    -e MME_GID="4" \
-    -e MME_CODE="1" \
-    -e MCC="208" \
-    -e MNC="92" \
-    -e TAC="1" \
-    -e SGW_IP="sgw.openair4G.eur" \
-    -e HSS_SERVICE="hss.openair4G.eur" \
-    -e HSS_REALM="openair4G.eur" \
-    -e HSS_HOSTNAME="hss" \
-    -p 3870:3870 -p 5870:5870 -p 2123:2123 \
-    -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
-    -h mme.openair4G.eur
+#run_component oai-mme:1.0.1 3870 \
+#    -e MY_POD_IP="127.0.1.1" \
+#    -e MME_SERVICE="mme.openair4G.eur" \
+#    -e MME_REALM="openair4G.eur" \
+#    -e MME_GID="4" \
+#    -e MME_CODE="1" \
+#    -e MCC="208" \
+#    -e MNC="92" \
+#    -e TAC="1" \
+#    -e SGW_IP="sgw.openair4G.eur" \
+#    -e HSS_SERVICE="hss.openair4G.eur" \
+#    -e HSS_REALM="openair4G.eur" \
+#    -e HSS_HOSTNAME="hss" \
+#    -p 3870:3870 -p 5870:5870 -p 2123:2123 \
+#    -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
+#    -h mme.openair4G.eur
 
-run_component oai-spgwc:1.0.0 2123 \
-    -e SGW_S11_INTERFACE="eno1" \
-    -e SGW_S5S8_INTERFACE="eno1" \
-    -e PGW_S5S8_INTERFACE="eno1" \
-    -e PGW_SX_INTERFACE="eno1" \
-    -e UE_IP_ADDRESS_POOL="10.0.23.1 - 10.0.23.240" \
-    -e UE_DNS_SERVER="8.8.8.8" \
-    -p 2123:2123 -p 8805:8805 \
-    -h spgwc.openair4G.eur
+#run_component oai-spgwc:1.0.0 2123 \
+#    -e SGW_S11_INTERFACE="eno1" \
+#    -e SGW_S5S8_INTERFACE="eno1" \
+#    -e PGW_S5S8_INTERFACE="eno1" \
+#    -e PGW_SX_INTERFACE="eno1" \
+#    -e UE_IP_ADDRESS_POOL="10.0.23.1 - 10.0.23.240" \
+#    -e UE_DNS_SERVER="8.8.8.8" \
+#    -p 2123:2123 -p 8805:8805 \
+#    -h spgwc.openair4G.eur
 
 info "All services started."
