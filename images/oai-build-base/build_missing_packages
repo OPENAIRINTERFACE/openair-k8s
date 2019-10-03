@@ -4,6 +4,9 @@ set -x
 
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
+source /etc/os-release
+PLATFORM=${ID}${VERSION_ID#*.}
+
 function build_install_asn1c_oai {
     rm -rf /tmp/asn1c_oai
     git clone https://gitlab.eurecom.fr/oai/asn1c.git /tmp/asn1c_oai
@@ -95,7 +98,38 @@ function build_install_libuv {
     make install
 }
 
-(cd /usr/bin && ln -s python2 python)
+function build_install_protobuf {
+    rm -rf /tmp/protobuf
+    git clone --depth=1 --branch=v3.3.0 https://github.com/protocolbuffers/protobuf.git /tmp/protobuf
+    cd /tmp/protobuf
+    git submodule update --init --recursive
+    ./autogen.sh
+    ./configure
+    make -j`nproc`
+    make install
+}
+
+function build_install_protobuf_c {
+    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+    rm -rf /tmp/protobuf-c
+    git clone --depth=1 --branch=v1.3.0 https://github.com/protobuf-c/protobuf-c.git /tmp/protobuf-c
+    cd /tmp/protobuf-c
+    ./autogen.sh
+    ./configure
+    make -j`nproc`
+    make install
+}
+
+case "${PLATFORM}" in
+    rhel8)
+        (cd /usr/bin && ln -s python2 python)
+        ;;
+    rhel7)
+        (cd /usr/bin && ln -s cmake3 cmake)
+        build_install_protobuf
+        build_install_protobuf_c
+        ;;
+esac
 build_install_asn1c_oai
 build_install_asn1c_cn
 build_install_uhd
