@@ -22,7 +22,7 @@ LABEL name="oai-spgwc" \
       io.openshift.non-scalable="true"
 
 RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
-    PKGLIST="boost libconfig libevent gflags-devel glog-devel iproute iputils procps-ng bind-utils" && \
+    PKGLIST="boost libasan libconfig libevent gflags-devel glog-devel iproute iputils procps-ng bind-utils" && \
     # yum -y update-minimal --setopt=tsflags=nodocs --security --sec-severity=Important --sec-severity=Critical && \
     yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} && \
     yum -y clean all
