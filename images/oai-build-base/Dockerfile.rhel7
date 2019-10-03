@@ -73,5 +73,5 @@ RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://
 
 # build packages not present in RHEL/EPEL repos
 COPY patches patches/
-COPY ./build_missing_packages .
-RUN chmod +x build_missing_packages && ./build_missing_packages
+COPY scripts scripts/
+RUN scripts/build_missing_packages
