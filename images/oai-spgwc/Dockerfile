@@ -1,7 +1,7 @@
 ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base AS builder
 
-ARG GIT_TAG=v1.0.0
+ARG GIT_TAG=develop
 
 WORKDIR /root
 
@@ -10,7 +10,7 @@ RUN git clone --depth=1 --branch=master https://github.com/gabime/spdlog.git ope
 COPY patches patches/
 RUN patch -p1 -d openair-cn-cups < patches/enable_sudo-less_build.patch
 RUN cd openair-cn-cups/build/scripts \
-    && ./build_spgwc -v
+    && ./build_spgwc -c -v -b RelWithDebInfo -j
 
 
 FROM registry.redhat.io/ubi8/ubi
@@ -39,7 +39,7 @@ USER 10001
 WORKDIR ${APP_ROOT}
 
 # expose ports
-EXPOSE 2123/tcp 8805/tcp
+EXPOSE 2123/udp 8805/udp
 
 CMD ["/opt/oai-spgwc/bin/spgwc", "-c", "/opt/oai-spgwc/etc/spgwc.conf"]
 ENTRYPOINT ["/opt/oai-spgwc/bin/entrypoint.sh"]
