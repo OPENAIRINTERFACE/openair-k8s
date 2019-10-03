@@ -34,11 +34,11 @@ COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} /etc/passwd
-USER 10001
+#USER 10001
 WORKDIR ${APP_ROOT}
 
 # expose ports
 EXPOSE 2152/udp 8805/udp
 
-CMD ["-h"]
-ENTRYPOINT ["${APP_ROOT}/bin/spgwc"]
+CMD ["/opt/oai-spgwu/bin/spgwu", "-c", "/opt/oai-spgwu/etc/spgw_u.conf", "-r"]
+ENTRYPOINT ["/opt/oai-spgwu/bin/entrypoint.sh"]
