@@ -107,32 +107,58 @@ run_component oai-hss_rel14:k8s 3868 \
     -p 3868:3868 -p 5868:5868 -p 9080:9080 -p 9081:9081 \
     -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
     -h hss.openair4G.eur
+HSS_IP=`sudo podman exec -it oai-hss_rel14 ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
 
-#run_component oai-mme:1.0.1 3870 \
-#    -e MY_POD_IP="127.0.1.1" \
-#    -e MME_SERVICE="mme.openair4G.eur" \
-#    -e MME_REALM="openair4G.eur" \
-#    -e MME_GID="4" \
-#    -e MME_CODE="1" \
-#    -e MCC="208" \
-#    -e MNC="92" \
-#    -e TAC="1" \
-#    -e SGW_IP="sgw.openair4G.eur" \
-#    -e HSS_SERVICE="hss.openair4G.eur" \
-#    -e HSS_REALM="openair4G.eur" \
-#    -e HSS_HOSTNAME="hss" \
-#    -p 3870:3870 -p 5870:5870 -p 2123:2123 \
-#    -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
-#    -h mme.openair4G.eur
+# Make your choice , should launch a script to retrieve the interface name
+CONTAINER_INTERFACE='ens192'
+#CONTAINER_INTERFACE='eno1'
+#CONTAINER_INTERFACE='eth0'
 
-#run_component oai-spgwc:1.0.0 2123 \
-#    -e SGW_S11_INTERFACE="eno1" \
-#    -e SGW_S5S8_INTERFACE="eno1" \
-#    -e PGW_S5S8_INTERFACE="eno1" \
-#    -e PGW_SX_INTERFACE="eno1" \
+# Commented due to  podman run --net=host (Same port binding for S11, SX)
+#run_component oai-spgwc:develop 2123 \
+#    -e SGW_S11_INTERFACE="$CONTAINER_INTERFACE" \
+#    -e PGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
 #    -e UE_IP_ADDRESS_POOL="10.0.23.1 - 10.0.23.240" \
 #    -e UE_DNS_SERVER="8.8.8.8" \
 #    -p 2123:2123 -p 8805:8805 \
 #    -h spgwc.openair4G.eur
+#PGWC_SX_IP_ADDRESS=`sudo podman exec -it oai-spgwc ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
+#SGWC_IP=`sudo podman exec -it oai-spgwc ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
 
+# Hardcoded due to  podman run --net=host 
+PGWC_SX_IP_ADDRESS="192.168.104.200"
+SGWC_IP="192.168.104.199"
+
+
+run_component oai-mme:k8s 3870 \
+    -e MY_POD_IP="192.168.104.195" \
+    -e MME_SERVICE="mme.openair4G.eur" \
+    -e MME_REALM="openair4G.eur" \
+    -e MME_GID="4" \
+    -e MME_CODE="1" \
+    -e MCC="208" \
+    -e MNC="92" \
+    -e NW_IF="$CONTAINER_INTERFACE" \
+    -e TAC="1" \
+    -e SGW_IP="$SGWC_IP" \
+    -e HSS_SERVICE="hss.openair4G.eur" \
+    -e HSS_IP="$HSS_IP" \
+    -e HSS_REALM="openair4G.eur" \
+    -e HSS_HOSTNAME="hss" \
+    -p 3870:3870 -p 5870:5870 -p 2123:2123 \
+    -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
+    -h mme.openair4G.eur
+
+
+    
+run_component oai-spgwu:develop 2123 \
+    -e SGW_S1U_INTERFACE="$CONTAINER_INTERFACE" \
+    -e SGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
+    -e PGW_SGI_INTERFACE="$CONTAINER_INTERFACE" \
+    -e NETWORK_UE_IP="10.0.23.0/24" \
+    -e PGWC_SX_IP_ADDRESS="$PGWC_SX_IP_ADDRESS" \
+    -p 2123:2123 -p 8805:8805 \
+    -h spgwu.openair4G.eur
+   
+    
 info "All services started."
