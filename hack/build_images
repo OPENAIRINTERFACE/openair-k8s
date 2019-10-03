@@ -1,8 +1,10 @@
 #!/bin/bash
 
+source /etc/os-release
+PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
 REGISTRY=${REGISTRY:-registry.redhat.io}
 BUILD_ARGS=${BUILD_ARGS:-"--no-cache"}
-IMAGES=$(find images -type f -name Dockerfile | sed 's|images/||g' | sed 's|/Dockerfile||g' | xargs)
+IMAGES=$(find images -type f -name Dockerfile* | sed 's|images/||g' | sed 's|/Dockerfile[a-z0-9.]*||g' | sort | uniq | xargs)
 
 info() {
     local MESSAGE=$1
@@ -27,6 +29,14 @@ build_image() {
     local TAG=$2
     local CLEAN_TAG=$(echo $TAG | sed -r 's/^v([0-9])/\1/')
 
+    # Default to building from Dockerfile. If there's a platform-specific Dockerfile
+    # use that instead and append the platform name to the image tag.
+    DOCKERFILE="Dockerfile"
+    if [ -f images/$IMAGE/Dockerfile.rh${PLATFORM} ]; then
+        DOCKERFILE="Dockerfile.rh${PLATFORM}"
+        CLEAN_TAG="${CLEAN_TAG}.${PLATFORM}"
+    fi
+
     podman image exists $IMAGE:$CLEAN_TAG
     if [ $? -eq 0 ] && [ ! "$FORCE" = true ]; then
         info "Skipping existing image $IMAGE:$CLEAN_TAG (use '-f' to override)"
@@ -36,7 +46,8 @@ build_image() {
             --net=host \
             $BUILD_ARGS \
             --build-arg GIT_TAG=$TAG \
-	    --build-arg EURECOM_PROXY=$PROXY\
+            --build-arg EURECOM_PROXY=$PROXY \
+            -f $DOCKERFILE \
             -t $IMAGE:$CLEAN_TAG \
             images/$IMAGE
     fi
@@ -79,7 +90,11 @@ for i in $IMAGES; do
     TAG=${i#*:}
     # if no git_tag specified, grep default from Dockerfile
     if [ "$IMG" = "$TAG" ]; then
-        TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile)        
+        if [ -f images/$IMG/Dockerfile.rh${PLATFORM} ]; then
+            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.rh${PLATFORM})
+        else
+            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile)
+        fi
     fi
     build_image $IMG $TAG
 done
