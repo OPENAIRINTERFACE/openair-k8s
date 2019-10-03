@@ -5,7 +5,7 @@ set -x
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
 source /etc/os-release
-PLATFORM=${ID}${VERSION_ID#*.}
+PLATFORM=${ID#rh*}${VERSION_ID%.*}
 
 function build_install_asn1c_oai {
     rm -rf /tmp/asn1c_oai
@@ -121,10 +121,10 @@ function build_install_protobuf_c {
 }
 
 case "${PLATFORM}" in
-    rhel8)
+    el8)
         (cd /usr/bin && ln -s python2 python)
         ;;
-    rhel7)
+    el7)
         (cd /usr/bin && ln -s cmake3 cmake)
         build_install_protobuf
         build_install_protobuf_c
