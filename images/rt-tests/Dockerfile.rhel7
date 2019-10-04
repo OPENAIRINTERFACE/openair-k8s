@@ -1,14 +1,18 @@
-FROM registry.redhat.io/ubi7/ubi
+ARG REGISTRY=registry.redhat.io
+FROM $REGISTRY/ubi7/ubi
 
 RUN REPOLIST=rhel-7-server-rt-rpms \
-    PKGLIST="kernel-tools rt-tests rteval" && \
-    yum -y install --enablerepo ${REPOLIST} ${PKGLIST} && \
-    yum -y clean all
+    PKGLIST="rt-tests rteval procps-ng" \
+    && yum -y install --enablerepo ${REPOLIST} ${PKGLIST} \
+    && yum -y clean all \
+    && rm -rf /var/cahce/yum
 
 USER 0
-ENV APP_ROOT=/opt/rt-tests
-ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
-COPY scripts ${APP_ROOT}
+ENV APP_ROOT=/opt/rt-tests HOME=${APP_ROOT} PATH=${APP_ROOT}:${PATH}
 WORKDIR ${APP_ROOT}
 
-ENTRYPOINT ["/opt/rt-tests/entrypoint.sh"]
+ENV DURATION=1m
+ENV CORE_LIST=1
+
+CMD ["-c", "taskset -c ${CORE_LIST} rteval -v -d ${DURATION} --loads-cpulist=${CORE_LIST} --measurement-cpulist=${CORE_LIST}"]
+ENTRYPOINT ["/bin/bash"]

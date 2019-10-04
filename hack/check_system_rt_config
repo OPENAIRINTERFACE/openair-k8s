@@ -1,0 +1,30 @@
+#!/bin/bash
+
+TURBOSTAT_DURATION=${TURBOSTAT_DURATION:-60}
+HWLAT_DURATION=${HWLAT_DURATION:-60}
+
+info() { echo -e "\E[34m\n== $@ ==\E[00m"; }
+
+info "CPU info"
+lscpu
+
+info "Checking CPU C-states (${TURBOSTAT_DURATION}s)"
+turbostat -n 1 -i "${TURBOSTAT_DURATION}"
+
+info "Checking CPU frequencies"
+cat /proc/cpuinfo | grep MHz
+
+info "Checking hardware/firmware-induced latency (${HWLAT_DURATION}s)"
+hwlatdetect --duration="${HWLAT_DURATION}"
+
+info "Kernel info"
+echo "default kernel:      $(grubby --default-kernel | sed 's|/boot/vmlinuz-||')"
+echo "current kernel:      $(uname -r)"
+if uname -v | grep -q PREEMPT; then
+  echo "has PREEMPT patch:   true"
+else
+  echo "has PREEMPT patch:   false"
+fi
+echo "kernel params:       $(cat /proc/cmdline)"
+echo "tuned version:       $(tuned -v)"
+echo "tuned act. profile:  $(cat /etc/tuned/active_profile)"

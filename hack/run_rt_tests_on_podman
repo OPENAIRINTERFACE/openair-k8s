@@ -6,15 +6,11 @@ info() {
     echo -e "\E[34m\n== $MESSAGE\E[00m";
 }
 
+
+THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
+${THIS_SCRIPT_PATH}/check_system_rt_config
+
 source /etc/os-release
-PLATFORM=${PLATFORM_ID#*:}
-
-podman image exists rt-tests.${PLATFORM}
-if [ $? -ne 0 ]; then
-    info "Building rt-tests.${PLATFORM} image"
-    podman build -f Dockerfile.rh${PLATFORM} -t rt-tests.${PLATFORM} images/rt-tests
-fi
-
+PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
 info "Running rt-tests.${PLATFORM} image"
-#podman run --device=/dev/cpu --cap-add=SYS_RAWIO rt-tests.${PLATFORM}
-podman run --privileged rt-tests.${PLATFORM}
+podman run --rm --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK -it rt-tests:latest.${PLATFORM}
