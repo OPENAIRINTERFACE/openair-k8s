@@ -51,5 +51,5 @@ WORKDIR ${APP_ROOT}
 # expose ports from gnb.conf
 EXPOSE 2152/tcp
 
-CMD ["/opt/oai-gnb/bin/nr-softmodem", "-O", "/opt/oai-hss/etc/gnb.conf"]
+CMD ["/opt/oai-gnb/bin/nr-softmodem", "-O", "/opt/oai-gnb/etc/gnb.conf"]
 ENTRYPOINT ["/opt/oai-gnb/bin/entrypoint.sh"]
