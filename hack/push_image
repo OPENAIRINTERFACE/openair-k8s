@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -ex
+set -e
 IMAGES=$(find images -type f -name Dockerfile* | sed 's|images/||g' | sed 's|/Dockerfile[a-z0-9.]*||g' | sort | uniq | xargs)
 
 IMAGENAME=$1
