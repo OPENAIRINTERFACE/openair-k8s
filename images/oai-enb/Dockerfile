@@ -41,7 +41,7 @@ ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem ${APP_ROOT}/bin/
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/rb_tool ${APP_ROOT}/bin/
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/*.so /lib64
-RUN cd /lib && ln -sf liboai_eth_transpro.so liboai_transpro.so && ln -sf liboai_usrpdevif.so liboai_device.so
+RUN cd /lib64 && ln -sf liboai_eth_transpro.so liboai_transpro.so && ln -sf liboai_usrpdevif.so liboai_device.so
 COPY scripts ${APP_ROOT}/bin/
 COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \

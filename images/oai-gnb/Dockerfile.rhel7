@@ -38,6 +38,9 @@ RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 ENV APP_ROOT=/opt/oai-gnb
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openairinterface5g/cmake_targets/ran_build/build/nr-softmodem ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/cmake_targets/ran_build/build/rb_tool ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/cmake_targets/ran_build/build/*.so /lib64
+RUN cd /lib64 && ln -sf liboai_eth_transpro.so liboai_transpro.so && ln -sf liboai_usrpdevif.so liboai_device.so
 COPY scripts ${APP_ROOT}/bin/
 COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
