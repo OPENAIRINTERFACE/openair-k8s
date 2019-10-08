@@ -1,11 +1,19 @@
 ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el8 AS builder
 
-ARG GIT_TAG=v1.0.3
+ARG GIT_TAG=v1.1.0
 
 WORKDIR /root
 
+RUN yum -y install --enablerepo="rhel-8-for-x86_64-rt-rpms" \
+        kernel-rt-core-${KERNEL_VERSION} \
+        kernel-rt-devel-${KERNEL_VERSION} \
+        kernel-rt-modules-${KERNEL_VERSION} \
+    && yum clean all -y \
+    && rm -rf /var/cache/yum
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
+COPY patches patches/
+RUN patch -p1 -d openairinterface5g < patches/enable_nasmesh_build_on_rhel8.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_oai /usr/local/share/asn1c \
@@ -20,24 +28,30 @@ LABEL name="oai-enb" \
       io.openshift.tags="oai,enb" \
       io.openshift.non-scalable="true"
 
-RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
-    PKGLIST="libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" && \
-    # yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
-    yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} && \
-    yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm && \
-    yum -y clean all
+RUN REPOLIST="codeready-builder-for-rhel-8-x86_64-rpms" \
+    PKGLIST="libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" \
+    # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
+    && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
+    && yum -y install http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
+    && yum -y clean all \
+    && rm -rf /var/cache/yum
 
-ENV APP_ROOT=/opt/oai-gnb
+ENV APP_ROOT=/opt/oai-enb
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/rb_tool ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/*.so /lib64
+RUN cd /lib && ln -sf liboai_eth_transpro.so liboai_transpro.so && ln -sf liboai_usrpdevif.so liboai_device.so
+COPY scripts ${APP_ROOT}/bin/
+COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} /etc/passwd
 USER 10001
 WORKDIR ${APP_ROOT}
 
-# expose ports
-# EXPOSE 3868/tcp 5868/tcp
+# expose ports from enb.conf
+EXPOSE 2152/udp 22100/tcp 36422/tcp
 
-CMD ["-h"]
-ENTRYPOINT ["${APP_ROOT}/bin/lte-softmodem"]
+CMD ["/opt/oai-enb/bin/lte-softmodem", "-O", "/opt/oai-enb/etc/enb.conf"]
+ENTRYPOINT ["/opt/oai-enb/bin/entrypoint.sh"]
