@@ -160,8 +160,8 @@ run_component oai-spgwu:develop 2123 \
 
 run_component oai-enb:1.1.0 2152 \
     --cap-add=SYS_NICE \
-    -e GNB_ID=42 \
-    -e GNB_NAME="eNB" \
+    -e ENB_ID=42 \
+    -e ENB_NAME="eNB" \
     -e MCC=42 \
     -e MNC=42 \
     -e MME_IP4="127.0.0.1" \
