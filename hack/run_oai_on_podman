@@ -149,8 +149,6 @@ run_component oai-mme:k8s 3870 \
     -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
     -h mme.openair4G.eur
 
-
-    
 run_component oai-spgwu:develop 2123 \
     -e SGW_S1U_INTERFACE="$CONTAINER_INTERFACE" \
     -e SGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
@@ -159,6 +157,24 @@ run_component oai-spgwu:develop 2123 \
     -e PGWC_SX_IP_ADDRESS="$PGWC_SX_IP_ADDRESS" \
     -p 2123:2123 -p 8805:8805 \
     -h spgwu.openair4G.eur
-   
-    
+
+run_component oai-enb:1.1.0 2152 \
+    --cap-add=SYS_NICE \
+    -e ENB_ID=42 \
+    -e ENB_NAME="eNB" \
+    -e MCC=42 \
+    -e MNC=42 \
+    -e MME_IP4="127.0.0.1" \
+    -e MME_IP6="::1" \
+    -e S1_MME_IF="lo" \
+    -e S1_MME_IP="127.0.0.1" \
+    -e S1_U_IF="lo" \
+    -e S1_U_IP="127.0.0.1" \
+    -e X2C_IP="127.0.0.1" \
+    -e CU_IF="lo" \
+    -e CU_IP="127.0.0.1" \
+    -e DU_IF="lo" \
+    -e DU_IP="127.0.0.1" \
+    -p 2152:2152 -p 22100:22100 -p 36422:36422
+
 info "All services started."
