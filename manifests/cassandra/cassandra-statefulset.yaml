@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cassandra
+spec:
+  serviceName: cassandra
+  selector:
+    matchLabels:
+      app: cassandra
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cassandra
+    spec:
+      containers:
+      - name: cassandra
+        image: cassandra:3.11
+        ports:
+        - containerPort: 7000
+          name: intra-node
+        - containerPort: 7001
+          name: tls-intra-node
+        - containerPort: 7199
+          name: jmx
+        - containerPort: 9042
+          name: cql
+        env:
+          # Cassandra env vars
+          - name: CASSANDRA_DC
+            valueFrom:
+              configMapKeyRef:
+                name: cassandra-config
+                key: cassandra.dc
+          - name: CASSANDRA_RACK
+            valueFrom:
+              configMapKeyRef:
+                name: cassandra-config
+                key: cassandra.rack
+          - name: CASSANDRA_CLUSTER_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: cassandra-config
+                key: cassandra.cluster_name
+          - name: CASSANDRA_ENDPOINT_SNITCH
+            valueFrom:
+              configMapKeyRef:
+                name: cassandra-config
+                key: cassandra.endpoint_snitch
+      - name: init-db
+        image: cassandra:3.11
+        command: ['sh', '-c', 'cqlsh --file /root/oai_db.cql']
+        volumeMounts:
+        - name: oai-db
+          mountPath: /root
+        restartPolicy: Never
+      volumes:
+        - name: oai-db
+          configMap:
+            name: oai-db
