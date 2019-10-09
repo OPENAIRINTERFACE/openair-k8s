@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 source /etc/os-release
 PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}

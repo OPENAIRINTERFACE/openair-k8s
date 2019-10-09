@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 if ! command -v kubectl >/dev/null 2>&1; then
     echo >&2 "Could not find 'kubectl' command."

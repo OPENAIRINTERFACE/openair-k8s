@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 info() {
     local MESSAGE=$1
