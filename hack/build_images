@@ -96,9 +96,9 @@ for i in $IMAGES; do
     # if no git_tag specified, grep default from Dockerfile
     if [ "$IMG" = "$TAG" ]; then
         if [ -f images/$IMG/Dockerfile.rh${PLATFORM} ]; then
-            TAG=$($(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.rh${PLATFORM}) || echo "latest")
+            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.rh${PLATFORM} || echo "latest")
         else
-            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile)
+            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile || echo "latest")
         fi
     fi
     build_image $IMG $TAG
