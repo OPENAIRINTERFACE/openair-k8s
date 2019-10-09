@@ -12,5 +12,6 @@ ${THIS_SCRIPT_PATH}/check_system_rt_config
 
 source /etc/os-release
 PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+CORE_LIST=${CORE_LIST:-1}
 info "Running rt-tests.${PLATFORM} image"
-podman run --rm --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK -it rt-tests:latest.${PLATFORM}
+podman run --rm --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK -e CORE_LIST=${CORE_LIST} -it rt-tests:latest.${PLATFORM}
