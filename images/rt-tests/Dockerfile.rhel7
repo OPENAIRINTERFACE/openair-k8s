@@ -5,7 +5,7 @@ RUN REPOLIST=rhel-7-server-rt-rpms \
     PKGLIST="rt-tests rteval procps-ng" \
     && yum -y install --enablerepo ${REPOLIST} ${PKGLIST} \
     && yum -y clean all \
-    && rm -rf /var/cahce/yum
+    && rm -rf /var/cache/yum
 
 USER 0
 ENV APP_ROOT=/opt/rt-tests HOME=${APP_ROOT} PATH=${APP_ROOT}:${PATH}
