@@ -70,17 +70,9 @@ spec:
         image: cassandra:3.11
         command: ['sh', '-c', 'cqlsh cassandra-0.cassandra.default.svc.cluster.local --file /root/oai_db.cql']
         volumeMounts:
-        - name: oai-db
+        - name: db
           mountPath: /root
         restartPolicy: Never
-      volumes:
-        - name: oai-db
-          configMap:
-            name: oai-db
-            volumeMounts:
-        - name: certs
-          mountPath: "/opt/oai-hss/certs"
-          readOnly: true
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -90,3 +82,6 @@ spec:
       - name: certs
         secret:
           secretName: hss-tls-secret
+      - name: db
+        configMap:
+          name: oai-db
