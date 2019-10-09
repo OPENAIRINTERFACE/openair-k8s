@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-hss
+  labels:
+    app: oai-hss
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-hss
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-hss
+    spec:
+      containers:
+      - name: hss
+        image: quay.io/oglok/oai:latest
+        ports:
+        - containerPort: 3868
+          name: oai-hss
+        - containerPort: 5868
+          name: oai-hss-secure
+        - containerPort: 9080
+          name: jmx
+        - containerPort: 9081
+          name: cql
+        env:
+          # HSS env vars
+          - name: DB_FQDN
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: db_fqdn
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: db_name
+          - name: DB_USER
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: db_user
+          - name: DB_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: db_password 
+          - name: OP_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: op_key
+          - name: HSS_FQDN
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: identity
+          - name: ROAMING_ALLOWED
+            valueFrom:
+              configMapKeyRef:
+                name: hss-config
+                key: roaming
+      initContainers:
+      - name: init-db
+        image: cassandra:3.11
+        command: ['sh', '-c', 'cqlsh cassandra-0.cassandra.default.svc.cluster.local --file /root/oai_db.cql']
+        volumeMounts:
+        - name: oai-db
+          mountPath: /root
+        restartPolicy: Never
+      volumes:
+        - name: oai-db
+          configMap:
+            name: oai-db
+            volumeMounts:
+        - name: certs
+          mountPath: "/opt/oai-hss/certs"
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: certs
+        secret:
+          secretName: hss-tls-secret

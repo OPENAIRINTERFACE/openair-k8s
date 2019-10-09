@@ -3,8 +3,10 @@ kind: ConfigMap
 metadata:
   name: hss-config
 data:
-  op_key: "1006020f0a478bf6b699f15c062e42b3"
+  db_fqdn: "cassandra-0.cassandra.default.svc.cluster.local"
+  db_name: "vhss"
+  db_user: "cassandra"
+  db_password: "cassandra"
+  op_key: "11111111111111111111"
   identity: "hss.openair4G.eur"
-  realm: "openair4G.eur"
-
-
+  roaming: "true"
