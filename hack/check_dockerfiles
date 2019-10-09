@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 IMAGES=$(find images -type f -name Dockerfile | sed 's|images/||g' | sed 's|/Dockerfile||g' | xargs)
 
