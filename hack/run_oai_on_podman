@@ -158,23 +158,42 @@ run_component oai-spgwu:develop 2123 \
     -p 2123:2123 -p 8805:8805 \
     -h spgwu.openair4G.eur
 
-run_component oai-enb:1.1.0 2152 \
-    --cap-add=SYS_NICE \
-    -e ENB_ID=42 \
-    -e ENB_NAME="eNB" \
-    -e MCC=42 \
-    -e MNC=42 \
-    -e MME_IP4="127.0.0.1" \
-    -e MME_IP6="::1" \
-    -e S1_MME_IF="lo" \
-    -e S1_MME_IP="127.0.0.1" \
-    -e S1_U_IF="lo" \
-    -e S1_U_IP="127.0.0.1" \
-    -e X2C_IP="127.0.0.1" \
-    -e CU_IF="lo" \
-    -e CU_IP="127.0.0.1" \
-    -e DU_IF="lo" \
-    -e DU_IP="127.0.0.1" \
-    -p 2152:2152 -p 22100:22100 -p 36422:36422
+# run_component oai-enb:1.1.0 2152 \
+#     --cap-add=SYS_NICE \
+#     -e ENB_ID=42 \
+#     -e ENB_NAME="eNB" \
+#     -e MCC=42 \
+#     -e MNC=42 \
+#     -e MME_IP4="127.0.0.1" \
+#     -e MME_IP6="::1" \
+#     -e S1_MME_IF="lo" \
+#     -e S1_MME_IP="127.0.0.1" \
+#     -e S1_U_IF="lo" \
+#     -e S1_U_IP="127.0.0.1" \
+#     -e X2C_IP="127.0.0.1" \
+#     -e CU_IF="lo" \
+#     -e CU_IP="127.0.0.1" \
+#     -e DU_IF="lo" \
+#     -e DU_IP="127.0.0.1" \
+#     -p 2152:2152 -p 22100:22100 -p 36422:36422
+
+# run_component oai-gnb:develop-nr 2152 \
+#     --privileged \
+#     --device=/dev/cpu_dma_latency:/dev/cpu_dma_latency \
+#     --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK \
+#     -e GNB_ID=42 \
+#     -e GNB_NAME="eNB" \
+#     -e MCC=42 \
+#     -e MNC=42 \
+#     -e MME_IP4="127.0.0.1" \
+#     -e MME_IP6="::1" \
+#     -e S1_MME_IF="lo" \
+#     -e S1_MME_IP="127.0.0.1" \
+#     -e S1_U_IF="lo" \
+#     -e S1_U_IP="127.0.0.1" \
+#     -e SDR_FIRST_IP="127.0.0.1" \
+#     -e SDR_SECOND_IP="127.0.0.2" \
+#     -e SDR_MGMT_IP="127.0.0.3" \
+#     -p 2152:2152
 
 info "All services started."
