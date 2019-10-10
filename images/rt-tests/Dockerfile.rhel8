@@ -14,5 +14,5 @@ WORKDIR ${APP_ROOT}
 ENV DURATION=1m
 ENV CORE_LIST=1
 
-CMD ["-c", "taskset -c ${CORE_LIST} rteval -v -d ${DURATION} --loads-cpulist=${CORE_LIST} --measurement-cpulist=${CORE_LIST}"]
+CMD ["-c", "taskset -c ${CORE_LIST} rteval -L -v -d ${DURATION} --loads-cpulist=${CORE_LIST} --measurement-cpulist=${CORE_LIST}"]
 ENTRYPOINT ["/bin/bash"]
