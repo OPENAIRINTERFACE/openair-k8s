@@ -39,9 +39,15 @@ RUN REPOLIST="codeready-builder-for-rhel-8-x86_64-rpms" \
 ENV APP_ROOT=/opt/oai-enb
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem ${APP_ROOT}/bin/
-COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/rb_tool ${APP_ROOT}/bin/
-COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/*.so /lib64
-RUN cd /lib64 && ln -sf liboai_eth_transpro.so liboai_transpro.so && ln -sf liboai_usrpdevif.so liboai_device.so
+COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/*.so* /lib64
+COPY --from=builder /usr/local/lib64 /lib64
+COPY --from=builder /usr/local/bin/uhd_* /usr/local/bin
+COPY --from=builder /usr/local/share/uhd /usr/local/share/uhd
+RUN cd /lib64 \
+    && ln -sf liboai_eth_transpro.so liboai_transpro.so \
+    && ln -sf liboai_usrpdevif.so liboai_device.so \
+    && ln -sf libuhd.so.3.13 libuhd.so.3 \
+    && ln -sf libuhd.so.3 libuhd.so
 COPY scripts ${APP_ROOT}/bin/
 COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
