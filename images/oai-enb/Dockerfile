@@ -29,7 +29,7 @@ LABEL name="oai-enb" \
       io.openshift.non-scalable="true"
 
 RUN REPOLIST="codeready-builder-for-rhel-8-x86_64-rpms" \
-    PKGLIST="libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" \
+    PKGLIST="boost libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" \
     # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
     && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
     && yum -y install http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
