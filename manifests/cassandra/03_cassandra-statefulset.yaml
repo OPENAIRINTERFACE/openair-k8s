@@ -47,14 +47,3 @@ spec:
               configMapKeyRef:
                 name: cassandra-config
                 key: cassandra.endpoint_snitch
-      - name: init-db
-        image: cassandra:3.11
-        command: ['sh', '-c', 'cqlsh --file /root/oai_db.cql']
-        volumeMounts:
-        - name: oai-db
-          mountPath: /root
-        restartPolicy: Never
-      volumes:
-        - name: oai-db
-          configMap:
-            name: oai-db

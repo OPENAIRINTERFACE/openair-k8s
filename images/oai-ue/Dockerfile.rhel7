@@ -1,44 +1,42 @@
 ARG REGISTRY=localhost
-FROM $REGISTRY/oai-build-base:latest.el8 AS builder
+FROM $REGISTRY/oai-build-base:latest.el7 AS builder
 
 ARG GIT_TAG=v1.1.0
+ARG KERNEL_VERSION
 
 WORKDIR /root
 
-RUN yum -y install --enablerepo="rhel-8-for-x86_64-rt-rpms" \
-        kernel-rt-core-${KERNEL_VERSION} \
+RUN yum -y install --enablerepo="rhel-7-server-rt-rpms" \
+        kernel-rt-${KERNEL_VERSION} \
         kernel-rt-devel-${KERNEL_VERSION} \
-        kernel-rt-modules-${KERNEL_VERSION} \
     && yum clean all -y \
     && rm -rf /var/cache/yum
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
-COPY patches patches/
-RUN patch -p1 -d openairinterface5g < patches/enable_nasmesh_build_on_rhel8.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_oai /usr/local/share/asn1c \
-    && ./build_oai -c --eNB -w USRP --verbose-compile
+    && ./build_oai -c --UE -w USRP --verbose-compile
 
 
-FROM registry.redhat.io/ubi8/ubi
-LABEL name="oai-enb" \
+FROM registry.redhat.io/ubi7/ubi
+LABEL name="oai-ue" \
       version="$GIT_TAG" \
       maintainer="Frank A. Zdarsky <fzdarsky@redhat.com>" \
-      io.k8s.description="openairinterface5g eNB $GIT_TAG." \
-      io.openshift.tags="oai,enb" \
+      io.k8s.description="openairinterface5g UE $GIT_TAG." \
+      io.openshift.tags="oai,ue" \
       io.openshift.non-scalable="true"
 
-RUN REPOLIST="codeready-builder-for-rhel-8-x86_64-rpms" \
-    PKGLIST="boost libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" \
-    # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
+RUN RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    && REPOLIST="rhel-7-server-optional-rpms" \
+    && PKGLIST="atlas blas boost lapack libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils xforms" \
+    # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important \
     && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
-    && yum -y install http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
-ENV APP_ROOT=/opt/oai-enb
+ENV APP_ROOT=/opt/oai-ue
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
-COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-uesoftmodem ${APP_ROOT}/bin/
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/*.so* /lib64
 COPY --from=builder /usr/local/lib64 /lib64
 COPY --from=builder /usr/local/bin/uhd_* /usr/local/bin
@@ -56,8 +54,8 @@ RUN chmod -R u+x ${APP_ROOT} && \
 USER 10001
 WORKDIR ${APP_ROOT}
 
-# expose ports from enb.conf
-EXPOSE 2152/udp 22100/tcp 36422/tcp
+# expose ports from ue.conf
+EXPOSE 50000/tcp 50010/tcp
 
-CMD ["/opt/oai-enb/bin/lte-softmodem", "-O", "/opt/oai-enb/etc/enb.conf"]
-ENTRYPOINT ["/opt/oai-enb/bin/entrypoint.sh"]
+CMD ["/opt/oai-ue/bin/lte-uesoftmodem", "-O", "/opt/oai-ue/etc/ue.conf"]
+ENTRYPOINT ["/opt/oai-ue/bin/entrypoint.sh"]

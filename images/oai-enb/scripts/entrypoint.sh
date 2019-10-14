@@ -3,8 +3,8 @@
 set -euo pipefail
 
 sed -i \
-    -e "s/\${ENB_ID}/${GNB_ID}/g" \
-    -e "s/\${ENB_NAME}/${GNB_NAME}/g" \
+    -e "s/\${ENB_ID}/${ENB_ID}/g" \
+    -e "s/\${ENB_NAME}/${ENB_NAME}/g" \
     -e "s/\${MCC}/${MCC}/g" \
     -e "s/\${MNC}/${MNC}/g" \
     -e "s/\${MNC_LENGTH}/${#MNC}/g" \

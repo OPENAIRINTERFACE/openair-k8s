@@ -1,0 +1,8 @@
+resources:
+ - 00_cassandra-service.yaml
+ - 01_cassandra-configmap.yaml
+ - 02_cassandra-oai-db.yaml
+ - 03_cassandra-statefulset.yaml
+
+namespace: oai
+

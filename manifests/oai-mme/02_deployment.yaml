@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-mme
+  labels:
+    app: oai-mme
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-mme
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-mme
+    spec:
+      containers:
+      - name: mme
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-mme
+        #command: ['sh', '-c', 'sleep 6000']
+        volumeMounts:
+        - name: certs
+          mountPath: /opt/oai-mme/certs
+        ports:
+        - containerPort: 3870
+          name: oai-mme
+        - containerPort: 5870
+          name: oai-mme-secure
+        - containerPort: 2123
+          name: s11
+        env:
+          # MME env vars
+          - name: MY_POD_IP
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: ip 
+          - name: MME_SERVICE
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: mme_service
+          - name: MME_REALM
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: mme_realm
+          - name: MME_GID
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: mme_gid
+          - name: MME_CODE
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: mme_code
+          - name: NW_IF
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: nw_if
+          - name: MCC
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: mcc
+          - name: MNC
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: mnc
+          - name: TAC
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: tac
+          - name: SGW_IP
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: sgw_ip
+          - name: HSS_SERVICE
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: hss_service
+          - name: HSS_REALM
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: hss_realm
+          - name: HSS_HOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: hss_hostname
+          - name: HSS_IP
+            valueFrom:
+              configMapKeyRef:
+                name: mme-config
+                key: hss_ip
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: certs
+        secret:
+          secretName: mme-tls-secret
