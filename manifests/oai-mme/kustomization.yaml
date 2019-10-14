@@ -1,0 +1,17 @@
+resources:
+- 00_configmap.yaml
+- 01_service.yaml
+- 02_deployment.yaml
+
+namespace: default
+
+secretGenerator:
+- name: mme-tls-secret
+  namespace: default
+  files:
+  - certs/mme.cacert.pem
+  - certs/mme.cert.pem
+  - certs/mme.key.pem
+  type: "Opaque"
+generatorOptions:
+  disableNameSuffixHash: true
