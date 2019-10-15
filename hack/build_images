@@ -84,9 +84,7 @@ fi
 podman login ${REGISTRY}
 
 # oai-build-base is a common dependency; ensure it's always included first
-if [[ "$IMAGES" != "rt-tests" ]]; then
-    IMAGES="oai-build-base ${IMAGES/oai-build-base/}"
-fi
+IMAGES="oai-build-base ${IMAGES/oai-build-base/}"
 
 # build all specified images
 for i in $IMAGES; do
