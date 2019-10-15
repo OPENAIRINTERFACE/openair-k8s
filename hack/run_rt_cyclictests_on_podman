@@ -1,0 +1,15 @@
+#!/bin/bash
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+
+source /etc/os-release
+PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+CORE_LIST=${CORE_LIST:-1}
+DURATION=${DURATION:-1m}
+CORES=${CORES:-1}
+info "Running cyclictests.${PLATFORM} image"
+podman run --rm --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK -e DURATION=${DURATION} -e CORES=${CORES} -e CORE_LIST=${CORE_LIST} rt-tests-cyclictest:latest.${PLATFORM}
