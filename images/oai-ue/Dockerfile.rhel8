@@ -7,9 +7,9 @@ ARG KERNEL_VERSION
 WORKDIR /root
 
 RUN yum -y install --enablerepo="rhel-8-for-x86_64-rt-rpms" \
-        kernel-rt-core-${KERNEL_VERSION} \
-        kernel-rt-devel-${KERNEL_VERSION} \
-        kernel-rt-modules-${KERNEL_VERSION} \
+        kernel-core-${KERNEL_VERSION} \
+        kernel-devel-${KERNEL_VERSION} \
+        kernel-modules-${KERNEL_VERSION} \
     && yum clean all -y \
     && rm -rf /var/cache/yum
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
