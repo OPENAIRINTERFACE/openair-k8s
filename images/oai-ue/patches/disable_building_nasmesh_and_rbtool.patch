@@ -10,7 +10,7 @@
 -    compilations \
 -          $lte_build_dir rb_tool \
 -          rb_tool $dbin/rb_tool
--          cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin        
+-          cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin	  
 +    # compilations \
 +    #       $lte_build_dir nasmesh \
 +    #       CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
