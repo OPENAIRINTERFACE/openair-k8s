@@ -5,15 +5,9 @@ ARG GIT_TAG=v1.1.0
 
 WORKDIR /root
 
-RUN yum -y install --enablerepo="rhel-8-for-x86_64-rt-rpms" \
-        kernel-rt-core-${KERNEL_VERSION} \
-        kernel-rt-devel-${KERNEL_VERSION} \
-        kernel-rt-modules-${KERNEL_VERSION} \
-    && yum clean all -y \
-    && rm -rf /var/cache/yum
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
 COPY patches patches/
-RUN patch -p1 -d openairinterface5g < patches/enable_nasmesh_build_on_rhel8.patch
+RUN patch -p1 -d openairinterface5g < patches/disable_building_nasmesh_and_rbtool.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_oai /usr/local/share/asn1c \
