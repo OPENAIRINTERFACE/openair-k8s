@@ -5,12 +5,12 @@ ARG GIT_TAG=v1.1.0
 
 WORKDIR /root
 
-#RUN yum -y install --enablerepo="rhel-8-for-x86_64-rt-rpms" \
-#        kernel-rt-core-${KERNEL_VERSION} \
-#        kernel-rt-devel-${KERNEL_VERSION} \
-#        kernel-rt-modules-${KERNEL_VERSION} \
-#    && yum clean all -y \
-#    && rm -rf /var/cache/yum
+RUN yum -y install --enablerepo="rhel-8-for-x86_64-rt-rpms" \
+        kernel-core-${KERNEL_VERSION} \
+        kernel-devel-${KERNEL_VERSION} \
+        kernel-modules-${KERNEL_VERSION} \
+    && yum clean all -y \
+    && rm -rf /var/cache/yum
 
 RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
 
