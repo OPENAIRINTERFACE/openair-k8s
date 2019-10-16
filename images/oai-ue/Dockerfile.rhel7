@@ -2,16 +2,13 @@ ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el7 AS builder
 
 ARG GIT_TAG=v1.1.0
-ARG KERNEL_VERSION
 
 WORKDIR /root
 
-RUN yum -y install --enablerepo="rhel-7-server-rt-rpms" \
-        kernel-rt-${KERNEL_VERSION} \
-        kernel-rt-devel-${KERNEL_VERSION} \
-    && yum clean all -y \
-    && rm -rf /var/cache/yum
+RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
+COPY patches patches/
+RUN patch -p1 -d openairinterface5g < patches/disable_building_nasmesh_and_rbtool.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_oai /usr/local/share/asn1c \
