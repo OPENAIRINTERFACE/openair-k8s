@@ -52,7 +52,7 @@ WORKDIR ${APP_ROOT}
 
 # expose ports from enb.conf
 EXPOSE 2152/udp 22100/tcp 36422/tcp
-EXPOSE 50000/tcp 50001/tcp
+EXPOSE 50000/udp 50001/udp
 
 CMD ["/opt/oai-enb/bin/lte-softmodem", "-O", "/opt/oai-enb/etc/enb.conf"]
 ENTRYPOINT ["/opt/oai-enb/bin/entrypoint.sh"]
