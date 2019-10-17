@@ -22,6 +22,9 @@ spec:
       containers:
       - name: hss
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss
+        volumeMounts:
+        - mountPath: /opt/oai-hss/certs
+          name: certs
         ports:
         - containerPort: 3868
           name: oai-hss
