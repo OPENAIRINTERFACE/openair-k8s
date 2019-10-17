@@ -34,7 +34,7 @@ function build_install_uhd {
     rm -rf /tmp/uhd
     git clone https://github.com/EttusResearch/uhd.git /tmp/uhd
     cd /tmp/uhd
-    git checkout tags/v3.13.0.2
+    git checkout tags/v3.13.1.0
     mkdir -p host/build
     cd host/build
     cmake ../
