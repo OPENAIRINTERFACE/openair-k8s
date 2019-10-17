@@ -1,5 +1,4 @@
 #!/bin/bash
-
 info() {
     local MESSAGE=$1
 
@@ -55,7 +54,7 @@ generate_certs() {
         -out ${PREFIX}.cert.pem
 
     info "Copying to $DIR"
-    mv ${PREFIX}{.cakey.pem,.cert.pem,.cacert.pem,.key.pem} "${DIR}"
+    mv -t "${DIR}" ${PREFIX}{.cakey.pem,.cert.pem,.cacert.pem,.key.pem}
 
     popd > /dev/null
 }
@@ -90,5 +89,10 @@ fi
 FQDN=$1
 PREFIX=${PREFIX:-${FQDN%%.*}}
 DIR=${DIR:-$(pwd)}
+
+# make destination path absolute (since we're copying from tmpdir later)
+if [[ "${DIR}" != /* ]]; then
+    DIR=$(pwd)/${DIR}
+fi
 
 generate_certs $FQDN $PREFIX $DIR
