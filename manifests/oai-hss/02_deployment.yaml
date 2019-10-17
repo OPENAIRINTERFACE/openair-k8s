@@ -16,6 +16,10 @@ spec:
       labels:
         app: oai-hss
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      nodeName: perse
       containers:
       - name: hss
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss
@@ -68,7 +72,7 @@ spec:
       initContainers:
       - name: init-db
         image: cassandra:3.11
-        command: ['sh', '-c', 'cqlsh cassandra-0.cassandra.default.svc.cluster.local --file /root/oai_db.cql']
+        command: ['sh', '-c', 'cqlsh cassandra-0.cassandra.oai.svc.cluster.local --file /root/oai_db.cql']
         volumeMounts:
         - name: db
           mountPath: /root

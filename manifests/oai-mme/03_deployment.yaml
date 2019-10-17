@@ -15,7 +15,13 @@ spec:
     metadata:
       labels:
         app: oai-mme
+      annotations:
+        k8s.v1.cni.cncf.io/networks: macvlan-conf 
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      nodeName: perse
       containers:
       - name: mme
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-mme

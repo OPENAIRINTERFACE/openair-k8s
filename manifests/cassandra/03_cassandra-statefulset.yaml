@@ -13,6 +13,10 @@ spec:
       labels:
         app: cassandra
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      nodeName: perse
       containers:
       - name: cassandra
         image: cassandra:3.11

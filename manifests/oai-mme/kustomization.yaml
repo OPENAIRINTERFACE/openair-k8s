@@ -1,9 +1,10 @@
 resources:
 - 00_configmap.yaml
 - 01_service.yaml
-- 02_deployment.yaml
+- 02_multus.yaml
+- 03_deployment.yaml
 
-namespace: default
+namespace: oai
 
 secretGenerator:
 - name: mme-tls-secret
