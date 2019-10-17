@@ -1,5 +1,5 @@
 ARG REGISTRY=localhost
-FROM $REGISTRY/oai-build-base:latest.el8 AS builder
+FROM $REGISTRY/oai-build-base:latest.el7 AS builder
 
 ARG GIT_TAG=v1.1.0
 
@@ -14,7 +14,7 @@ RUN cd openairinterface5g/cmake_targets \
     && ./build_oai -c --eNB -w USRP --verbose-compile
 
 
-FROM registry.redhat.io/ubi8/ubi
+FROM registry.redhat.io/ubi7/ubi
 LABEL name="oai-enb" \
       version="$GIT_TAG" \
       maintainer="Frank A. Zdarsky <fzdarsky@redhat.com>" \
@@ -22,11 +22,11 @@ LABEL name="oai-enb" \
       io.openshift.tags="oai,enb" \
       io.openshift.non-scalable="true"
 
-RUN REPOLIST="codeready-builder-for-rhel-8-x86_64-rpms" \
-    PKGLIST="boost libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" \
+RUN RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    && REPOLIST="rhel-7-server-optional-rpms" \
+    && PKGLIST="boost libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils xforms" \
     # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
     && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
-    && yum -y install http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
     && yum -y clean all \
     && rm -rf /var/cache/yum
 
@@ -52,6 +52,7 @@ WORKDIR ${APP_ROOT}
 
 # expose ports from enb.conf
 EXPOSE 2152/udp 22100/tcp 36422/tcp
+EXPOSE 50000/tcp 50001/tcp
 
 CMD ["/opt/oai-enb/bin/lte-softmodem", "-O", "/opt/oai-enb/etc/enb.conf"]
 ENTRYPOINT ["/opt/oai-enb/bin/entrypoint.sh"]

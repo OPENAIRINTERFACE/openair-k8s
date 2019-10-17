@@ -51,7 +51,9 @@ USER 10001
 WORKDIR ${APP_ROOT}
 
 # expose ports from ue.conf
-EXPOSE 50000/tcp 50010/tcp
+EXPOSE 50000/tcp 50001/tcp
 
-CMD ["/opt/oai-ue/bin/lte-uesoftmodem", "-O", "/opt/oai-ue/etc/ue.conf"]
+CMD ["/opt/oai-ue/bin/lte-uesoftmodem", \
+    "-C", "2680000000", "-r", "25", "--nokrnmod", "1", \
+    "-O", "/opt/oai-ue/etc/ue.conf"]
 ENTRYPOINT ["/opt/oai-ue/bin/entrypoint.sh"]
