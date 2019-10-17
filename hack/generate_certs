@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 info() {
     local MESSAGE=$1
@@ -27,10 +26,10 @@ generate_certs() {
         rm -rf "${TMP}"
     }
     trap cleanup EXIT
-    pushd "${TMP}"
+    pushd "${TMP}" > /dev/null
 
     echo "01" > serial
-    touch index.txt
+    touch index.txt index.txt.attr
     cat /etc/pki/tls/openssl.cnf | sed "s|/etc/pki/CA|${TMP}|" > openssl.cnf
 
     info "Creating Root CA certificate for '${FQDN}'"
@@ -58,7 +57,7 @@ generate_certs() {
     info "Copying to $DIR"
     mv ${PREFIX}{.cakey.pem,.cert.pem,.cacert.pem,.key.pem} "${DIR}"
 
-    popd
+    popd > /dev/null
 }
 
 # parse command line args
