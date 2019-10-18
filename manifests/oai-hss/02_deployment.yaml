@@ -36,6 +36,11 @@ spec:
           name: cql
         env:
           # HSS env vars
+          - name: HOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                key: identity
+                name: hss-config
           - name: DB_FQDN
             valueFrom:
               configMapKeyRef:
