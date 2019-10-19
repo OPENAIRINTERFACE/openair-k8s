@@ -16,9 +16,15 @@ spec:
       labels:
         app: oai-hss
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
       containers:
       - name: hss
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss
+        volumeMounts:
+        - mountPath: /opt/oai-hss/certs
+          name: certs
         ports:
         - containerPort: 3868
           name: oai-hss
@@ -30,6 +36,11 @@ spec:
           name: cql
         env:
           # HSS env vars
+          - name: HOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                key: identity
+                name: hss-config
           - name: DB_FQDN
             valueFrom:
               configMapKeyRef:
@@ -68,7 +79,7 @@ spec:
       initContainers:
       - name: init-db
         image: cassandra:3.11
-        command: ['sh', '-c', 'cqlsh cassandra-0.cassandra.default.svc.cluster.local --file /root/oai_db.cql']
+        command: ['sh', '-c', 'cqlsh cassandra-0.cassandra.oai.svc.cluster.local --file /root/oai_db.cql']
         volumeMounts:
         - name: db
           mountPath: /root

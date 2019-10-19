@@ -5,6 +5,7 @@ metadata:
     app: oai-hss
   name: oai-hss
 spec:
+  clusterIP: None
   type: ClusterIP
   ports:
   - name: oai-hss
