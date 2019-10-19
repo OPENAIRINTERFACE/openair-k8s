@@ -6,6 +6,8 @@ ARG KERNEL_VERSION
 
 WORKDIR /root
 
+RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
+
 RUN yum -y install --enablerepo="rhel-7-server-rt-rpms" \
         kernel-rt-${KERNEL_VERSION} \
         kernel-rt-devel-${KERNEL_VERSION} \
