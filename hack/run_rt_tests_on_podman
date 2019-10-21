@@ -10,8 +10,19 @@ info() {
 THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
 ${THIS_SCRIPT_PATH}/check_system_rt_config
 
+#!/bin/bash
+
+info() {
+    local MESSAGE=$1
+
+    echo -e "\E[34m\n== $MESSAGE\E[00m";
+}
+THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
+${THIS_SCRIPT_PATH}/check_system_rt_config
+DURATION=${DURATION:-10m}
+NUM_CORES=${NUM_CORES:-1}
+
 source /etc/os-release
-PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
-CORE_LIST=${CORE_LIST:-1}
-info "Running rt-tests.${PLATFORM} image"
-podman run --rm --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK -e CORE_LIST=${CORE_LIST} -it rt-tests:latest.${PLATFORM}
+info "Running cyclictest image"
+mkdir /tmp/cyclictest || true
+podman run --rm --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK -e DURATION=${DURATION} -v /tmp:/tmp -v /dev/cpu_dma_latency:/dev/cpu_dma_latency --cpus ${NUM_CORES} -it docker.io/cscojianzhan/cyclictest
