@@ -10,8 +10,8 @@ LABEL name="oai-build-base" \
 
 WORKDIR /root
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-    && yum install -y --enablerepo="rhel-7-server-optional-rpms" \
-        git make cmake3 gcc gcc-c++ autoconf automake bc bison flex libtool patch \
+    && yum install -y --enablerepo="rhel-7-server-optional-rpms" --enablerepo="rhel-server-rhscl-7-rpms" \
+        git make cmake3 gcc gcc-c++ autoconf automake bc bison flex libtool patch devtoolset-7 \
         atlas-devel \
         blas \
         blas-devel \
@@ -73,6 +73,7 @@ RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
 
 # build packages not present in RHEL/EPEL repos
+# using gcc 7.3.1, because libfolly doesn't build with RHEL7's gcc 4.8.5
 COPY patches patches/
 COPY scripts scripts/
-RUN scripts/build_missing_packages
+RUN scl enable devtoolset-7 scripts/build_missing_packages

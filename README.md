@@ -16,7 +16,7 @@ As some of the required rpm packages for building OAI are not yet available via 
 sudo subscription-manager register
 sudo subscription-manager attach
 sudo yum install -y git podman nmap-ncat
-git clone http://github.com/fzdarsky/openair-k8s
+git clone http://github.com/OPENAIRINTERFACE/openair-k8s
 cd openair-k8s
 ```
 
@@ -77,9 +77,15 @@ hack/clean_oai_on_podman
 
 ## Running OAI on Kubernetes
 ### Prerequisites
-Obviously, a running k8s cluster with `kubectl` set up correctly. This work is being developed and tested on OpenShift 4.1 ([try it here](https://try.openshift.com)). You also need `kustomize` installed:
+Obviously, a running k8s cluster with `kubectl` set up correctly. This work is being developed and tested on OpenShift 4.2 ([try it here](https://try.openshift.com)). You also need `kustomize` installed:
 ```sh
 curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64 -o ~/bin/kustomize && chmod a+x ~/bin/kustomize
+```
+
+If necessary, generate new TLS certificates for the oai-hss and oai-mme services to match the namespace and cluster name you're deploying to, e.g.:
+```sh
+hack/generate_certs -p hss -d manifests/oai-hss/certs oai-hss.oai.svc.cluster.local
+hack/generate_certs -p mme -d manifests/oai-mme/certs oai-mme.oai.svc.cluster.local
 ```
 
 ### Running

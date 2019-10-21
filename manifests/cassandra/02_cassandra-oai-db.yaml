@@ -86,3 +86,5 @@ data:
         extid text,
         primary key (imsi, extid)
     );
+    INSERT into vhss.mmeidentity JSON '{"idmmeidentity":"1","mmeisdn":"mme-isdn", "mmehost":"oai-mme.oai.svc.cluster.local", "mmerealm":"oai.svc.cluster.local", "ue_reachability":"1"}';
+    INSERT into vhss.mmeidentity_host JSON '{"idmmeidentity":"1","mmeisdn":"mme-isdn", "mmehost":"oai-mme.oai.svc.cluster.local", "mmerealm":"oai.svc.cluster.local", "ue_reachability":"1"}';
