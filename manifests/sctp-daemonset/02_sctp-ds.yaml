@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sctp-ds
+  labels:
+    name: sctp-ds
+spec:
+  selector:
+    matchLabels:
+      name: sctl-ds
+  template:
+    metadata:
+      labels:
+        name: sctp-ds
+    spec:
+      serviceAccountName: sctp-sa
+      hostNetwork: true
+      containers:
+      - name: sctp-loader
+        image: ubi8/ubi-minimal
+        command:
+        - "modprobe sctp"
+        securityContext:
+          privileged: true
+        terminationMessagePolicy: FallbackToLogsOnError
+        terminationMessagePath: /dev/termination-log
+      terminationGracePeriodSeconds: 10
+      restartPolicy: Always
