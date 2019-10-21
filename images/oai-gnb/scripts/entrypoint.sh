@@ -2,8 +2,9 @@
 
 set -eo pipefail # don't set 'u' as we need to explicityly test for undefined vars
 
-CONFIG_DIR="../etc"
+CONFIG_DIR="/opt/oai-gnb/etc"
 DEFAULT_MODE="GNB"
+MNC_LENGTH=${MNC_LENGTH:-#MNC}
 
 # look up configuration template to use
 MODE=${MODE:-${DEFAULT_MODE}}
@@ -28,6 +29,6 @@ for v in ${VARS}; do
 done
 
 # render template and write to enb.conf
-sed ${EXPRESSIONS} ${TEMPLATE} > ${CONFIG_DIR}/enb.conf
+sed ${EXPRESSIONS} ${TEMPLATE} > ${CONFIG_DIR}/gnb.conf
 
 exec "$@"

@@ -4,6 +4,7 @@ set -eo pipefail # don't set 'u' as we need to explicityly test for undefined va
 
 CONFIG_DIR="../etc"
 DEFAULT_MODE="RCC"
+MNC_LENGTH=${MNC_LENGTH:-#MNC}
 
 # look up configuration template to use
 MODE=${MODE:-${DEFAULT_MODE}}

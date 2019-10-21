@@ -5,8 +5,8 @@ Asn1_verbosity = "none";
 gNBs = (
     {
         # Identification parameters:
-        eNB_ID      = ${ENB_ID};
-        eNB_name    = "${ENB_NAME}";
+        eNB_ID      = ${GNB_ID};
+        eNB_name    = "${GNB_NAME}";
         cell_type   = "CELL_MACRO_ENB";
 
         # Tracking area code, 0x0000 and 0xfffe are reserved values
