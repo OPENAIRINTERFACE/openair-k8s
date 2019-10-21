@@ -57,8 +57,12 @@ RUN chmod -R u+x ${APP_ROOT} && \
 USER 10001
 WORKDIR ${APP_ROOT}
 
-# expose ports from gnb.conf
-EXPOSE 2152/tcp
+EXPOSE 2152/udp  # S1U, GTP/UDP
+EXPOSE 22100/tcp # ?
+EXPOSE 36412/udp # S1C, SCTP/UDP
+EXPOSE 36422/udp # X2C, SCTP/UDP
+EXPOSE 50000/udp # IF5 / ORI (control)
+EXPOSE 50001/udp # IF5 / ECPRI (data)
 
 CMD ["/opt/oai-gnb/bin/nr-softmodem", "-O", "/opt/oai-gnb/etc/gnb.conf"]
 ENTRYPOINT ["/opt/oai-gnb/bin/entrypoint.sh"]
