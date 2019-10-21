@@ -5,8 +5,8 @@ Asn1_verbosity = "none";
 gNBs = (
     {
         # Identification parameters:
-        eNB_ID      = ${GNB_ID};
-        eNB_name    = "${GNB_NAME}";
+        gNB_ID      = ${GNB_ID};
+        gNB_name    = "${GNB_NAME}";
         cell_type   = "CELL_MACRO_ENB";
 
         # Tracking area code, 0x0000 and 0xfffe are reserved values
@@ -239,7 +239,7 @@ L1s = (
 
 RUs = (
     {
-        sdr_addrs      = "addr=${SDR_FIRST_IP},second_addr=${SDR_SECOND_IP},mgmt_addr=${SDR_MGMT_IP},clock_source=external,time_source=external";
+        sdr_addrs      = "addr=${SDR_FIRST_IP},second_addr=${SDR_SECOND_IP},mgmt_addr=${SDR_MGMT_IP}";
         local_rf       = "yes"
         nb_tx          = 1
         nb_rx          = 1
