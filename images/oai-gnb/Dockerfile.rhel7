@@ -2,18 +2,14 @@ ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el7 AS builder
 
 ARG GIT_TAG=develop-nr
-ARG KERNEL_VERSION
 
 WORKDIR /root
 
 RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
 
-RUN yum -y install --enablerepo="rhel-7-server-rt-rpms" \
-        kernel-rt-${KERNEL_VERSION} \
-        kernel-rt-devel-${KERNEL_VERSION} \
-    && yum clean all -y \
-    && rm -rf /var/cache/yum
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
+COPY patches patches/
+RUN patch -p1 -d openairinterface5g < patches/disable_building_nasmesh_rbtools_ue_ip.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_oai /usr/local/share/asn1c \
@@ -31,7 +27,7 @@ LABEL name="oai-gnb" \
 
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
     && REPOLIST="rhel-7-server-optional-rpms" \
-    && PKGLIST="atlas blas boost lapack libconfig libyaml lksctp-tools nettle protobuf-c iproute iputils procps-ng bind-utils xforms" \
+    && PKGLIST="atlas blas boost lapack libconfig libusb libusbx libyaml lksctp-tools nettle protobuf-c iproute iputils procps-ng bind-utils xforms" \
     # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important \
     && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
     && yum -y clean all \
