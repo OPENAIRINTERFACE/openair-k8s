@@ -1,0 +1,20 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: sctp-entrypoint
+data:
+  entrypoint.sh: |
+    #!/bin/bash
+    set -eo pipefail
+    echo "###################################"
+    echo "Script to enable sctp kernel module"
+    echo "###################################"
+    /sbin/modprobe sctp
+    if [ $(lsmod | grep sctp | wc -l) -eq 0 ]
+    then
+      echo "SCTP module not loaded"
+      exit 1
+    else
+      echo "SCTP module successfully loaded"
+      while true; do sleep 10; done
+    fi

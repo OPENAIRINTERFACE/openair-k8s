@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sctp-ds
+  labels:
+    app: sctp-ds
+spec:
+  selector:
+    matchLabels:
+      app: sctp-ds
+  template:
+    metadata:
+      labels:
+        app: sctp-ds
+    spec:
+      serviceAccountName: sctp-sa
+      hostNetwork: true
+      containers:
+      - name: sctp-loader
+        image: ubi8/ubi-minimal
+        command: ['sh', '-c', 'source /root/entrypoint.sh']
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /root
+          name: sctp-script
+        - mountPath: /bin
+          name: binaries
+        - mountPath: /sbin
+          name: sbinaries
+        - mountPath: /lib/modules
+          name: modules
+      hostNetwork: true
+      restartPolicy: Always
+      serviceAccountName: sctp-sa
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - configMap:
+          name: sctp-entrypoint
+        name: sctp-script
+      - hostPath:
+          path: /bin/
+          type: Directory
+        name: binaries
+      - hostPath:
+          path: /sbin/
+          type: Directory
+        name: sbinaries
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+
