@@ -45,7 +45,6 @@ RUN cd /lib64 \
     && ln -sf libuhd.so.3.13 libuhd.so.3 \
     && ln -sf libuhd.so.3 libuhd.so
 COPY scripts ${APP_ROOT}/bin/
-COPY configs ${APP_ROOT}/etc/
 RUN chmod -R u+x ${APP_ROOT} && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} /etc/passwd
