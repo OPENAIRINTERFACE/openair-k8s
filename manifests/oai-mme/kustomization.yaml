@@ -1,8 +1,11 @@
 resources:
-- 00_configmap.yaml
-- 01_service.yaml
-- 02_multus.yaml
-- 03_deployment.yaml
+ - 00_mme-sa.yaml
+ - 01_mme-rbac.yaml
+ - 02_configmap.yaml
+ - 03_service.yaml
+ - 04_multus.yaml
+ - 05_deployment.yaml
+
 
 namespace: oai
 
