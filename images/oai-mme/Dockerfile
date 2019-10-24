@@ -59,6 +59,5 @@ EXPOSE 3870/tcp 5870/tcp 2123/udp
 
 VOLUME ["${APP_ROOT}/certs"]
 
-#CMD ["/opt/oai-mme/bin/mme", "-c", "/opt/oai-mme/etc/mme.conf"]
+CMD ["/opt/oai-mme/bin/mme", "-c", "/opt/oai-mme/etc/mme.conf"]
 ENTRYPOINT ["/opt/oai-mme/bin/entrypoint.sh"]
-CMD ["/bin/bash"]
