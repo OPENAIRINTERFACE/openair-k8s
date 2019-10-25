@@ -34,27 +34,27 @@ spec:
           name: s11
         env:
           # MME env vars
-          - name: 
+          - name: SGW_S1U_INTERFACE
             valueFrom:
               configMapKeyRef:
                 name: spgwu-config
                 key: sgw_s1u_if
-          - name: 
+          - name: SGW_SX_INTERFACE
             valueFrom:
               configMapKeyRef:
                 name: spgwu-config
                 key: sgw_sx_if
-          - name: 
+          - name: PGW_SGI_INTERFACE
             valueFrom:
               configMapKeyRef:
                 name: spgwu-config
                 key: pgw_sgi_if
-          - name: 
+          - name: NETWORK_UE_IP
             valueFrom:
               configMapKeyRef:
                 name: spgwu-config
                 key: net_ue_ip
-          - name: 
+          - name: PGWC_SX_IP_ADDRESS
             valueFrom:
               configMapKeyRef:
                 name: spgwu-config
