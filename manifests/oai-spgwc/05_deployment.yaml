@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-spgwc
+  labels:
+    app: oai-spgwc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-spgwc
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-spgwc
+      annotations:
+        k8s.v1.cni.cncf.io/networks: spgwc-net1, spgwc-net2
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+      - name: mme
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
+        #command: ['sh', '-c', 'sleep 6000']
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8805
+          name: oai-mme
+        - containerPort: 2123
+          name: s11
+        env:
+          # MME env vars
+          - name: PGW_SX_INTERFACE
+            valueFrom:
+              configMapKeyRef:
+                name: spgwc-config
+                key: pgw_sx_if
+          - name: SGW_S11_INTERFACE
+            valueFrom:
+              configMapKeyRef:
+                name: spgwc-config
+                key: sgw_s11_if
+          - name: UE_IP_ADDRESS_POOL
+            valueFrom:
+              configMapKeyRef:
+                name: spgwc-config
+                key: ue_ip_pool
+          - name: UE_DNS_SERVER
+            valueFrom:
+              configMapKeyRef:
+                name: spgwc-config
+                key: ue_dns_server
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: spgwc-sa
+      terminationGracePeriodSeconds: 30
