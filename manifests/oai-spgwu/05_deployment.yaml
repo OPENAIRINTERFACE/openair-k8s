@@ -1,61 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oai-spgwc
+  name: oai-spgwu
   labels:
-    app: oai-spgwc
+    app: oai-spgwu
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: oai-spgwc
+      app: oai-spgwu
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: oai-spgwc
+        app: oai-spgwu
       annotations:
-        k8s.v1.cni.cncf.io/networks: spgwc-net1, spgwc-net2
+        k8s.v1.cni.cncf.io/networks: spgwu-net1, spgwu-net2
     spec:
       securityContext:
         runAsUser: 0
         runAsGroup: 0
       containers:
-      - name: spgwc
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
+      - name: spgwu
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:
           privileged: true
         ports:
         - containerPort: 8805
-          name: oai-spgwc
-        - containerPort: 2123
+          name: oai-spgwu
+        - containerPort: 2152
           name: s11
         env:
           # MME env vars
-          - name: PGW_SX_INTERFACE
+          - name: 
             valueFrom:
               configMapKeyRef:
-                name: spgwc-config
-                key: pgw_sx_if
-          - name: SGW_S11_INTERFACE
+                name: spgwu-config
+                key: sgw_s1u_if
+          - name: 
             valueFrom:
               configMapKeyRef:
-                name: spgwc-config
-                key: sgw_s11_if
-          - name: UE_IP_ADDRESS_POOL
+                name: spgwu-config
+                key: sgw_sx_if
+          - name: 
             valueFrom:
               configMapKeyRef:
-                name: spgwc-config
-                key: ue_ip_pool
-          - name: UE_DNS_SERVER
+                name: spgwu-config
+                key: pgw_sgi_if
+          - name: 
             valueFrom:
               configMapKeyRef:
-                name: spgwc-config
-                key: ue_dns_server
+                name: spgwu-config
+                key: net_ue_ip
+          - name: 
+            valueFrom:
+              configMapKeyRef:
+                name: spgwu-config
+                key: pgwc_sx_ip
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
-      serviceAccountName: spgwc-sa
+      serviceAccountName: spgwu-sa
       terminationGracePeriodSeconds: 30

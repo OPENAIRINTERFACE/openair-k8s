@@ -1,0 +1,9 @@
+resources:
+ - 00_spgwu-sa.yaml
+ - 01_spgwu-rbac.yaml
+ - 02_configmap.yaml
+ - 03_service.yaml
+ - 04_multus.yaml
+ - 05_deployment.yaml
+
+namespace: oai

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spgwu-config
+data:
+  sgw_s1u_if: net2
+  sgw_sx_if: net1
+  pgw_sgi_if: eth0
+  net_ue_ip: 10.10.10.0
+  pgwc_sx_ip: 192.168.2.101
+
