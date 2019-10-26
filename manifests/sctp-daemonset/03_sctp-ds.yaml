@@ -32,9 +32,7 @@ spec:
           name: sbinaries
         - mountPath: /lib/modules
           name: modules
-      hostNetwork: true
       restartPolicy: Always
-      serviceAccountName: sctp-sa
       terminationGracePeriodSeconds: 10
       volumes:
       - configMap:
