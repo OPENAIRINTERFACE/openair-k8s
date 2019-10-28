@@ -1,0 +1,9 @@
+resources:
+ - 00_spgwc-sa.yaml
+ - 01_spgwc-rbac.yaml
+ - 02_configmap.yaml
+ - 03_service.yaml
+ - 04_multus.yaml
+ - 05_deployment.yaml
+
+namespace: oai

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-enb
+  labels:
+    app: oai-enb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-enb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-enb
+      annotations:
+        k8s.v1.cni.cncf.io/networks: enb-net1, enb-net2
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+      - name: spgwc
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-enb
+        #command: ['sh', '-c', 'sleep 6000']
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 22100
+          name: oai-enb
+        - containerPort: 2152
+          name: s1u
+        - containerPort: 36412
+          name: s1c
+        - containerPort: 36422
+          name: x2c
+        - containerPort: 50000
+          name: if5_ori
+        - containerPort: 50001
+          name: if5_ecpri
+        env:
+          # eNB env vars
+          - name: 
+            valueFrom:
+              configMapKeyRef:
+                name: enb-config
+                key: 
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: enb-sa
+      terminationGracePeriodSeconds: 30
