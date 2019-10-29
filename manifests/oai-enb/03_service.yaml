@@ -24,11 +24,11 @@ spec:
     port: 36422
     protocol: UDP
     targetPort: 36422
-  - name: if5_ori
+  - name: if5-ori
     port: 50000
     protocol: UDP
     targetPort: 50000
-  - name: if5_ecpri
+  - name: if5-ecpri
     port: 50001
     protocol: UDP
     targetPort: 50001
