@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: spgwc-config
 data:
-  pgw_sx_if: net1
-  sgw_s11_if: net2
+  pgw_sx_if: "net1"
+  sgw_s11_if: "net2"
   ue_ip_pool: "10.10.10.1-10.10.10.200"
   ue_dns_server: "8.8.8.8"
