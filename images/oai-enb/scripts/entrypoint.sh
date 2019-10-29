@@ -2,7 +2,7 @@
 
 set -eo pipefail # don't set 'u' as we need to explicityly test for undefined vars
 
-CONFIG_DIR="../etc"
+CONFIG_DIR="/opt/oai-enb/etc"
 DEFAULT_MODE="RCC"
 MNC_LENGTH=${MNC_LENGTH:-${#MNC}}
 
