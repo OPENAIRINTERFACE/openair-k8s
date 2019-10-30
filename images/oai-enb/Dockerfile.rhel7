@@ -26,7 +26,7 @@ LABEL name="oai-enb" \
 
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
     && REPOLIST="rhel-7-server-optional-rpms" \
-    && PKGLIST="boost libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils xforms nettle libyaml" \
+    && PKGLIST="boost libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils xforms nettle libyaml libusb" \
     # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important && \
     && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
     && yum -y clean all \
