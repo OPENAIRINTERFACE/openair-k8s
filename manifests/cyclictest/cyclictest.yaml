@@ -1,0 +1,39 @@
+apiVersion: v1 
+kind: Pod 
+metadata:
+  name: cyclictest 
+spec:
+  restartPolicy: Never 
+  containers:
+  - name: cyclictest
+    image:  docker.io/cscojianzhan/cyclictest
+    resources:
+      limits:
+        cpu: 4
+        memory: "400Mi"
+      requests:
+        cpu: 4
+        memory: "400Mi"
+    env:
+    - name: DURATION
+      value: "10m"
+    securityContext:
+      capabilities:
+        add:
+          - SYS_NICE
+          - SYS_RAWIO
+          - IPC_LOCK
+    volumeMounts:
+    - mountPath: /tmp
+      name: results-volume
+    - mountPath: /dev/cpu_dma_latency
+      name: cstate
+  nodeSelector:
+    node-role.kubernetes.io/worker-rt: ""
+  volumes:
+  - name: results-volume
+    hostPath:
+      path: /tmp
+  - name: cstate
+    hostPath:
+      path: /dev/cpu_dma_latency
