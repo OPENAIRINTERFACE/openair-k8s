@@ -1,10 +1,14 @@
 #!/bin/bash
-
+set -x
 source /etc/os-release
-PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
 REGISTRY=${REGISTRY:-registry.redhat.io}
-IMAGES=$(find images -type f -name Dockerfile* | sed 's|images/||g' | sed 's|/Dockerfile[a-z0-9.]*||g' | sort | uniq | xargs)
-COMPONENTS="HSS MME SPGW ENB GNB"
+PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+IS_RT_CAPABLE="false"
+if uname -v | grep -q PREEMPT; then
+    IS_RT_CAPABLE="true"
+fi
+DEFAULT_HOST_INTERFACE_NAME=$(ip route get 1.1.1.1 | grep -oP 'dev \K\S+')
+DEFAULT_HOST_INTERFACE_IP=$(ip route get 1.1.1.1 | grep -oP 'src \K\S+')
 
 info() {
     local MESSAGE=$1
@@ -13,36 +17,42 @@ info() {
 }
 
 usage() {
-    echo "Runs the specified (set of) OAI components locally on Podman for testing purposes (default: all components).
+    echo "Runs the specified (set of) OAI components locally on Podman for testing purposes.
     
-usage: $(basename $0) [-h] [COMPONENT1 [COMPONENT2 [...]]]
+usage: $(basename $0) [-h] COMPONENT1 [COMPONENT2 [...]]
   -h|--help:        prints this help message
   
 available components:
-  ${COMPONENTS}"
+  HSS:      Runs oai-hss + Cassandra.
+  MME:      Runs oai-mme.
+  (SPGW:     Runs oai-spgw-c + oai-spgw-u.)
+  EPC:      Alias for \"HSS MME SPGW\".
+  RCC:      Runs oai-enb in RCC mode, accessing external RRU via IF4.5.
+  eNB+UE:   Runs oai-enb in RCC mode, with oai-ue for RRU, channel sim, and UE emulation."
     exit 1
 }
 
-wait_until_running() {
-    local CONTAINER_NAME=$1
+wait_for_state() {
+    local CONTAINER_NAME_OR_ID=$1   # container name or id to monitor
+    local TARGET_STATE=${2,,}       # state to waite for ("running", "exited", etc)
+    local TIMEOUT=${3:-30}          # timeout (default: 30s)
 
-    TIMEOUT=30
-    until [ "$(podman inspect -t container -f {{.State.Running}} ${CONTAINER_NAME})" == "true" ] || [ $TIMEOUT -le 0 ]; do
-        echo -ne "  Waiting ${TIMEOUT}s for $CONTAINER_NAME to transition to state Running.\033[0K\r"
+    until [ "$(podman inspect ${CONTAINER_NAME_OR_ID} -f {{.State.Status}})" == "${TARGET_STATE}" ] || [ $TIMEOUT -le 0 ]; do
+        echo -ne "  Waiting ${TIMEOUT}s for ${CONTAINER_NAME_OR_ID} to transition to state ${TARGET_STATE^^}.\033[0K\r"
         sleep 1;
         (( TIMEOUT-- ))
     done
     if [ $TIMEOUT -le 0 ]; then
-        info "$CONTAINER_NAME failed to start."
+        info "${CONTAINER_NAME_OR_ID} failed to transition to ${TARGET_STATE^^}."
         exit 1
     fi
 }
 
 wait_for_socket() {
-    local HOST=$1
-    local PORT=$2
+    local HOST=$1           # host to use for connectivity test
+    local PORT=$2           # port to use for connectivity test
+    local TIMEOUT=${3:-120} # timeout (default: 120)
 
-    TIMEOUT=120
     until nc -z $HOST $PORT || [ $TIMEOUT -le 0 ]; do
         echo -ne "  Waiting ${TIMEOUT}s for port $PORT on host $HOST to open.\033[0K\r"
         sleep 1;
@@ -70,12 +80,12 @@ run_component() {
     fi
 
     info "Starting $CONTAINER_NAME container."
-    shift 3 # remove image, liveness port, and container name from args
+    shift 3 # remove image, container name and liveness IP+port from args
     echo -ne "podman run -d --net=host --name $CONTAINER_NAME $@ $IMAGE\n"
     podman run -d --net=host --name $CONTAINER_NAME "$@" $IMAGE
 
     # block until container is running and service binds to port
-    wait_until_running $CONTAINER_NAME
+    wait_for_state $CONTAINER_NAME "RUNNING"
     wait_for_socket $LIVENESS_IP $LIVENESS_PORT
 }
 
@@ -96,10 +106,13 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # if there are positional args, interpret them as list of components to run
-if [ $# -ne 0 ]; then
-  COMPONENTS=$*
+if [ $# -eq 0 ]; then
+    echo "Please provide at least one component to run."
+    usage
 fi
+COMPONENTS=$*
 COMPONENTS=${COMPONENTS^^}
+COMPONENTS=${COMPONENTS/EPC/HSS MME SPGW}
 
 
 if [[ "${COMPONENTS}" =~ "HSS" ]]; then
@@ -109,10 +122,9 @@ if [[ "${COMPONENTS}" =~ "HSS" ]]; then
         -e CASSANDRA_CLUSTER_NAME=OAI_HSS \
         -e CASSANDRA_ENDPOINT_SNITCH="GossipingPropertyFileSnitch" \
         -p 127.0.0.1:9042:9042 
-    CASSANDRA_IP=`sudo podman exec -it cassandra ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
+    CASSANDRA_IP=$(podman exec cassandra ip route get 1.1.1.1 | grep -oP 'src \K\S+')
 
     info 'Provisioning...(Datacenter name is hardcoded in CQL)'
-    IP_CASSANDRA=`sudo podman exec -it cassandra ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
     SCRIPT=$(readlink -f $0)
     THIS_SCRIPT_PATH=`dirname $SCRIPT`
     PROVISION_SCRIPT=$THIS_SCRIPT_PATH/../images/oai-cassandra/scripts/init_prov.sh    
@@ -124,74 +136,104 @@ if [[ "${COMPONENTS}" =~ "HSS" ]]; then
         -e DB_NAME=vhss \
         -e DB_USER=cassandra \
         -e DB_PASSWORD=cassandra \
-        -e OP_KEY="11111111111111111111" \
+        -e OP_KEY="11111111111111111111111111111111" \
         -e HSS_FQDN="hss.openair4G.eur" \
         -e ROAMING_ALLOWED="true" \
+        -e MME_IDENTITY="127.0.0.1" \
         -p 3868:3868 -p 5868:5868 -p 9080:9080 -p 9081:9081 \
         -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
         -h hss.openair4G.eur
-    HSS_IP=`sudo podman exec -it oai-hss_rel14 ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
+    HSS_IP=$(podman exec oai-hss ip route get 1.1.1.1 | grep -oP 'src \K\S+')
 fi
 
 if [[ "${COMPONENTS}" =~ "SPGW" ]]; then
-# # Make your choice , should launch a script to retrieve the interface name
-# CONTAINER_INTERFACE='ens192'
-# #CONTAINER_INTERFACE='eno1'
-# #CONTAINER_INTERFACE='eth0'
-# # Commented due to  podman run --net=host (Same port binding for S11, SX)
-# #run_component oai-spgwc:develop oai-spgwc 127.0.0.1:2123 \
-# #    -e SGW_S11_INTERFACE="$CONTAINER_INTERFACE" \
-# #    -e PGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
-# #    -e UE_IP_ADDRESS_POOL="10.0.23.1 - 10.0.23.240" \
-# #    -e UE_DNS_SERVER="8.8.8.8" \
-# #    -p 2123:2123 -p 8805:8805 \
-# #    -h spgwc.openair4G.eur
-# #PGWC_SX_IP_ADDRESS=`sudo podman exec -it oai-spgwc ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
-# #SGWC_IP=`sudo podman exec -it oai-spgwc ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
+    echo "(not implemented yet)"
+    # Commented due to  podman run --net=host (Same port binding for S11, SX)
+    #run_component oai-spgwc:develop oai-spgwc 127.0.0.1:2123 \
+    #    -e SGW_S11_INTERFACE="$CONTAINER_INTERFACE" \
+    #    -e PGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
+    #    -e UE_IP_ADDRESS_POOL="10.0.23.1 - 10.0.23.240" \
+    #    -e UE_DNS_SERVER="8.8.8.8" \
+    #    -p 2123:2123 -p 8805:8805 \
+    #    -h spgwc.openair4G.eur
+    #PGWC_SX_IP_ADDRESS=`sudo podman exec -it oai-spgwc ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
+    #SGWC_IP=`sudo podman exec -it oai-spgwc ip -4 addr show  scope global | awk '$1 == "inet" {print $2}' | xargs | cut -d '/' -f1`
 
-# # Hardcoded due to  podman run --net=host 
-# PGWC_SX_IP_ADDRESS="192.168.104.200"
-# SGWC_IP="192.168.104.199"
+    # Hardcoded due to  podman run --net=host 
+    # PGWC_SX_IP_ADDRESS="192.168.104.200"
+    # SGWC_IP="192.168.104.199"
 
-# run_component oai-spgwu:develop oai-spgwu 127.0.0.1:2123 \
-#     -e SGW_S1U_INTERFACE="$CONTAINER_INTERFACE" \
-#     -e SGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
-#     -e PGW_SGI_INTERFACE="$CONTAINER_INTERFACE" \
-#     -e NETWORK_UE_IP="10.0.23.0/24" \
-#     -e PGWC_SX_IP_ADDRESS="$PGWC_SX_IP_ADDRESS" \
-#     -p 2123:2123 -p 8805:8805 \
-#     -h spgwu.openair4G.eur
+    # run_component oai-spgwu:develop oai-spgwu 127.0.0.1:2123 \
+    #     -e SGW_S1U_INTERFACE="$CONTAINER_INTERFACE" \
+    #     -e SGW_SX_INTERFACE="$CONTAINER_INTERFACE" \
+    #     -e PGW_SGI_INTERFACE="$CONTAINER_INTERFACE" \
+    #     -e NETWORK_UE_IP="10.0.23.0/24" \
+    #     -e PGWC_SX_IP_ADDRESS="$PGWC_SX_IP_ADDRESS" \
+    #     -p 2123:2123 -p 8805:8805 \
+    #     -h spgwu.openair4G.eur
 fi
 
 if [[ "${COMPONENTS}" =~ "MME" ]]; then
-# run_component oai-mme:k8s oai-mme 127.0.0.1:3870 \
-#     -e MY_POD_IP="192.168.104.195" \
-#     -e MME_SERVICE="mme.openair4G.eur" \
-#     -e MME_REALM="openair4G.eur" \
-#     -e MME_GID="4" \
-#     -e MME_CODE="1" \
-#     -e MCC="208" \
-#     -e MNC="92" \
-#     -e NW_IF="$CONTAINER_INTERFACE" \
-#     -e TAC="1" \
-#     -e SGW_IP="$SGWC_IP" \
-#     -e HSS_SERVICE="hss.openair4G.eur" \
-#     -e HSS_IP="$HSS_IP" \
-#     -e HSS_REALM="openair4G.eur" \
-#     -e HSS_HOSTNAME="hss" \
-#     -p 3870:3870 -p 5870:5870 -p 2123:2123 \
-#     -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
-#     -h mme.openair4G.eur
+    run_component oai-mme:k8s oai-mme 127.0.0.1:3870 \
+        -e MY_POD_IP="192.168.104.195" \
+        -e MME_SERVICE="mme.openair4G.eur" \
+        -e MME_REALM="openair4G.eur" \
+        -e MME_GID="4" \
+        -e MME_CODE="1" \
+        -e MCC="208" \
+        -e MNC="92" \
+        -e NW_IF="${DEFAULT_HOST_INTERFACE}" \
+        -e TAC="1" \
+        -e SGW_IP="$SGWC_IP" \
+        -e HSS_SERVICE="hss.openair4G.eur" \
+        -e HSS_IP="$HSS_IP" \
+        -e HSS_REALM="openair4G.eur" \
+        -e HSS_HOSTNAME="hss" \
+        -p 3870:3870 -p 5870:5870 -p 2123:2123 \
+        -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
+        -h mme.openair4G.eur
 fi
 
-if [[ "${COMPONENTS}" =~ "ENB" ]]; then
-    run_component oai-enb:1.1.0 oai-enb-rcc 127.0.0.1:2152 \
+if [[ "${COMPONENTS}" =~ "RCC" ]]; then
+    CPU_RT_PARAMS=""
+    if [[ "$IS_RT_CAPABLE" == "false" ]]; then
+        CPU_RT_PARAMS="--cpu-rt-period 1000 --cpu-rt-runtime 950" # allocate 95% of a 1ms period to rt tasks
+    fi
+    run_component oai-enb:1.1.0.${PLATFORM} oai-enb-rcc 127.0.0.1:2152 \
+        ${CPU_RT_PARAMS} \
         --cap-add=SYS_NICE \
         -e MODE="RCC" \
-        -e ENB_ID=42 \
-        -e ENB_NAME="eNB" \
+        -e ENB_ID="0xe00" \
+        -e ENB_NAME="eNB_Eurecom_LTEBox" \
         -e TAC=1 \
-        -e MCC=200 \
+        -e MCC=208 \
+        -e MNC=92 \
+        -e MME_IP4="127.0.0.1" \
+        -e MME_IP6="::1" \
+        -e S1_MME_IF="lo" \
+        -e S1_MME_IP="127.0.0.1" \
+        -e S1_U_IF="lo" \
+        -e S1_U_IP="127.0.0.1" \
+        -e X2C_IP="127.0.0.1" \
+        -e RU_LOCAL_IF="${DEFAULT_HOST_INTERFACE_NAME}" \
+        -e RU_LOCAL_IP="${DEFAULT_HOST_INTERFACE_IP}" \
+        -e RU_REMOTE_IP="192.168.18.205" \
+        -p 2152:2152 -p 36412:36412 -p 36422:36422 -p 50000:50000 -p 50001:50001
+fi
+
+if [[ "${COMPONENTS}" =~ "eNB+UE" ]]; then
+    CPU_RT_PARAMS=""
+    if [[ "$IS_RT_CAPABLE" == "false" ]]; then
+        CPU_RT_PARAMS="--cpu-rt-period=1000 --cpu-rt-runtime=950" # allocate 95% of a 1ms period to rt tasks
+    fi
+    run_component oai-enb:1.1.0.${PLATFORM} oai-enb-rcc 127.0.0.1:2152 \
+        ${CPU_RT_PARAMS} \
+        --cap-add=SYS_NICE \
+        -e MODE="RCC" \
+        -e ENB_ID="0xe00" \
+        -e ENB_NAME="eNB_Eurecom_LTEBox" \
+        -e TAC=1 \
+        -e MCC=208 \
         -e MNC=92 \
         -e MME_IP4="127.0.0.1" \
         -e MME_IP6="::1" \
@@ -203,22 +245,22 @@ if [[ "${COMPONENTS}" =~ "ENB" ]]; then
         -e RU_LOCAL_IF="lo" \
         -e RU_LOCAL_IP="127.0.0.1" \
         -e RU_REMOTE_IP="127.0.0.1" \
-        -p 2152:2152 -p 22100:22100 -p 36422:36422
+        -p 2152:2152 -p 36412:36412 -p 36422:36422 -p 50000:50000 -p 50001:50001
 
-    run_component oai-enb:1.1.0 oai-enb-rru 127.0.0.1:2152 \
+    run_component oai-ue:1.1.0.${PLATFORM} oai-ue 127.0.0.1:2152 \
+        ${CPU_RT_PARAMS} \
         --cap-add=SYS_NICE \
-        -e MODE="RRU" \
         -e RU_LOCAL_IF="lo" \
         -e RU_LOCAL_IP="127.0.0.1" \
         -e RU_REMOTE_IP="127.0.0.1" \
-        -p 2152:2152 -p 22100:22100 -p 36422:36422
+        -p 50000:50000 -p 50001:50001
 fi
 
 if [[ "${COMPONENTS}" =~ "GNB" ]]; then
     run_component oai-gnb:develop-nr.${PLATFORM} oai-gnb 127.0.0.1:2152 \
         --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK \
         --device=/dev/cpu_dma_latency:/dev/cpu_dma_latency \
-        -e GNB_ID=0xe00 \
+        -e GNB_ID="0xe00" \
         -e GNB_NAME="gNB-Eurecom-5GNRBox" \
         -e TAC=1 \
         -e MCC=208 \
@@ -236,23 +278,23 @@ if [[ "${COMPONENTS}" =~ "GNB" ]]; then
 fi
 
 if [[ "${COMPONENTS}" =~ "NR-UE" ]]; then
-    # run_component oai-nrue:develop-nr.${PLATFORM} oai-nrue 127.0.0.1:2152 \
-    #     --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK \
-    #     --device=/dev/cpu_dma_latency:/dev/cpu_dma_latency \
-    #     -e GNB_ID=42 \
-    #     -e GNB_NAME="eNB" \
-    #     -e MCC=42 \
-    #     -e MNC=42 \
-    #     -e MME_IP4="127.0.0.1" \
-    #     -e MME_IP6="::1" \
-    #     -e S1_MME_IF="lo" \
-    #     -e S1_MME_IP="127.0.0.1" \
-    #     -e S1_U_IF="lo" \
-    #     -e S1_U_IP="127.0.0.1" \
-    #     -e SDR_FIRST_IP="127.0.0.1" \
-    #     -e SDR_SECOND_IP="127.0.0.2" \
-    #     -e SDR_MGMT_IP="127.0.0.3" \
-    #     -p 2152:2152
+    run_component oai-nrue:develop-nr.${PLATFORM} oai-nrue 127.0.0.1:2152 \
+        --privileged --cap-add=SYS_RAWIO --cap-add=SYS_NICE --cap-add=IPC_LOCK \
+        --device=/dev/cpu_dma_latency:/dev/cpu_dma_latency \
+        -e GNB_ID=42 \
+        -e GNB_NAME="eNB" \
+        -e MCC=42 \
+        -e MNC=42 \
+        -e MME_IP4="127.0.0.1" \
+        -e MME_IP6="::1" \
+        -e S1_MME_IF="lo" \
+        -e S1_MME_IP="127.0.0.1" \
+        -e S1_U_IF="lo" \
+        -e S1_U_IP="127.0.0.1" \
+        -e SDR_FIRST_IP="127.0.0.1" \
+        -e SDR_SECOND_IP="127.0.0.2" \
+        -e SDR_MGMT_IP="127.0.0.3" \
+        -p 2152:2152
 fi
 
 info "All services started."
