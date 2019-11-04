@@ -6,6 +6,6 @@ data:
   sgw_s1u_if: net2
   sgw_sx_if: net1
   pgw_sgi_if: eth0
-  net_ue_ip: 10.10.10.0/24
-  pgwc_sx_ip: 192.168.2.101
+  net_ue_ip: 192.172.0.0/24
+  pgwc_sx_ip: 192.168.2.100
 
