@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 source /etc/os-release
+THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
 REGISTRY=${REGISTRY:-registry.redhat.io}
 PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
 IS_RT_CAPABLE="false"
@@ -89,6 +90,15 @@ run_component() {
     wait_for_socket $LIVENESS_IP $LIVENESS_PORT
 }
 
+enable_sctp() {
+    if ! $(lsmod | grep -q sctp); then
+        info Enabling SCTP
+        dnf install -y kernel-modules-extra
+        rm /etc/modprobe.d/sctp-blacklist.conf
+        modprobe sctp
+    fi
+}
+
 # parse command line args
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -124,12 +134,9 @@ if [[ "${COMPONENTS}" =~ "HSS" ]]; then
         -p 127.0.0.1:9042:9042 
     CASSANDRA_IP=$(podman exec cassandra ip route get 1.1.1.1 | grep -oP 'src \K\S+')
 
-    info 'Provisioning...(Datacenter name is hardcoded in CQL)'
-    SCRIPT=$(readlink -f $0)
-    THIS_SCRIPT_PATH=`dirname $SCRIPT`
-    PROVISION_SCRIPT=$THIS_SCRIPT_PATH/../images/oai-cassandra/scripts/init_prov.sh    
-    $PROVISION_SCRIPT -n cassandra -i $CASSANDRA_IP
-    info 'Provisioning done'
+    info 'Provisioning HSS database schema'
+    QUERIES=$(<${THIS_SCRIPT_PATH}/db/oai_db.cql)
+    podman run --rm -it cassandra:3.11 cqlsh ${CASSANDRA_IP} -e "${QUERIES}"
 
     run_component oai-hss_rel14:k8s oai-hss 127.0.0.1:3868 \
         -e DB_FQDN=${CASSANDRA_IP} \
@@ -139,11 +146,13 @@ if [[ "${COMPONENTS}" =~ "HSS" ]]; then
         -e OP_KEY="11111111111111111111111111111111" \
         -e HSS_FQDN="hss.openair4G.eur" \
         -e ROAMING_ALLOWED="true" \
-        -e MME_IDENTITY="127.0.0.1" \
         -p 3868:3868 -p 5868:5868 -p 9080:9080 -p 9081:9081 \
         -v ${PWD}/manifests/oai-hss/certs:/opt/oai-hss/certs:Z \
         -h hss.openair4G.eur
-    HSS_IP=$(podman exec oai-hss ip route get 1.1.1.1 | grep -oP 'src \K\S+')
+
+    info 'Registering subscriber(s) with HSS'
+    QUERIES=$(<${THIS_SCRIPT_PATH}/db/subscribers.cql)
+    podman run --rm -it cassandra:3.11 cqlsh ${CASSANDRA_IP} -e "${QUERIES}"
 fi
 
 if [[ "${COMPONENTS}" =~ "SPGW" ]]; then
@@ -174,22 +183,34 @@ if [[ "${COMPONENTS}" =~ "SPGW" ]]; then
 fi
 
 if [[ "${COMPONENTS}" =~ "MME" ]]; then
-    run_component oai-mme:k8s oai-mme 127.0.0.1:3870 \
-        -e MY_POD_IP="192.168.104.195" \
+    enable_sctp
+
+    info 'Registering MME with HSS'
+    QUERIES="INSERT INTO vhss.mmeidentity (idmmeidentity, mmeisdn, mmehost, mmerealm, ue_reachability) VALUES (4, 'mme-isdn', 'mme.openair4G.eur', 'openair4G.eur', 1); INSERT INTO vhss.mmeidentity_host (idmmeidentity, mmeisdn, mmehost, mmerealm, ue_reachability) VALUES (4, 'mme-isdn', 'mme.openair4G.eur', 'openair4G.eur', 1);"
+    podman run --rm -it cassandra:3.11 cqlsh ${CASSANDRA_IP} -e "${QUERIES}"
+
+    HSS_IP=$(podman exec oai-hss ip route get 1.1.1.1 | grep -oP 'src \K\S+')
+    run_component oai-mme:master oai-mme 127.0.0.1:3870 \
+        --privileged \
         -e MME_SERVICE="mme.openair4G.eur" \
         -e MME_REALM="openair4G.eur" \
         -e MME_GID="4" \
         -e MME_CODE="1" \
         -e MCC="208" \
         -e MNC="92" \
-        -e NW_IF="${DEFAULT_HOST_INTERFACE}" \
         -e TAC="1" \
-        -e SGW_IP="$SGWC_IP" \
+        -e MME_CIDR_S1C="${DEFAULT_HOST_INTERFACE_IP}/32" \
+        -e MME_CIDR_S11="${DEFAULT_HOST_INTERFACE_IP}/32" \
+        -e MME_CIDR_S10="${DEFAULT_HOST_INTERFACE_IP}/32" \
+        -e NW_IF_S1C="${DEFAULT_HOST_INTERFACE_NAME}" \
+        -e NW_IF_S11="${DEFAULT_HOST_INTERFACE_NAME}" \
+        -e NW_IF_S10="${DEFAULT_HOST_INTERFACE_NAME}" \
+        -e SGW_CIDR_S11="127.0.0.1/32" \
         -e HSS_SERVICE="hss.openair4G.eur" \
         -e HSS_IP="$HSS_IP" \
         -e HSS_REALM="openair4G.eur" \
         -e HSS_HOSTNAME="hss" \
-        -p 3870:3870 -p 5870:5870 -p 2123:2123 \
+        -p 3870:3870 -p 5870:5870 -p 2123:2123 -p 36412:36412 \
         -v ${PWD}/manifests/oai-mme/certs:/opt/oai-mme/certs:Z \
         -h mme.openair4G.eur
 fi

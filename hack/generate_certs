@@ -54,6 +54,7 @@ generate_certs() {
         -out ${PREFIX}.cert.pem
 
     info "Copying to $DIR"
+    chmod g+r *.pem
     mv -t "${DIR}" ${PREFIX}{.cakey.pem,.cert.pem,.cacert.pem,.key.pem}
 
     popd > /dev/null
