@@ -2,12 +2,26 @@
 
 set -euo pipefail
 
-sed -i \
-    -e "s/\${SGW_S1U_INTERFACE}/${SGW_S1U_INTERFACE}/g" \
-    -e "s/\${SGW_SX_INTERFACE}/${SGW_SX_INTERFACE}/g" \
-    -e "s/\${PGW_SGI_INTERFACE}/${PGW_SGI_INTERFACE}/g" \
-    -e "s|\${NETWORK_UE_IP}|${NETWORK_UE_IP}|g" \
-    -e "s/\${PGWC_SX_IP_ADDRESS}/${PGWC_SX_IP_ADDRESS}/g" \
-    /opt/oai-spgwu/etc/spgw_u.conf
+CONFIG_DIR="/opt/oai-spgwu/etc"
+
+for c in ${CONFIG_DIR}/*.conf; do
+    # grep variable names (format: ${VAR}) from template to be rendered
+    VARS=$(grep -oP '\$\{\K[a-zA-Z0-9_]+' ${c} | sort | uniq | xargs)
+
+    # create sed expressions for substituting each occurrence of ${VAR}
+    # with the value of the environment variable "VAR"
+    EXPRESSIONS=""
+    for v in ${VARS}; do
+        if [[ "${!v}x" == "x" ]]; then
+            echo "Error: Environment variable '${v}' is not set." \
+                "Config file '$(basename $c)' requires all of $VARS."
+            exit 1
+        fi
+        EXPRESSIONS="${EXPRESSIONS} -e s|\\\${${v}}|${!v}|g"
+    done
+
+    # render template and inline replace config file
+    sed -i ${EXPRESSIONS} ${c}
+done
 
 exec "$@"

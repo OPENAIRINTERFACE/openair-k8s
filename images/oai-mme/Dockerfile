@@ -1,7 +1,7 @@
 ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el8 AS builder
 
-ARG GIT_TAG=k8s
+ARG GIT_TAG=master
 
 WORKDIR /root
 
@@ -20,8 +20,7 @@ RUN rm -rf /usr/local/lib/freeDiameter /usr/local/lib/libfd* \
 RUN cd openair-cn/scripts \
     && ln -sf /usr/local/bin/asn1c_cn /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_cn /usr/local/share/asn1c \
-    && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_mme -c -v -b Debug\
-    && ./check_mme_s6a_certificate ../.. mme.openair4G.eur 
+    && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_mme -c -v -b Debug
 
 
 FROM registry.redhat.io/ubi8/ubi
@@ -40,9 +39,7 @@ RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
 
 ENV APP_ROOT=/opt/oai-mme
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
-RUN mkdir -p -m 777 ${APP_ROOT}/certs
 COPY --from=builder /root/openair-cn/build/mme/build/mme ${APP_ROOT}/bin/
-COPY --from=builder /root/*.pem ${APP_ROOT}/certs/
 COPY --from=builder /usr/local/lib/libfd* /lib64
 COPY --from=builder /usr/local/lib/freeDiameter/* /usr/local/lib/freeDiameter/
 COPY --from=builder /usr/local/lib/liblfds* /usr/lib64
