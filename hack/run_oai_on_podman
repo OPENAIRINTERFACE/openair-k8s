@@ -222,6 +222,7 @@ if [[ "${COMPONENTS}" =~ "RCC" ]]; then
     fi
     run_component oai-enb:1.1.0.${PLATFORM} oai-enb-rcc 127.0.0.1:2152 \
         ${CPU_RT_PARAMS} \
+        --privileged \
         --cap-add=SYS_NICE \
         -e MODE="RCC" \
         -e ENB_ID="0xe00" \
@@ -229,7 +230,7 @@ if [[ "${COMPONENTS}" =~ "RCC" ]]; then
         -e TAC=1 \
         -e MCC=208 \
         -e MNC=92 \
-        -e MME_IP4="127.0.0.1" \
+        -e MME_IP4="127.0.0.2" \
         -e MME_IP6="::1" \
         -e S1_MME_IF="lo" \
         -e S1_MME_IP="127.0.0.1" \
