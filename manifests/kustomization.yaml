@@ -1,6 +1,10 @@
 resources:
 - 00_namespace.yaml
-- mariadb
+- cassandra
 - oai-hss
+- oai-mme
+- oai-spgwc
+- oai-spgwu
+- oai-enb
 
 namespace: oai

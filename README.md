@@ -99,6 +99,18 @@ kustomize build manifests | kubectl apply -f -
 ```
 If you need to use a namespace assigned to you, e.g. `oai`, modify `manifests/kustomization.yaml` to delete the `00_namespace.yaml` resource and change the `namespace` field to your needs.
 
+In order to run a single component, you have to point to the specific path where the manifests are located. For instnace, to run the MME on Kubernetes/OpenShift, please run:
+
+```
+kustomize build manifests/oai-mme | kubectl apply -f -
+```
+
+and to delete that component from running on the cluster, execute:
+
+```
+kustomize build manifests/oai-mme | kubectl delete -f -
+```
+
 ### Cleaning
 To remove all resources from the 'oai' namespace plus delete the namespace itself, run:
 ```sh
