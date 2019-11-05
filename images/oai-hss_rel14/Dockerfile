@@ -14,7 +14,6 @@ RUN cd openair-cn/scripts \
     && ln -sf /usr/local/bin/asn1c_cn /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_cn /usr/local/share/asn1c \
     && rm -rf /usr/local/lib/freeDiameter /usr/local/lib/libfd* \
-    && ./check_hss_s6a_certificate $(pwd) hss.openair4G.eur \
     && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_hss_rel14 --check-installed-software --force \
     && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_hss_rel14 -v
 
@@ -37,9 +36,7 @@ RUN REPOLIST=codeready-builder-for-rhel-8-x86_64-rpms \
 ENV APP_ROOT=/opt/oai-hss
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 
-RUN mkdir -p -m 777 ${APP_ROOT}/certs
 COPY --from=builder /root/openair-cn/build/hss_rel14/bin/hss ${APP_ROOT}/bin/oai_hss
-COPY --from=builder /root/openair-cn/scripts/*.pem ${APP_ROOT}/certs/
 COPY --from=builder /usr/local/lib/libfd* /lib64
 COPY --from=builder /usr/local/lib/freeDiameter/* /usr/local/lib/freeDiameter/
 COPY --from=builder /usr/local/lib64/libcassandra* /lib64
