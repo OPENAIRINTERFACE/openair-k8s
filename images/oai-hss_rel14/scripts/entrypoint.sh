@@ -21,11 +21,12 @@ for c in ${CONFIG_DIR}/*.{conf,json}; do
                 "Config file '$(basename $c)' requires all of $VARS."
             exit 1
         fi
-        EXPRESSIONS="${EXPRESSIONS} -e s|\\\${${v}}|${!v}|g"
+        EXPRESSIONS="${EXPRESSIONS};s|\\\${${v}}|${!v}|g"
     done
+    EXPRESSIONS="${EXPRESSIONS#';'}"
 
     # render template and inline replace config file
-    sed -i ${EXPRESSIONS} ${c}
+    sed -i "${EXPRESSIONS}" ${c}
 done
 
 exec "$@"

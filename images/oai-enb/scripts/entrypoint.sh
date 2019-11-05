@@ -26,10 +26,11 @@ for v in ${VARS}; do
              "Config file '$(basename $TEMPLATE)' requires all of $VARS."
         exit 1
     fi
-    EXPRESSIONS="${EXPRESSIONS} -e s|\\\${${v}}|${!v}|g"
+    EXPRESSIONS="${EXPRESSIONS};s|\\\${${v}}|${!v}|g"
 done
+EXPRESSIONS="${EXPRESSIONS#';'}"
 
 # render template and write to enb.conf
-sed ${EXPRESSIONS} ${TEMPLATE} > ${CONFIG_DIR}/enb.conf
+sed "${EXPRESSIONS}" ${TEMPLATE} > ${CONFIG_DIR}/enb.conf
 
 exec "$@"
