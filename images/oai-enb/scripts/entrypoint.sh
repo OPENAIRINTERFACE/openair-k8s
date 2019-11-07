@@ -3,15 +3,17 @@
 set -eo pipefail # don't set 'u' as we need to explicityly test for undefined vars
 
 CONFIG_DIR="/opt/oai-enb/etc"
-DEFAULT_MODE="RCC"
+DEFAULT_MODE="RCC_BAND38"
 MNC_LENGTH=${MNC_LENGTH:-${#MNC}}
 
 # look up configuration template to use
 MODE=${MODE:-${DEFAULT_MODE}}
 case "${MODE^^}" in
-    RCC) TEMPLATE=${CONFIG_DIR}/rcc.band40.tm1.25PRB.FairScheduler.usrpb210.conf.template;;
-    RRU) TEMPLATE=${CONFIG_DIR}/rru.tdd.band40.conf.template;;
-    *)   echo "Unkown mode '${MODE}'."; exit 1;;
+    RCC_BAND38_IF5) TEMPLATE=${CONFIG_DIR}/rcc.b38.if5.conf.template;;
+    RCC_BAND38)     TEMPLATE=${CONFIG_DIR}/rcc.b38.conf.template;;
+    RCC_BAND40)     TEMPLATE=${CONFIG_DIR}/rcc.band40.tm1.25PRB.FairScheduler.usrpb210.conf.template;;
+    RRU)            TEMPLATE=${CONFIG_DIR}/rru.tdd.band40.conf.template;;
+    *)              echo "Unkown mode '${MODE}'."; exit 1;;
 esac
 
 # grep variable names (format: ${VAR}) from template to be rendered
