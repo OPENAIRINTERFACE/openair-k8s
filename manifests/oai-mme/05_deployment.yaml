@@ -129,6 +129,11 @@ spec:
               configMapKeyRef:
                 name: mme-config
                 key: hss_ip
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          - /bin/sleep
+          - infinity
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

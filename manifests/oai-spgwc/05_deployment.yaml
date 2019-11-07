@@ -54,6 +54,11 @@ spec:
               configMapKeyRef:
                 name: spgwc-config
                 key: ue_dns_server
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          - /bin/sleep
+          - infinity
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

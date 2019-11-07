@@ -122,6 +122,11 @@ spec:
               configMapKeyRef:
                 name: enb-config
                 key: x2c_ip
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          - /bin/sleep
+          - infinity
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
