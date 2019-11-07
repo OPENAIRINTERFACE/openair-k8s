@@ -18,7 +18,7 @@ data:
   mme_cidr_s1c: "192.168.1.100/24"
   mme_cidr_s11: "172.16.1.100/24"
   mme_cidr_s10: "127.0.0.1/32"
-  sgw_cidr_s11: "127.0.0.1/32"
+  sgw_cidr_s11: "172.16.1.101/24"
   #hss_service: "hss.openair4G.eur"
   hss_service: "oai-hss.oai.svc.cluster.local"
   #hss_realm: "openair4G.eur"
