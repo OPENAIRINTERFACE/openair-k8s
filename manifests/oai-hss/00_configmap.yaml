@@ -7,6 +7,6 @@ data:
   db_name: "vhss"
   db_user: "cassandra"
   db_password: "cassandra"
-  op_key: "1006020f0a478bf6b699f15c062e42b3"
+  op_key: "11111111111111111111111111111111"
   identity: "oai-hss.oai.svc.cluster.local"
   roaming: "true"

@@ -9,7 +9,7 @@ data:
   mme_ip6: "::1"
   mcc: "208"
   tac: "1"
-  mnc: "92"
+  mnc: "96"
   mnc_length: "2"
   ru_local_if: "net3"
   ru_local_ip: "192.168.18.206"
