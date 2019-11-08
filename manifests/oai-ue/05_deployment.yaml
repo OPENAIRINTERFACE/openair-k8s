@@ -49,6 +49,11 @@ spec:
               configMapKeyRef:
                 name: ue-config
                 key: ru_remote_ip
+          - name: BAND
+            valueFrom:
+              configMapKeyRef:
+                name: ue-config
+                key: band
       - name: tcpdump
         image: corfr/tcpdump
         command:

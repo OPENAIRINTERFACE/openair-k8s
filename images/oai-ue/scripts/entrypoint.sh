@@ -2,16 +2,8 @@
 
 set -eo pipefail # don't set 'u' as we need to explicityly test for undefined vars
 
-CONFIG_DIR="../etc"
-DEFAULT_MODE="RCC"
-MNC_LENGTH=${MNC_LENGTH:-${#MNC}}
-
-# look up configuration template to use
-MODE=${MODE:-${DEFAULT_MODE}}
-case "${MODE^^}" in
-    UE) TEMPLATE=${CONFIG_DIR}/rru.tdd.band40.conf.template;;
-    *)   echo "Unkown mode '${MODE}'."; exit 1;;
-esac
+CONFIG_DIR="/opt/oai-ue/etc"
+TEMPLATE=${CONFIG_DIR}/rru.conf.template
 
 # grep variable names (format: ${VAR}) from template to be rendered
 VARS=$(grep -oP '\$\{\K[a-zA-Z0-9_]+' ${TEMPLATE} | sort | uniq | xargs)

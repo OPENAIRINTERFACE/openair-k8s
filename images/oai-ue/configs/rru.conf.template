@@ -1,19 +1,19 @@
 RUs = (
     {
-        local_if_name  = "${RU_LOCAL_IF}";
-        remote_address = "${RU_REMOTE_IP}";
-        local_address  = "${RU_LOCAL_IP}";
-        local_portc    = 50000;
-        remote_portc   = 50000;
-        local_portd    = 50001;
-        remote_portd   = 50001;
-        local_rf       = "yes"
-        tr_preference  = "udp_if4p5"
-        nb_tx          = 1
-        nb_rx          = 1
-        att_tx         = -27
-        att_rx         = 115;
-        eNB_instances  = [40];
+        local_if_name                   = "${RU_LOCAL_IF}";
+        remote_address                  = "${RU_REMOTE_IP}";
+        local_address                   = "${RU_LOCAL_IP}";
+        local_portc                     = 50000;
+        remote_portc                    = 50000;
+        local_portd                     = 50001;
+        remote_portd                    = 50001;
+        local_rf                        = "yes"
+        tr_preference                   = "udp_if4p5"
+        nb_tx                           = 1
+        nb_rx                           = 1
+        max_pdschReferenceSignalPower   = -27;
+        max_rxgain                      = 115;
+        bands                           = [${BAND}];
     }
 );
 
