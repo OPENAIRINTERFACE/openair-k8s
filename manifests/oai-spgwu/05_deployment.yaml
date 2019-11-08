@@ -16,7 +16,7 @@ spec:
       labels:
         app: oai-spgwu
       annotations:
-        k8s.v1.cni.cncf.io/networks: spgwu-net1, spgwu-net2
+        k8s.v1.cni.cncf.io/networks: spgwu-net1, spgwu-net2, spgwu-net3
     spec:
       securityContext:
         runAsUser: 0

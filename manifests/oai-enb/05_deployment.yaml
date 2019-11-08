@@ -16,13 +16,13 @@ spec:
       labels:
         app: oai-enb
       annotations:
-        k8s.v1.cni.cncf.io/networks: enb-net1, enb-net2
+        k8s.v1.cni.cncf.io/networks: enb-net1, enb-net2, enb-net3
     spec:
       securityContext:
         runAsUser: 0
         runAsGroup: 0
       containers:
-      - name: spgwc
+      - name: enb
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-enb
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: oai-ue
+  name: oai-ue
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: if4p5-c
+    port: 50000
+    protocol: UDP
+    targetPort: 50000
+  - name: if4p5-u
+    port: 50001
+    protocol: UDP
+    targetPort: 50001
+  selector:
+    app: oai-ue
