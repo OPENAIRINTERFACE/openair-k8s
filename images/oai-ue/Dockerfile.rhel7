@@ -23,7 +23,7 @@ LABEL name="oai-ue" \
       io.openshift.tags="oai,ue" \
       io.openshift.non-scalable="true"
 
-RUN RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
     && REPOLIST="rhel-7-server-optional-rpms" \
     && PKGLIST="atlas blas boost lapack libconfig lksctp-tools protobuf-c iproute iputils procps-ng bind-utils xforms" \
     # && yum -y upgrade-minimal --setopt=tsflags=nodocs --security --sec-severity=Critical --sec-severity=Important \
