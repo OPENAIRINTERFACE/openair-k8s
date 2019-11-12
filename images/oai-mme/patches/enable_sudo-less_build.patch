@@ -1,3 +1,5 @@
+diff --git a/build/tools/build_helper b/build/tools/build_helper
+index d5fbf406..8af0a9a9 100644
 --- a/build/tools/build_helper
 +++ b/build/tools/build_helper
 @@ -38,7 +38,7 @@ case "$OS_DISTRO" in
@@ -6,3 +8,6 @@
  
 -SUDO='sudo -S -E'
 +SUDO=''
+ 
+ ###############################
+ ## echo and  family

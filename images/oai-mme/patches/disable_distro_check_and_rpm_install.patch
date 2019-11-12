@@ -1,0 +1,73 @@
+diff --git a/build/tools/build_helper.fd b/build/tools/build_helper.fd
+index 0be2a8b7..74e9adbe 100644
+--- a/build/tools/build_helper.fd
++++ b/build/tools/build_helper.fd
+@@ -355,29 +355,29 @@ install_opencoord.org_freediameter() {
+   fi
+ 
+   # libpq-dev 'may' be not needed
+-  $SUDO apt-get install $OPTION \
+-    autoconf  \
+-    automake  \
+-    bison     \
+-    build-essential \
+-    cmake \
+-    cmake-curses-gui  \
+-    debhelper \
+-    flex  \
+-    g++ \
+-    gcc \
+-    gdb \
+-    libgcrypt-dev \
+-    libidn11-dev \
+-    libmysqlclient-dev \
+-    libpq-dev \
+-    libsctp1 \
+-    libsctp-dev \
+-    libxml2-dev \
+-    mercurial \
+-    python-dev \
+-    ssl-cert \
+-    swig
++#  $SUDO apt-get install $OPTION \
++#    autoconf  \
++#    automake  \
++#    bison     \
++#    build-essential \
++#    cmake \
++#    cmake-curses-gui  \
++#    debhelper \
++#    flex  \
++#    g++ \
++#    gcc \
++#    gdb \
++#    libgcrypt-dev \
++#    libidn11-dev \
++#    libmysqlclient-dev \
++#    libpq-dev \
++#    libsctp1 \
++#    libsctp-dev \
++#    libxml2-dev \
++#    mercurial \
++#    python-dev \
++#    ssl-cert \
++#    swig
+ 
+   if [[ $prompt =~ [yY](es)* ]]
+   then
+diff --git a/scripts/build_mme b/scripts/build_mme
+index ca64459d..3201eb0a 100755
+--- a/scripts/build_mme
++++ b/scripts/build_mme
+@@ -170,8 +170,9 @@ function main()
+   fi
+   
+   if [ $var_check_install_oai_software -gt 0 ];then
+-    update_package_db
+-    check_install_mme_software  $force
++#    update_package_db
++#    check_install_mme_software  $force
++    $FD_INSTALL_FUNC $force
+     if [ $? -ne 0 ]; then
+         echo_error "Error: MME software installation failed"
+         return 1

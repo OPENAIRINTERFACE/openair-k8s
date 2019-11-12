@@ -5,21 +5,15 @@ ARG GIT_TAG=master
 
 WORKDIR /root
 
-RUN git clone --depth=1 --branch=$GIT_TAG --recurse-submodules https://github.com/OPENAIRINTERFACE/openair-cn.git
+RUN git clone --depth=1 --branch=$GIT_TAG https://github.com/OPENAIRINTERFACE/openair-cn.git
 COPY patches patches/
-RUN patch -p1 -d openair-cn < patches/enable_sudo-less_build.patch
-RUN rm -rf /usr/local/lib/freeDiameter /usr/local/lib/libfd* \
-    && cd openair-cn/build/git_submodules/freeDiameter \
-    && git pull origin master \
-    && patch -p1 < ../../patches/0001-opencoord.org.freeDiameter.patch \
-    && rm -rf build && mkdir -p build && cd build \
-    && cmake .. \
-    && awk '{if (/^DISABLE_SCTP/) gsub(/OFF/, "ON"); print}' CMakeCache.txt > tmp && mv tmp CMakeCache.txt \
-    && make -j`nproc` \
-    && make install
+RUN patch -p1 -d openair-cn < patches/enable_sudo-less_build.patch \
+    && patch -p1 -d openair-cn < patches/disable_distro_check_and_rpm_install.patch
 RUN cd openair-cn/scripts \
     && ln -sf /usr/local/bin/asn1c_cn /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_cn /usr/local/share/asn1c \
+    && rm -rf /usr/local/lib/freeDiameter /usr/local/lib/libfd* \
+    && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_mme --check-installed-software --force \
     && OPENAIRCN_DIR=$(dirname $(pwd)) ./build_mme -c -v -b Debug
 
 
