@@ -18,7 +18,7 @@
     "cassiothreads" : 2,    
     "randv"  : true,
     "optkey" : "${OP_KEY}",
-    "reloadkey"  : false,
+    "reloadkey"  : true,
     "roamallow"  : ${ROAMING_ALLOWED},
     "logsize": 20,
     "lognumber": 5,
