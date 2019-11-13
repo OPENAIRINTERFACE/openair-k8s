@@ -23,7 +23,7 @@ spec:
         runAsGroup: 0
       containers:
       - name: mme
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-mme
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-mme:master
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:
           privileged: true

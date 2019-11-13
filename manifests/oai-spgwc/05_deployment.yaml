@@ -23,7 +23,7 @@ spec:
         runAsGroup: 0
       containers:
       - name: spgwc
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc:develop
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:
           privileged: true

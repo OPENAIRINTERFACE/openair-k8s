@@ -23,7 +23,7 @@ spec:
         runAsGroup: 0
       containers:
       - name: spgwu
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu:develop
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:
           privileged: true
