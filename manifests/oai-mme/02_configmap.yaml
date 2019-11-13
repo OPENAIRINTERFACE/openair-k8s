@@ -13,7 +13,7 @@ data:
   nw_if_s11: "net2"
   nw_if_s10: "lo"
   mcc: "208"
-  mnc: "96"
+  mnc: "95"
   tac: "1"
   mme_cidr_s1c: "192.168.1.100/24"
   mme_cidr_s11: "172.16.1.100/24"
