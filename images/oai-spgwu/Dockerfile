@@ -1,7 +1,7 @@
 ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el8 AS builder
 
-ARG GIT_TAG=develop
+ARG GIT_TAG=develop-vco3
 
 WORKDIR /root
 
