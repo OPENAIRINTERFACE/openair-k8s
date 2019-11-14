@@ -21,7 +21,7 @@ spec:
         runAsGroup: 0
       containers:
       - name: hss
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss:develop
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss:develop-vco3
         volumeMounts:
         - mountPath: /opt/oai-hss/certs
           name: certs
