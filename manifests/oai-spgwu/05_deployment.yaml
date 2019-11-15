@@ -59,6 +59,11 @@ spec:
               configMapKeyRef:
                 name: spgwu-config
                 key: pgwc_sx_ip
+          - name: PGWU_SGI_GW
+            valueFrom:
+              configMapKeyRef:
+                name: spgwu-config
+                key: pgwu_sgi_gw
       - name: tcpdump
         image: corfr/tcpdump
         command:

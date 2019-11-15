@@ -5,5 +5,5 @@ metadata:
 data:
   pgw_sx_if: "net1"
   sgw_s11_if: "net2"
-  ue_ip_pool: "10.10.10.1-10.10.10.200"
+  ue_ip_pool: "192.168.20.2-192.168.20.200"
   ue_dns_server: "8.8.8.8"

@@ -25,4 +25,11 @@ for c in ${CONFIG_DIR}/*.conf; do
     sed -i "${EXPRESSIONS}" ${c}
 done
 
+# This will be done by the spgwu internally soon, but for the time being:
+echo '200 lte' | tee --append /etc/iproute2/rt_tables
+# Default gateway 
+ip route add default via $PGWU_SGI_GW dev $PGW_SGI_INTERFACE table lte
+# you will have to repeat the following line for each PDN network set in your SPGW-U config file
+ip rule add from $NETWORK_UE_IP table lte
+
 exec "$@"
