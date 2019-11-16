@@ -293,9 +293,9 @@ if [[ "${COMPONENTS}" =~ "GNB" ]]; then
         -e S1_MME_IP="192.168.12.111/24" \
         -e S1_U_IF="lo" \
         -e S1_U_IP="127.0.0.1" \
-        -e SDR_FIRST_IP="192.168.20.2" \
-        -e SDR_SECOND_IP="192.168.10.2" \
-        -e SDR_MGMT_IP="192.168.20.2" \
+        -e SDR_FIRST_IP="192.168.10.2" \
+        -e SDR_SECOND_IP="192.168.40.2" \
+        -e SDR_MGMT_IP="192.168.10.2" \
         -p 2152:2152
 fi
 
