@@ -49,7 +49,7 @@ spec:
   config: '{ 
       "cniVersion": "0.3.0",
       "type": "host-device",
-      "device": "eno1",
+      "device": "em1",
       "ipam": {
         "type": "static",
         "addresses": [
@@ -69,7 +69,7 @@ spec:
   config: '{ 
       "cniVersion": "0.3.0",
       "type": "host-device",
-      "device": "eno3",
+      "device": "em3",
       "ipam": {
         "type": "static",
         "addresses": [
