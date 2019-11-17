@@ -24,9 +24,9 @@ spec:
       containers:
       - name: gnb
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:develop-nr
-        command:
-          - /bin/sleep
-          - infinity
+        # command:
+        #   - /bin/sleep
+        #   - infinity
         securityContext:
           privileged: true
         ports:
@@ -119,6 +119,8 @@ spec:
         command:
           - /bin/sleep
           - infinity
+      nodeSelector:
+        kubernetes.io/hostname: babylon.5glab.nsa.eurecom.fr
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
