@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enb-b38-2-config
+data:
+  enb_id: "00e01"
+  enb_name: "eNB-Eurecom-1"
+  mme_ip4: "192.168.1.100"
+  mme_ip6: "::1"
+  mcc: "208"
+  tac: "1"
+  mnc: "96"
+  mnc_length: "2"
+  ru_local_if: "net3"
+  ru_local_ip: "192.168.18.207"
+  ru_remote_ip: "192.168.18.205"
+  s1_mme_if: "net1"
+  s1_mme_ip: "192.168.1.102"
+  s1_u_if: "net2"
+  s1_u_ip: "172.16.2.102"
+  x2c_ip: "172.16.2.102"
