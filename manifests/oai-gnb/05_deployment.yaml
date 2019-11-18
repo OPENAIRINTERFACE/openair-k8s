@@ -24,6 +24,7 @@ spec:
       containers:
       - name: gnb
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:develop-nr
+        imagePullPolicy: Always
         # command:
         #   - /bin/sleep
         #   - infinity

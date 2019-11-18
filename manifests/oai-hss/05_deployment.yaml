@@ -21,6 +21,7 @@ spec:
       containers:
       - name: hss
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss:develop-vco3
+        imagePullPolicy: Always
         #command: ['sh', '-c', 'sleep infinity']
         ports:
         - containerPort: 3868
