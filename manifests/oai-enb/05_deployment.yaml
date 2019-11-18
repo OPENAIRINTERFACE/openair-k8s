@@ -25,6 +25,7 @@ spec:
       - name: enb
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-enb
         #command: ['sh', '-c', 'sleep 6000']
+        imagePullPolicy: Always
         securityContext:
           privileged: true
         ports:

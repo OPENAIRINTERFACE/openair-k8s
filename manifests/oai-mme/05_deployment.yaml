@@ -24,6 +24,7 @@ spec:
       containers:
       - name: mme
         image: image-registry.openshift-image-registry.svc:5000/oai/oai-mme:develop-vco3
+        imagePullPolicy: Always
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:
           privileged: true
