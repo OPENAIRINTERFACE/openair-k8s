@@ -2,6 +2,14 @@
 
 source /etc/os-release
 PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+
+if [[ ${PLATFORM} == "rh"* ]]; then
+  DOCKERFILE_SUFIX=rh${PLATFORM}
+else
+  PLATFORM="centos8"
+  DOCKERFILE_SUFIX=${PLATFORM}
+fi
+
 KERNEL_VERSION=${KERNEL_VERSION:-$(uname -r)}
 KERNEL_VERSION=${KERNEL_VERSION%*.x86_64}
 REGISTRY=${REGISTRY:-registry.redhat.io}
@@ -34,8 +42,8 @@ build_image() {
     # Default to building from Dockerfile. If there's a platform-specific Dockerfile
     # use that instead and append the platform name to the image tag.
     DOCKERFILE="Dockerfile"
-    if [ -f images/$IMAGE/Dockerfile.rh${PLATFORM} ]; then
-        DOCKERFILE="Dockerfile.rh${PLATFORM}"
+    if [ -f images/$IMAGE/Dockerfile.${DOCKERFILE_SUFIX} ]; then
+        DOCKERFILE="Dockerfile.${DOCKERFILE_SUFIX}"
         CLEAN_TAG="${CLEAN_TAG}.${PLATFORM}"
     fi
 
@@ -81,7 +89,9 @@ if [ $# -ne 0 ]; then
   IMAGES=$*
 fi
 
-podman login ${REGISTRY}
+if [[ ${PLATFORM} == "rh"* ]]; then
+  podman login ${REGISTRY}
+fi
 
 IMAGES="oai-build-base ${IMAGES/oai-build-base/}"
 
@@ -92,8 +102,8 @@ for i in $IMAGES; do
     TAG=${i#*:}
     # if no git_tag specified, grep default from Dockerfile
     if [ "$IMG" = "$TAG" ]; then
-        if [ -f images/$IMG/Dockerfile.rh${PLATFORM} ]; then
-            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.rh${PLATFORM} || echo "latest")
+        if [ -f images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} ]; then
+            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} || echo "latest")
         else
             TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile || echo "latest")
         fi
