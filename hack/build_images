@@ -2,16 +2,19 @@
 
 source /etc/os-release
 PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
-DOCKERFILE_SUFIX=rh${PLATFORM}
+
+if [[ ${PLATFORM} == "rh"* ]]; then
+  DOCKERFILE_SUFIX=rh${PLATFORM}
+else
+  PLATFORM="centos8"
+  DOCKERFILE_SUFIX=${PLATFORM}
+fi
+
 KERNEL_VERSION=${KERNEL_VERSION:-$(uname -r)}
 KERNEL_VERSION=${KERNEL_VERSION%*.x86_64}
 REGISTRY=${REGISTRY:-registry.redhat.io}
 BUILD_ARGS=${BUILD_ARGS:-"--no-cache"}
 IMAGES=$(find images -type f -name Dockerfile* | sed 's|images/||g' | sed 's|/Dockerfile[a-z0-9.]*||g' | sort | uniq | xargs)
-
-if [[ $PLATFORM == *"centos"* ]]; then
-  DOCKERFILE_SUFIX=${PLATFORM}
-fi
 
 info() {
     local MESSAGE=$1
@@ -86,7 +89,7 @@ if [ $# -ne 0 ]; then
   IMAGES=$*
 fi
 
-if [[ $PLATFORM != *"centos"* ]]; then
+if [[ ${PLATFORM} == "rh"* ]]; then
   podman login ${REGISTRY}
 fi
 

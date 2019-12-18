@@ -20,6 +20,10 @@ git clone http://github.com/OPENAIRINTERFACE/openair-k8s
 cd openair-k8s
 ```
 
+#### Ubuntu
+
+Follow this [guide](https://computingforgeeks.com/how-to-install-podman-on-ubuntu/) to install `podman`.
+
 ### Building
 To build all OAI component images:
 ```sh
