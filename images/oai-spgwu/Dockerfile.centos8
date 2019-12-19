@@ -1,5 +1,4 @@
-ARG REGISTRY=localhost
-FROM $REGISTRY/oai-build-base:latest.centos8 AS builder
+FROM oai-build-base:latest.centos8 AS builder
 
 ARG GIT_TAG=develop-vco3
 
@@ -15,10 +14,7 @@ RUN cd openair-cn-cups/build/scripts \
 FROM centos:8
 LABEL name="oai-spgwu" \
       version="$GIT_TAG" \
-      maintainer="Frank A. Zdarsky <fzdarsky@redhat.com>" \
-      io.k8s.description="openair-cn-cups S/P-GW-U $GIT_TAG" \
-      io.openshift.tags="oai,spgwu" \
-      io.openshift.non-scalable="true"
+      io.k8s.description="openair-cn-cups S/P-GW-U $GIT_TAG"
 
 RUN REPOLIST=PowerTools \
     PKGLIST="boost libasan libconfig libevent gflags-devel glog-devel iproute iputils iptables procps-ng bind-utils" && \

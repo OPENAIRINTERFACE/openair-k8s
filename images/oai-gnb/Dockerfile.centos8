@@ -1,5 +1,4 @@
-ARG REGISTRY=localhost
-FROM $REGISTRY/oai-build-base:latest.centos8 AS builder
+FROM oai-build-base:latest.centos8 AS builder
 
 ARG GIT_TAG=develop-nr
 
@@ -19,10 +18,7 @@ RUN cd openairinterface5g/cmake_targets \
 FROM centos:8
 LABEL name="oai-gnb" \
       version="$GIT_TAG" \
-      maintainer="Frank A. Zdarsky <fzdarsky@redhat.com>" \
-      io.k8s.description="openairinterface5g gNB $GIT_TAG." \
-      io.openshift.tags="oai,gnb" \
-      io.openshift.non-scalable="true"
+      io.k8s.description="openairinterface5g gNB $GIT_TAG."
 
 RUN REPOLIST="PowerTools" \
     && PKGLIST="atlas blas boost lapack libconfig libusb libusbx lksctp-tools protobuf-c iproute iputils procps-ng bind-utils" \

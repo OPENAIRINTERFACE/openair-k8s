@@ -2,7 +2,7 @@ FROM centos:8
 
 ARG GIT_TAG=latest
 LABEL name="oai-build-base" \
-      version="${GIT_TAG}.el8" \
+      version="${GIT_TAG}.centos8" \
       io.k8s.description="Image containing all build dependencies for openairinterface5g and openair-cn."
 
 WORKDIR /root
@@ -16,7 +16,9 @@ RUN yum -y install --enablerepo="PowerTools" \
         bzip2-devel \
         check \
         check-devel \
+        diffutils \
         elfutils-libelf-devel \
+        file \
         gflags-devel \
         glog-devel \
         gmp-devel \
@@ -67,11 +69,7 @@ RUN yum -y install --enablerepo="PowerTools" \
     && rm -rf /var/cache/yum \
     && pip2 install --user mako pexpect
 
-# RUN git clone https://gist.github.com/2190472.git /opt/ssh
-
-RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
-
-# build packages not present in RHEL/EPEL repos
+# build packages not present in CentOS/EPEL repos
 COPY patches patches/
 COPY scripts scripts/
 RUN scripts/build_missing_packages

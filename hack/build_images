@@ -1,13 +1,19 @@
 #!/bin/bash
 
-source /etc/os-release
-PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+if [[ -f /etc/os-release ]]; then
+    source /etc/os-release
+    PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+fi
 
 if [[ ${PLATFORM} == "rh"* ]]; then
   DOCKERFILE_SUFIX=rh${PLATFORM}
 else
   PLATFORM="centos8"
   DOCKERFILE_SUFIX=${PLATFORM}
+fi
+
+if hash podman 2>/dev/null; then
+    USE_PODMAN=true
 fi
 
 KERNEL_VERSION=${KERNEL_VERSION:-$(uname -r)}
@@ -37,7 +43,7 @@ available images:
 build_image_podman() {
     local IMAGE=$1
     local TAG=$2
-    local CLEAN_TAG=$(echo $TAG | sed -r 's/^v([0-9])/\1/')
+    local CLEAN_TAG=$(echo $TAG | sed 's/^v\([0-9]\)/\1/')
     echo "Building images using - Podman"
     # Default to building from Dockerfile. If there's a platform-specific Dockerfile
     # use that instead and append the platform name to the image tag.
@@ -67,7 +73,7 @@ build_image_podman() {
 build_image_docker() {
     local IMAGE=$1
     local TAG=$2
-    local CLEAN_TAG=$(echo $TAG | sed -r 's/^v([0-9])/\1/')
+    local CLEAN_TAG=$(echo $TAG | sed 's/^v\([0-9]\)/\1/')
 
     echo "Building images using - Docker"
     # Default to building from Dockerfile. If there's a platform-specific Dockerfile
@@ -130,15 +136,15 @@ for i in $IMAGES; do
     # if no git_tag specified, grep default from Dockerfile
     if [ "$IMG" = "$TAG" ]; then
         if [ -f images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} ]; then
-            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} || echo "latest")
+            TAG=$(sed -n "s/ARG GIT_TAG=\(.*\)/\1/p" images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} || echo "latest")
         else
-            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile || echo "latest")
+            TAG=$(sed -n "s/ARG GIT_TAG=\(.*\)/\1/p" images/$IMG/Dockerfile || echo "latest")
         fi
     fi
     # decide whether or not to use docker or podman
-    if [[ -z $USE_DOCKER ]]; then
-        build_image_podman $IMG $TAG
-    else
+    if [[ -z $USE_PODMAN ]]; then
         build_image_docker $IMG $TAG
+    else
+        build_image_podman $IMG $TAG
     fi
 done
