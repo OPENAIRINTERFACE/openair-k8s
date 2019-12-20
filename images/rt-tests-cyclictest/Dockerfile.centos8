@@ -1,5 +1,7 @@
 FROM centos:8
 
+ARG GIT_TAG=latest
+
 RUN REPOLIST=PowerTools \
     PKGLIST="rt-tests" \
     && yum -y install --enablerepo ${REPOLIST} ${PKGLIST} \
