@@ -47,6 +47,7 @@ RUN yum -y install --enablerepo="PowerTools" \
         lz4-devel \
         mariadb-devel \
         nettle-devel \
+        numactl-devel \
         openssh-clients \
         openssh-server \
         openssl \
