@@ -48,12 +48,18 @@ RUN chmod -R u+x ${APP_ROOT} && \
 USER 10001
 WORKDIR ${APP_ROOT}
 
-EXPOSE 2152/udp  # S1U, GTP/UDP
-EXPOSE 22100/tcp # ?
-EXPOSE 36412/udp # S1C, SCTP/UDP
-EXPOSE 36422/udp # X2C, SCTP/UDP
-EXPOSE 50000/udp # IF5 / ORI (control)
-EXPOSE 50001/udp # IF5 / ECPRI (data)
+# S1U, GTP/UDP
+EXPOSE 2152/udp
+# ?
+EXPOSE 22100/tcp
+# S1C, SCTP/UDP
+EXPOSE 36412/udp
+# X2C, SCTP/UDP
+EXPOSE 36422/udp
+# IF5 / ORI (control)
+EXPOSE 50000/udp
+# IF5 / ECPRI (data)
+EXPOSE 50001/udp
 
 CMD ["/opt/oai-gnb/bin/nr-softmodem", "-O", "/opt/oai-gnb/etc/gnb.conf"]
 ENTRYPOINT ["/opt/oai-gnb/bin/entrypoint.sh"]
