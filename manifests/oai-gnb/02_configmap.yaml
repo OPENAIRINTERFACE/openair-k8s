@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gnb-config
+data:
+  gnb_id: "0x0e00"
+  gnb_name: "gNB-Eurecom-GNRBox"
+  mcc: "208"
+  mnc: "93"
+  tac: "1"
+  mme_ip4: "192.168.1.100"
+  mme_ip6: "192:168:"
+  s1_mme_if: "net1"
+  s1_mme_ip: "192.168.1.123"
+  s1_u_if: "net2"
+  s1_u_ip: "172.16.2.123"
+  sdr_first_ip: "192.168.10.2"
+  sdr_second_ip: "192.168.40.2"
+  sdr_mgmt_ip: "192.168.10.2"

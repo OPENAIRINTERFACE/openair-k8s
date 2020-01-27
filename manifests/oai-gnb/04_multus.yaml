@@ -1,0 +1,82 @@
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition 
+metadata:
+  name: gnb-net1 
+spec:
+  config: '{ 
+      "cniVersion": "0.3.0",
+      "type": "macvlan",
+      "master": "bond0",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": "192.168.1.110/24",
+                        "gateway": "192.168.1.1"
+                }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition 
+metadata:
+  name: gnb-net2
+spec:
+  config: '{ 
+      "cniVersion": "0.3.0",
+      "type": "macvlan",
+      "master": "bond0",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": "172.16.2.110/24",
+                        "gateway": "172.16.2.1"
+                }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition 
+metadata:
+  name: gnb-net3
+spec:
+  config: '{ 
+      "cniVersion": "0.3.0",
+      "type": "host-device",
+      "device": "em1",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": "192.168.10.1/24",
+                        "gateway": "192.168.10.254"
+                }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition 
+metadata:
+  name: gnb-net4
+spec:
+  config: '{ 
+      "cniVersion": "0.3.0",
+      "type": "host-device",
+      "device": "em3",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": "192.168.40.1/24",
+                        "gateway": "192.168.40.254"
+                }
+        ]
+      }
+    }'

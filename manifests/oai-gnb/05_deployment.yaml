@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-gnb
+  labels:
+    app: oai-gnb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-gnb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-gnb
+      annotations:
+        k8s.v1.cni.cncf.io/networks: gnb-net1, gnb-net2, gnb-net3, gnb-net4
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+      - name: gnb
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:develop-nr
+        imagePullPolicy: Always
+        # command:
+        #   - /bin/sleep
+        #   - infinity
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 22100
+          name: oai-gnb
+        - containerPort: 2152
+          name: s1u
+        - containerPort: 36412
+          name: s1c
+        - containerPort: 36422
+          name: x2c
+        - containerPort: 50000
+          name: if5-ori
+        - containerPort: 50001
+          name: if5-ecpri
+        env:
+          # gNB env vars
+          - name: GNB_ID
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: gnb_id
+          - name: GNB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: gnb_name
+          - name: MCC
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: mcc
+          - name: MNC
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: mnc
+          - name: TAC
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: tac
+          - name: MME_IP4
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: mme_ip4
+          - name: MME_IP6
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: mme_ip6
+          - name: S1_MME_IF
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: s1_mme_if
+          - name: S1_MME_IP
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: s1_mme_ip 
+          - name: S1_U_IF
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: s1_u_if
+          - name: S1_U_IP
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: s1_u_ip
+          - name: SDR_FIRST_IP
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: sdr_first_ip
+          - name: SDR_SECOND_IP
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: sdr_second_ip
+          - name: SDR_MGMT_IP
+            valueFrom:
+              configMapKeyRef:
+                name: gnb-config
+                key: sdr_mgmt_ip
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          - /bin/sleep
+          - infinity
+      nodeSelector:
+        kubernetes.io/hostname: babylon.5glab.nsa.eurecom.fr
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: gnb-sa
+      terminationGracePeriodSeconds: 30

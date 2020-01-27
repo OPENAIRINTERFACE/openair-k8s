@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oai-hss
+  name: oai-hss
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-hss
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: hss-net1
+      labels:
+        app: oai-hss
+    spec:
+      containers:
+      - name: hss
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss:develop-vco3
+        imagePullPolicy: Always
+        #command: ['sh', '-c', 'sleep infinity']
+        ports:
+        - containerPort: 3868
+          name: oai-hss
+        - containerPort: 5868
+          name: oai-hss-secure
+        - containerPort: 9080
+          name: jmx
+        - containerPort: 9081
+          name: cql
+        volumeMounts:
+        - mountPath: /opt/oai-hss/certs
+          name: certs
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              key: identity
+              name: hss-config
+        - name: DB_FQDN
+          valueFrom:
+            configMapKeyRef:
+              key: db_fqdn
+              name: hss-config
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: db_name
+              name: hss-config
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              key: db_user
+              name: hss-config
+        - name: DB_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: db_password
+              name: hss-config
+        - name: OP_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: op_key
+              name: hss-config
+        - name: HSS_FQDN
+          valueFrom:
+            configMapKeyRef:
+              key: identity
+              name: hss-config
+        - name: ROAMING_ALLOWED
+          valueFrom:
+            configMapKeyRef:
+              key: roaming
+              name: hss-config
+      - command:
+        - /bin/sleep
+        - infinity
+        image: corfr/tcpdump
+        name: tcpdump
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - cqlsh cassandra-0.cassandra.oai.svc.cluster.local --file /root/oai_db.cql
+        image: cassandra:3.11
+        name: init-db
+        restartPolicy: Never
+        volumeMounts:
+        - mountPath: /root
+          name: db
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccountName: hss-sa
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: certs
+        secret:
+          secretName: hss-tls-secret
+      - configMap:
+          name: oai-db
+        name: db
