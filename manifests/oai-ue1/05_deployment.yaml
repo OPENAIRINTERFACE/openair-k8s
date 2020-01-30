@@ -1,29 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oai-ue
+  name: oai-ue1
   labels:
-    app: oai-ue
+    app: oai-ue1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: oai-ue
+      app: oai-ue1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: oai-ue
+        app: oai-ue1
       annotations:
-        k8s.v1.cni.cncf.io/networks: ue-net1
+        k8s.v1.cni.cncf.io/networks: ue1-net1
     spec:
       securityContext:
         runAsUser: 0
         runAsGroup: 0
       containers:
-      - name: ue
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-ue
+      - name: ue1
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-ue:develop-vco3
+        command: ["/bin/sh","-c"]
+        args: [ "./bin/entrypoint.sh; sleep infinity"]
         imagePullPolicy: Always
         #command: ['sh', '-c', 'sleep 6000']
         securityContext:
@@ -38,22 +40,22 @@ spec:
           - name: RU_LOCAL_IF
             valueFrom:
               configMapKeyRef:
-                name: ue-config
+                name: ue1-config
                 key: ru_local_if
           - name: RU_LOCAL_IP
             valueFrom:
               configMapKeyRef:
-                name: ue-config
+                name: ue1-config
                 key: ru_local_ip
           - name: RU_REMOTE_IP
             valueFrom:
               configMapKeyRef:
-                name: ue-config
+                name: ue1-config
                 key: ru_remote_ip
           - name: BAND
             valueFrom:
               configMapKeyRef:
-                name: ue-config
+                name: ue1-config
                 key: band
       - name: tcpdump
         image: corfr/tcpdump
@@ -63,5 +65,5 @@ spec:
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
-      serviceAccountName: ue-sa
+      serviceAccountName: ue1-sa
       terminationGracePeriodSeconds: 30

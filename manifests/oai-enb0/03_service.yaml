@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: oai-enb
-  name: oai-enb
+    app: oai-enb0
+  name: oai-enb0
 spec:
   type: ClusterIP
   clusterIP: None
   ports:
-  - name: oai-enb
+  - name: oai-enb0
     port: 22100
     protocol: TCP
     targetPort: 22100
@@ -33,4 +33,5 @@ spec:
     protocol: UDP
     targetPort: 50001
   selector:
-    app: oai-enb
+    app: oai-enb0
+

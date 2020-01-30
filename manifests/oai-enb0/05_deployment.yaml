@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-enb0
+  labels:
+    app: oai-enb0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-enb0
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-enb0
+      annotations:
+        k8s.v1.cni.cncf.io/networks: enb0-net1, enb0-net2, enb0-net3
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+      - name: enb0
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-enb
+        command: ["/bin/sh","-c"]
+        args: [ "./bin/entrypoint.sh; sleep infinity"]
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 22100
+          name: oai-enb0
+        - containerPort: 2152
+          name: s1u
+        - containerPort: 36412
+          name: s1c
+        - containerPort: 36422
+          name: x2c
+        - containerPort: 50000
+          name: if5-ori
+        - containerPort: 50001
+          name: if5-ecpri
+        env:
+          # eNB env vars
+          - name: ENB_ID
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: enb_id
+          - name: ENB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: enb_name
+          - name: MME_IP4
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: mme_ip4
+          - name: MME_IP6
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: mme_ip6
+          - name: MCC
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: mcc
+          - name: TAC
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: tac
+          - name: MNC
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: mnc
+          - name: MNC_LENGTH
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: mnc_length
+          - name: RU_LOCAL_IF
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: ru_local_if
+          - name: RU_LOCAL_IP
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: ru_local_ip
+          - name: RU_REMOTE_IP
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: ru_remote_ip
+          - name: S1_MME_IF
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: s1_mme_if
+          - name: S1_MME_IP
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: s1_mme_ip 
+          - name: S1_U_IF
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: s1_u_if
+          - name: S1_U_IP
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: s1_u_ip
+          - name: X2C_IP
+            valueFrom:
+              configMapKeyRef:
+                name: enb0-config
+                key: x2c_ip
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          - /bin/sleep
+          - infinity
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: enb0-sa
+      terminationGracePeriodSeconds: 30
+

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ue1-config
+data:
+  ru_local_if: "net1"
+  ru_local_ip: "192.168.18.155"
+  ru_remote_ip: "192.168.18.153"
+  band: "38"

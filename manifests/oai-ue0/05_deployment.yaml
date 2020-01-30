@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-ue0
+  labels:
+    app: oai-ue0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-ue0
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oai-ue0
+      annotations:
+        k8s.v1.cni.cncf.io/networks: ue0-net1
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+      - name: ue0
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-ue:develop-vco3
+        command: ["/bin/sh","-c"]
+        args: ["./bin/entrypoint.sh; sleep infinity"]
+        imagePullPolicy: Always
+        #command: ['sh', '-c', 'sleep 6000']
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 50000
+          name: if4p5-c
+        - containerPort: 50001
+          name: if4p5-u
+        env:
+          # eNB env vars
+          - name: RU_LOCAL_IF
+            valueFrom:
+              configMapKeyRef:
+                name: ue0-config
+                key: ru_local_if
+          - name: RU_LOCAL_IP
+            valueFrom:
+              configMapKeyRef:
+                name: ue0-config
+                key: ru_local_ip
+          - name: RU_REMOTE_IP
+            valueFrom:
+              configMapKeyRef:
+                name: ue0-config
+                key: ru_remote_ip
+          - name: BAND
+            valueFrom:
+              configMapKeyRef:
+                name: ue0-config
+                key: band
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          - /bin/sleep
+          - infinity
+      deSelector:
+        kubernetes.io/hostname: babylon.5glab.nsa.eurecom.fr
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: ue0-sa
+      terminationGracePeriodSeconds: 30
+

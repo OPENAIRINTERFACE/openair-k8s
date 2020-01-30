@@ -2,7 +2,7 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: enb-net1 
+  name: enb1-net1 
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
@@ -23,7 +23,7 @@ spec:
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: enb-net2
+  name: enb1-net2
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
@@ -44,7 +44,7 @@ spec:
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: enb-net3
+  name: enb1-net3
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
@@ -55,7 +55,7 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.18.206/24",
+                        "address": "192.168.18.153/24",
                         "gateway": "192.168.18.1"
                 }
         ]
