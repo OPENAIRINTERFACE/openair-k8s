@@ -9,7 +9,9 @@ RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
 COPY patches patches/
 RUN patch -p1 -d openairinterface5g < patches/disable_building_nasmesh_and_rbtool.patch \
-    && patch -p1 -d openairinterface5g < patches/el8_support_ue_ip_module.patch
+    && patch -p1 -d openairinterface5g < patches/el8_support_ue_ip_module.patch \
+    && patch -p1 -d openairinterface5g < patches/disable_sched_fifo_fail_exits.patch \
+    && patch -p1 -d openairinterface5g < patches/disable_sched_fifo_fail_exits_lte_ue.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
     && ln -sf /usr/local/share/asn1c_oai /usr/local/share/asn1c \
@@ -30,11 +32,16 @@ RUN REPOLIST="codeready-builder-for-rhel-8-x86_64-rpms" \
     && yum -y install --enablerepo ${REPOLIST} --setopt=tsflag=nodocs ${PKGLIST} \
     && yum install -y http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/x/xforms-1.2.4-5.el7.x86_64.rpm \
     && yum -y clean all \
+    && yum -y install net-tools  \
+    && yum -y install iperf3  \
     && rm -rf /var/cache/yum
 
 ENV APP_ROOT=/opt/oai-ue
 ENV PATH=${APP_ROOT}:${PATH} HOME=${APP_ROOT}
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-uesoftmodem ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/.u* ${APP_ROOT}/
+COPY --from=builder /root/openairinterface5g/targets/bin/conf2uedata ${APP_ROOT}/bin/
+COPY --from=builder /root/openairinterface5g/openair3/NAS/TOOLS/ue_eurecom_test_sfr.conf ${APP_ROOT}/etc/
 COPY --from=builder /root/openairinterface5g/cmake_targets/lte_build_oai/build/*.so* /lib64
 COPY --from=builder /usr/local/lib64 /lib64
 COPY --from=builder /usr/local/bin/uhd_* /usr/local/bin

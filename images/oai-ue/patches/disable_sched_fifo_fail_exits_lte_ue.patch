@@ -1,0 +1,13 @@
+--- a/targets/RT/USER/lte-ue.c  
++++ b/targets/RT/USER/lte-ue.c  
+@@ -231,8 +231,8 @@
+
+   struct sched_param sp;
+   sp.sched_priority = sched_fifo;
+-  AssertFatal(pthread_setschedparam(pthread_self(),SCHED_FIFO,&sp)==0,
+-              "Can't set thread priority, Are you root?\n");
++  //AssertFatal(pthread_setschedparam(pthread_self(),SCHED_FIFO,&sp)==0,
++  //            "Can't set thread priority, Are you root?\n");
+   /* Check the actual affinity mask assigned to the thread */
+   cpu_set_t *cset=CPU_ALLOC(CPU_SETSIZE);
+
