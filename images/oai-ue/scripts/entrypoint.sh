@@ -22,6 +22,6 @@ done
 EXPRESSIONS="${EXPRESSIONS#';'}"
 
 # render template and write to ue.conf
-sed "${EXPRESSIONS}"" ${TEMPLATE} > ${CONFIG_DIR}/ue.conf
+sed "${EXPRESSIONS}" ${TEMPLATE} > ${CONFIG_DIR}/ue.conf
 
 exec "$@"
