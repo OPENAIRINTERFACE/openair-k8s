@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: enb1-config
 data:
-  enb_id: "00e00"
+  enb_id: "00e01"
   enb_name: "eNB-Eurecom-LTEBox"
   mme_ip4: "192.168.1.100"
   mme_ip6: "::1"
