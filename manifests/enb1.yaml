@@ -1,0 +1,251 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: enb1-sa
+  namespace: oai
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: enb1-rbac
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: enb1-sa
+  namespace: oai
+---
+apiVersion: v1
+data:
+  enb_id: "00001"
+  enb_name: eNB-Eurecom-LTEBox
+  mcc: "208"
+  mme_ip4: 192.168.1.100
+  mme_ip6: ::1
+  mnc: "96"
+  mnc_length: "2"
+  ru_local_if: net3
+  ru_local_ip: 192.168.18.153
+  ru_remote_ip: 192.168.18.155
+  s1_mme_if: net1
+  s1_mme_ip: 192.168.1.103
+  s1_u_if: net2
+  s1_u_ip: 172.16.2.103
+  tac: "1"
+  x2c_ip: 172.16.2.103
+kind: ConfigMap
+metadata:
+  name: enb1-config
+  namespace: oai
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: oai-enb1
+  name: oai-enb1
+  namespace: oai
+spec:
+  clusterIP: None
+  ports:
+  - name: oai-enb1
+    port: 22100
+    protocol: TCP
+    targetPort: 22100
+  - name: s1u
+    port: 2152
+    protocol: UDP
+    targetPort: 2152
+  - name: s1c
+    port: 36412
+    protocol: UDP
+    targetPort: 36412
+  - name: x2c
+    port: 36422
+    protocol: UDP
+    targetPort: 36422
+  - name: if5-ori
+    port: 50000
+    protocol: UDP
+    targetPort: 50000
+  - name: if5-ecpri
+    port: 50001
+    protocol: UDP
+    targetPort: 50001
+  selector:
+    app: oai-enb1
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oai-enb1
+  name: oai-enb1
+  namespace: oai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-enb1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: enb1-net1, enb1-net2, enb1-net3
+      labels:
+        app: oai-enb1
+    spec:
+      containers:
+      - args:
+        - ./bin/entrypoint.sh; sleep infinity
+        command:
+        - /bin/sh
+        - -c
+        env:
+        - name: ENB_ID
+          valueFrom:
+            configMapKeyRef:
+              key: enb_id
+              name: enb1-config
+        - name: ENB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: enb_name
+              name: enb1-config
+        - name: MME_IP4
+          valueFrom:
+            configMapKeyRef:
+              key: mme_ip4
+              name: enb1-config
+        - name: MME_IP6
+          valueFrom:
+            configMapKeyRef:
+              key: mme_ip6
+              name: enb1-config
+        - name: MCC
+          valueFrom:
+            configMapKeyRef:
+              key: mcc
+              name: enb1-config
+        - name: TAC
+          valueFrom:
+            configMapKeyRef:
+              key: tac
+              name: enb1-config
+        - name: MNC
+          valueFrom:
+            configMapKeyRef:
+              key: mnc
+              name: enb1-config
+        - name: MNC_LENGTH
+          valueFrom:
+            configMapKeyRef:
+              key: mnc_length
+              name: enb1-config
+        - name: RU_LOCAL_IF
+          valueFrom:
+            configMapKeyRef:
+              key: ru_local_if
+              name: enb1-config
+        - name: RU_LOCAL_IP
+          valueFrom:
+            configMapKeyRef:
+              key: ru_local_ip
+              name: enb1-config
+        - name: RU_REMOTE_IP
+          valueFrom:
+            configMapKeyRef:
+              key: ru_remote_ip
+              name: enb1-config
+        - name: S1_MME_IF
+          valueFrom:
+            configMapKeyRef:
+              key: s1_mme_if
+              name: enb1-config
+        - name: S1_MME_IP
+          valueFrom:
+            configMapKeyRef:
+              key: s1_mme_ip
+              name: enb1-config
+        - name: S1_U_IF
+          valueFrom:
+            configMapKeyRef:
+              key: s1_u_if
+              name: enb1-config
+        - name: S1_U_IP
+          valueFrom:
+            configMapKeyRef:
+              key: s1_u_ip
+              name: enb1-config
+        - name: X2C_IP
+          valueFrom:
+            configMapKeyRef:
+              key: x2c_ip
+              name: enb1-config
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-enb
+        imagePullPolicy: Always
+        name: enb1
+        ports:
+        - containerPort: 22100
+          name: oai-enb1
+        - containerPort: 2152
+          name: s1u
+        - containerPort: 36412
+          name: s1c
+        - containerPort: 36422
+          name: x2c
+        - containerPort: 50000
+          name: if5-ori
+        - containerPort: 50001
+          name: if5-ecpri
+        securityContext:
+          privileged: true
+      - command:
+        - /bin/sleep
+        - infinity
+        image: corfr/tcpdump
+        name: tcpdump
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: babylon.5glab.nsa.eurecom.fr
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsGroup: 0
+        runAsUser: 0
+      serviceAccountName: enb1-sa
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: enb1-net1
+  namespace: oai
+spec:
+  config: '{ "cniVersion": "0.3.0", "type": "macvlan", "master": "bond0", "mode":
+    "bridge", "ipam": { "type": "static", "addresses": [ { "address": "192.168.1.103/24",
+    "gateway": "192.168.1.1" } ] } }'
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: enb1-net2
+  namespace: oai
+spec:
+  config: '{ "cniVersion": "0.3.0", "type": "macvlan", "master": "bond0", "mode":
+    "bridge", "ipam": { "type": "static", "addresses": [ { "address": "172.16.2.103/24",
+    "gateway": "172.16.2.1" } ] } }'
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: enb1-net3
+  namespace: oai
+spec:
+  config: '{ "cniVersion": "0.3.0", "type": "macvlan", "master": "bond0", "mode":
+    "bridge", "ipam": { "type": "static", "addresses": [ { "address": "192.168.18.153/24",
+    "gateway": "192.168.18.1" } ] } }'
