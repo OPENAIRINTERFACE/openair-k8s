@@ -16,14 +16,14 @@ spec:
       labels:
         app: oai-gnb
       annotations:
-        k8s.v1.cni.cncf.io/networks: gnb-net1, gnb-net2, gnb-net3, gnb-net4
+        k8s.v1.cni.cncf.io/networks: gnb-net1, gnb-net2, usrp1, usrp2, usrp3, usrp4
     spec:
       securityContext:
         runAsUser: 0
         runAsGroup: 0
       containers:
       - name: gnb
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:develop-nr
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:latest
         imagePullPolicy: Always
         # command:
         #   - /bin/sleep

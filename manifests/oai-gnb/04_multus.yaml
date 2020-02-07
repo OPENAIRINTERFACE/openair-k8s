@@ -44,7 +44,7 @@ spec:
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: gnb-net3
+  name: usrp1
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
@@ -64,12 +64,12 @@ spec:
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: gnb-net4
+  name: usrp2
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
       "type": "host-device",
-      "device": "em3",
+      "device": "em2",
       "ipam": {
         "type": "static",
         "addresses": [
@@ -80,3 +80,44 @@ spec:
         ]
       }
     }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition 
+metadata:
+  name: usrp3
+spec:
+  config: '{
+      "cniVersion": "0.3.0",
+      "type": "host-device",
+      "device": "em3",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": "192.168.30.1/24",
+                        "gateway": "192.168.30.254"
+                }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition 
+metadata:
+  name: usrp4
+spec:
+  config: '{
+      "cniVersion": "0.3.0",
+      "type": "host-device",
+      "device": "em4",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": "192.168.20.1/24",
+                        "gateway": "192.168.20.254"
+                }
+        ]
+      }
+    }'
+
