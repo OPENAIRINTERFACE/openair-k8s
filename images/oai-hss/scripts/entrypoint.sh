@@ -6,9 +6,10 @@ HSS_DOMAIN=${HSS_FQDN#*.}
 DB_NAME=${DB_NAME:-vhss}
 ROAMING_ALLOWED=${ROAMING_ALLOWED:-true}
 
-CONFIG_DIR="/opt/oai-hss/etc"
+CONFIG_FILES=/opt/oai-hss/etc/*
+CONFIG_FILES=$(echo $CONFIG_FILES | sed 's#/opt/oai-hss/etc/oss.json##g')
 
-for c in ${CONFIG_DIR}/*.{conf,json}; do
+for c in ${CONFIG_FILES}; do
     # grep variable names (format: ${VAR}) from template to be rendered
     VARS=$(grep -oP '\$\{\K[a-zA-Z0-9_]+' ${c} | sort | uniq | xargs)
 
