@@ -23,7 +23,7 @@ spec:
         runAsGroup: 0
       containers:
       - name: gnb
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:latest
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-gnb:NR_RRCConfiguration
         imagePullPolicy: Always
         # command:
         #   - /bin/sleep
