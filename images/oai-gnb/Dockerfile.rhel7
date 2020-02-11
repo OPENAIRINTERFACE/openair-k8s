@@ -1,7 +1,7 @@
 ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el7 AS builder
 
-ARG GIT_TAG=develop-nr
+ARG GIT_TAG=NR_RRCConfiguration
 
 WORKDIR /root
 
