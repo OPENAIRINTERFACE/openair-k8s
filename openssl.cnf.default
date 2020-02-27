@@ -1,0 +1,87 @@
+#
+# Example OpenSSL configuration file for use with Let's Encrypt.
+# This is only being used for generation of certificate requests.
+# Modified from a standard example by Parliament Hill Computers Ltd.
+#
+
+# This definition stops the following lines choking if HOME isn't
+# defined.
+HOME			= .
+RANDFILE		= ./.rnd
+
+[ req ]
+default_bits		= 2048
+distinguished_name	= req_distinguished_name
+attributes		= req_attributes
+
+# Stop confirmation prompts. All information is contained below.
+prompt			= no
+
+# The extensions to add to a certificate request - see [ v3_req ]
+req_extensions		= v3_req
+
+[ req_distinguished_name ]
+# Describe the Subject (ie the origanisation).
+# The first 6 below could be shortened to: C ST L O OU CN
+# The short names are what are shown when the certificate is displayed.
+# Eg the details below would be shown as:
+#    Subject: C=UK, ST=Hertfordshire, L=My Town, O=Some Organisation, OU=Some Department, CN=www.example.com/emailAddress=bofh@example.com
+
+# Leave as long names as it helps documentation
+
+countryName=		UK
+stateOrProvinceName=	Midlothian
+localityName=		Edinburgh
+organizationName=	University of Edinburgh
+organizationalUnitName=	Informatics
+
+[ req_attributes ]
+# None. Could put Challenge Passwords, don't want them, leave empty
+
+[ v3_req ]
+
+# X509v3 extensions to add to a certificate request
+# See x509v3_config
+
+# What the key can/cannot be used for:
+#basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth,serverAuth
+
+# The subjectAltName is where you give the names of extra web sites.
+# You may have more than one of these, so put in the section [ alt_names ]
+# If you do not have any extra names, comment the next line out.
+#subjectAltName = @alt_names
+
+# List of all the other DNS names that the certificate should work for.
+# alt_names is a name of my own invention
+#[ alt_names ]
+#DNS.1 = devel.example.com
+#DNS.2 = ipv6.example.com
+#DNS.3 = ipv4.example.com
+#DNS.4 = test.example.com
+#DNS.5 = party.example.com
+
+[ ca ]
+default_ca = default_ca_opts
+
+[ default_ca_opts ]
+serial = ./serial
+database = ./index.txt
+new_certs_dir = .
+default_md = sha1
+default_days = 365
+# a section with a set of variables corresponding to DN fields
+policy = my_policy
+
+[ my_policy ]
+# if the value is "match" then the field value must match the same field in the
+# CA certificate. If the value is "supplied" then it must be present.
+# Optional means it may be present. Any fields not mentioned are silently
+# deleted.
+countryName = match
+stateOrProvinceName = supplied
+organizationName = supplied
+commonName = supplied
+organizationalUnitName = optional
+commonName = supplied

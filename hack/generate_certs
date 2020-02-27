@@ -19,6 +19,7 @@ generate_certs() {
     local FQDN=$1
     local PREFIX=$2
     local DIR=$3
+    local REPO_DIR=$(pwd)
 
     TMP=$(mktemp -d)
     function cleanup {
@@ -29,7 +30,12 @@ generate_certs() {
 
     echo "01" > serial
     touch index.txt index.txt.attr
-    cat /etc/pki/tls/openssl.cnf | sed "s|/etc/pki/CA|${TMP}|" > openssl.cnf
+    if [ -f "/etc/pki/tls/openssl.cnf" ]; then
+        cat /etc/pki/tls/openssl.cnf | sed "s|/etc/pki/CA|${TMP}|" > openssl.cnf
+    else
+        dd if=/dev/urandom of=".rnd" bs=256 count=1
+        cp "${REPO_DIR}/openssl.cnf.default" openssl.cnf
+    fi
 
     info "Creating Root CA certificate for '${FQDN}'"
     openssl req -new -batch -x509 -days 3650 -nodes -newkey rsa:1024 \
