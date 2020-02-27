@@ -1,12 +1,5 @@
-#
-# Example OpenSSL configuration file for use with Let's Encrypt.
-# This is only being used for generation of certificate requests.
-# Modified from a standard example by Parliament Hill Computers Ltd.
-#
+# File based on example available here: https://www.phcomp.co.uk/Tutorials/Web-Technologies/Understanding-and-generating-OpenSSL.cnf-files.html
 
-# This definition stops the following lines choking if HOME isn't
-# defined.
-HOME			= .
 RANDFILE		= ./.rnd
 
 [ req ]
@@ -22,18 +15,15 @@ req_extensions		= v3_req
 
 [ req_distinguished_name ]
 # Describe the Subject (ie the origanisation).
-# The first 6 below could be shortened to: C ST L O OU CN
 # The short names are what are shown when the certificate is displayed.
-# Eg the details below would be shown as:
-#    Subject: C=UK, ST=Hertfordshire, L=My Town, O=Some Organisation, OU=Some Department, CN=www.example.com/emailAddress=bofh@example.com
 
 # Leave as long names as it helps documentation
 
-countryName=		UK
-stateOrProvinceName=	Midlothian
-localityName=		Edinburgh
-organizationName=	University of Edinburgh
-organizationalUnitName=	Informatics
+countryName=            FR
+stateOrProvinceName=    PACA
+localityName=           Aix
+organizationName=       Eurecom
+organizationalUnitName= CM
 
 [ req_attributes ]
 # None. Could put Challenge Passwords, don't want them, leave empty
