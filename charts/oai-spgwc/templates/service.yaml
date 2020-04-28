@@ -10,13 +10,13 @@ spec:
   clusterIP: None
 {{- end }}
   ports:
-    - name: pfcp
+    - name: sxab
       # Port accessible outside cluster
       port: {{ .Values.service.pfcpPort }}
       # Port to forward to inside the pod
       targetPort: {{ .Values.service.pfcpPort }}
       protocol: UDP
-    - name: gtpc
+    - name: s11
       # Port accessible outside cluster
       port: {{ .Values.service.gtpcPort }}
       # Port to forward to inside the pod
