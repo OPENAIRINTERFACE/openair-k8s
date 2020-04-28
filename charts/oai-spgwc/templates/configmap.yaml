@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  sgwS11If: {{ .Values.lte.sgwS11If }}
+  pgwSxIf: {{ .Values.lte.pgwSxIf }}
+  ueIpAddressPool: {{ .Values.lte.ueIpAddressPool }}
+  ueDnsServer: {{ .Values.lte.ueDnsServer }}

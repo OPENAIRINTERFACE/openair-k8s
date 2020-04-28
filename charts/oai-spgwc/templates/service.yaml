@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oai-spgwc.fullname" . }}
+  labels:
+    {{- include "oai-spgwc.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+{{- if  contains "ClusterIP" .Values.service.type }}
+  clusterIP: None
+{{- end }}
+  ports:
+    - name: pfcp
+      # Port accessible outside cluster
+      port: {{ .Values.service.pfcpPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.pfcpPort }}
+      protocol: UDP
+    - name: gtpc
+      # Port accessible outside cluster
+      port: {{ .Values.service.gtpcPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.gtpcPort }}
+      protocol: UDP
+  selector:
+    {{- include "oai-spgwc.selectorLabels" . | nindent 4 }}
