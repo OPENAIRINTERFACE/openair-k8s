@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "oai-spgwc.fullname" . }}
+  name: {{ .Chart.Name }}
   labels:
     {{- include "oai-spgwc.labels" . | nindent 4 }}
 spec:
@@ -24,37 +24,42 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "oai-spgwc.serviceAccountName" . }}
       containers:
-      - name: {{ .Chart.Name }}
-        securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+      - name: spgwc
         image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        ports:
+        - containerPort: 8805
+          name: oai-spgwc
+        - containerPort: 2123
+          name: s11
         env:
-          - name: "SGW_S11_INTERFACE"
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Release.Name }}-configmap
-                key: sgwS11If
           - name: "PGW_SX_INTERFACE"
             valueFrom:
               configMapKeyRef:
-                name: {{ .Release.Name }}-configmap
+                name: {{ .Chart.Name }}-configmap
                 key: pgwSxIf
+          - name: "SGW_S11_INTERFACE"
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: sgwS11If
           - name: UE_IP_ADDRESS_POOL
             valueFrom:
               configMapKeyRef:
-                name: {{ .Release.Name }}-configmap
+                name: {{ .Chart.Name }}-configmap
                 key: ueIpAddressPool
           - name: UE_DNS_SERVER
             valueFrom:
               configMapKeyRef:
-                name: {{ .Release.Name }}-configmap
+                name: {{ .Chart.Name }}-configmap
                 key: ueDnsServer
         command:
           - /bin/sleep
           - infinity
+      - name: tcpdump
         image: corfr/tcpdump
         command:
           - /bin/sleep
@@ -62,6 +67,6 @@ spec:
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
-      serviceAccountName: spgwc-sa
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       terminationGracePeriodSeconds: 30
 

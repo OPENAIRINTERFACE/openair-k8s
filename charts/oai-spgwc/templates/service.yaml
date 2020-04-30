@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "oai-spgwc.fullname" . }}
+  name: {{ .Chart.Name }}
   labels:
     {{- include "oai-spgwc.labels" . | nindent 4 }}
 spec:
@@ -10,7 +10,7 @@ spec:
   clusterIP: None
 {{- end }}
   ports:
-    - name: sxab
+    - name: oai-spgwc
       # Port accessible outside cluster
       port: {{ .Values.service.pfcpPort }}
       # Port to forward to inside the pod

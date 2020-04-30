@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-configmap
+  name: {{ .Chart.Name }}-configmap
 data:
   sgwS11If: {{ .Values.lte.sgwS11If }}
   pgwSxIf: {{ .Values.lte.pgwSxIf }}
