@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "oai-spgwu-tiny.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+{{- if  contains "ClusterIP" .Values.service.type }}
+  clusterIP: None
+{{- end }}
+  ports:
+    - name: oai-spgwu-tiny
+      # Port accessible outside cluster
+      port: {{ .Values.service.pfcpPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.pfcpPort }}
+      protocol: UDP
+    - name: s1u
+      # Port accessible outside cluster
+      port: {{ .Values.service.gtpuPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.gtpuPort }}
+      protocol: UDP
+  selector:
+    {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "oai-spgwu-tiny.fullname" . }}-test-connection"
+  labels:
+    {{- include "oai-spgwu-tiny.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: ping
+      image: busybox
+      command: ['ping']
+      args: ['-c' , '1', {{ include "oai-spgwu-tiny.fullname" . }} ]
+  restartPolicy: Never
