@@ -31,7 +31,6 @@ podSecurityContext:
   runAsUser: 0
   runAsGroup: 0
 
-
 securityContext:
   privileged: true
   # capabilities:
@@ -51,7 +50,7 @@ lte:
   pgwSxIf: "net1"
   ueIpAddressPool: "12.1.1.2-12.1.1.253"
   ueDnsServer: "192.168.18.129"
-  apn: "oai.ipv4"
+  apn: "apn.oai.svc.cluster.local"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

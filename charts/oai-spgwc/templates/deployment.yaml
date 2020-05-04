@@ -36,12 +36,12 @@ spec:
         - containerPort: 2123
           name: s11
         env:
-          - name: "PGW_SX_INTERFACE"
+          - name: PGW_SX_INTERFACE
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: pgwSxIf
-          - name: "SGW_S11_INTERFACE"
+          - name: SGW_S11_INTERFACE
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
@@ -57,8 +57,10 @@ spec:
                 name: {{ .Chart.Name }}-configmap
                 key: ueDnsServer
         command:
-          - /bin/sleep
-          - infinity
+          - /opt/oai-spgwc/bin/spgwc
+          - -c
+          - /opt/oai-spgwc/etc/spgw_c.conf
+          - -o
       - name: tcpdump
         image: corfr/tcpdump
         command:
