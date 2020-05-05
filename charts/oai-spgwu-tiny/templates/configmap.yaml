@@ -4,6 +4,7 @@ metadata:
   name: {{ .Chart.Name }}-configmap
 data:
   sgwS1uIf: {{ .Values.lte.sgwS1uIf }}
+  pgwSgiIf: {{ .Values.lte.pgwSgiIf }}
   pgwuSgiGw: {{ .Values.lte.pgwuSgiGw }}
   sgwSxIf: {{ .Values.lte.sgwSxIf }}
   netUeIp: {{ .Values.lte.netUeIp }}

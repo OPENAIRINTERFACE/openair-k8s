@@ -45,7 +45,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
-                key: sgwS1uIf
+                key: pgwSgiIf
           - name: NETWORK_UE_IP
             valueFrom:
               configMapKeyRef:
@@ -61,9 +61,6 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: pgwuSgiGw
-        command:
-          - /bin/sleep
-          - infinity
       - name: tcpdump
         image: corfr/tcpdump
         command:

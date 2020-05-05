@@ -48,7 +48,7 @@ service:
 lte:
   sgwS11If: "net2"
   pgwSxIf: "net1"
-  ueIpAddressPool: "12.1.1.2-12.1.1.253"
+  ueIpAddressPool: "192.168.20.2-192.168.20.200"
   ueDnsServer: "192.168.18.129"
   apn: "apn.oai.svc.cluster.local"
 

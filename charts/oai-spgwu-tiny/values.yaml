@@ -31,7 +31,8 @@ podSecurityContext:
   runAsUser: 0
   runAsGroup: 0
 
-securityContext: {}
+securityContext:
+  privileged: true
   # capabilities:
   #   drop:
   #   - ALL
@@ -47,9 +48,10 @@ service:
 lte:
   sgwS1uIf: "net2"
   sgwSxIf: "net1"
-  pgwuSgiGw: "192.168.18.129"
-  netUeIp: "12.1.1.0/24"
-  pgwcSxIp: "192.168.18.2"
+  pgwSgiIf: "net3"
+  pgwuSgiGw: "192.168.3.101"
+  netUeIp: "192.168.20.0/24"
+  pgwcSxIp: "192.168.2.100"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
