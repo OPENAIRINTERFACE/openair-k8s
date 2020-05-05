@@ -56,11 +56,6 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: ueDnsServer
-        command:
-          - /opt/oai-spgwc/bin/spgwc
-          - -c
-          - /opt/oai-spgwc/etc/spgw_c.conf
-          - -o
       - name: tcpdump
         image: corfr/tcpdump
         command:
