@@ -1,7 +1,21 @@
 #!/bin/bash
 
-source /etc/os-release
-PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+if [[ -f /etc/os-release ]]; then
+    source /etc/os-release
+    PLATFORM=${PLATFORM:-${ID#rh*}${VERSION_ID%.*}}
+fi
+
+if [[ ${PLATFORM} == "rh"* ]]; then
+  DOCKERFILE_SUFIX=rh${PLATFORM}
+else
+  PLATFORM="centos8"
+  DOCKERFILE_SUFIX=${PLATFORM}
+fi
+
+if hash podman 2>/dev/null; then
+    USE_PODMAN=true
+fi
+
 KERNEL_VERSION=${KERNEL_VERSION:-$(uname -r)}
 KERNEL_VERSION=${KERNEL_VERSION%*.x86_64}
 REGISTRY=${REGISTRY:-registry.redhat.io}
@@ -26,16 +40,16 @@ available images:
     exit 1
 }
 
-build_image() {
+build_image_podman() {
     local IMAGE=$1
     local TAG=$2
-    local CLEAN_TAG=$(echo $TAG | sed -r 's/^v([0-9])/\1/')
-
+    local CLEAN_TAG=$(echo $TAG | sed 's/^v\([0-9]\)/\1/')
+    echo "Building images using - Podman"
     # Default to building from Dockerfile. If there's a platform-specific Dockerfile
     # use that instead and append the platform name to the image tag.
     DOCKERFILE="Dockerfile"
-    if [ -f images/$IMAGE/Dockerfile.rh${PLATFORM} ]; then
-        DOCKERFILE="Dockerfile.rh${PLATFORM}"
+    if [ -f images/$IMAGE/Dockerfile.${DOCKERFILE_SUFIX} ]; then
+        DOCKERFILE="Dockerfile.${DOCKERFILE_SUFIX}"
         CLEAN_TAG="${CLEAN_TAG}.${PLATFORM}"
     fi
 
@@ -54,6 +68,33 @@ build_image() {
             -t $IMAGE:$CLEAN_TAG \
             images/$IMAGE
     fi
+}
+
+build_image_docker() {
+    local IMAGE=$1
+    local TAG=$2
+    local CLEAN_TAG=$(echo $TAG | sed 's/^v\([0-9]\)/\1/')
+
+    echo "Building images using - Docker"
+    # Default to building from Dockerfile. If there's a platform-specific Dockerfile
+    # use that instead and append the platform name to the image tag.
+    DOCKERFILE="Dockerfile"
+    if [ -f images/$IMAGE/Dockerfile.${DOCKERFILE_SUFIX} ]; then
+        DOCKERFILE="Dockerfile.${DOCKERFILE_SUFIX}"
+        CLEAN_TAG="${CLEAN_TAG}.${PLATFORM}"
+    fi
+
+    info "Building image $IMAGE:$CLEAN_TAG"
+
+    docker build \
+        --network=host \
+        $BUILD_ARGS \
+        --build-arg GIT_TAG=$TAG \
+        --build-arg KERNEL_VERSION=$KERNEL_VERSION \
+        --build-arg EURECOM_PROXY=$PROXY \
+        -f images/$IMAGE/$DOCKERFILE \
+        -t $IMAGE:$CLEAN_TAG \
+        images/$IMAGE
 }
 
 # parse command line args
@@ -81,7 +122,9 @@ if [ $# -ne 0 ]; then
   IMAGES=$*
 fi
 
-podman login ${REGISTRY}
+if [[ ${PLATFORM} == "rh"* ]]; then
+  podman login ${REGISTRY}
+fi
 
 IMAGES="oai-build-base ${IMAGES/oai-build-base/}"
 
@@ -92,11 +135,16 @@ for i in $IMAGES; do
     TAG=${i#*:}
     # if no git_tag specified, grep default from Dockerfile
     if [ "$IMG" = "$TAG" ]; then
-        if [ -f images/$IMG/Dockerfile.rh${PLATFORM} ]; then
-            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile.rh${PLATFORM} || echo "latest")
+        if [ -f images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} ]; then
+            TAG=$(sed -n "s/ARG GIT_TAG=\(.*\)/\1/p" images/$IMG/Dockerfile.${DOCKERFILE_SUFIX} || echo "latest")
         else
-            TAG=$(grep -oP "ARG GIT_TAG=\K[a-zA-Z0-9.-]+" images/$IMG/Dockerfile || echo "latest")
+            TAG=$(sed -n "s/ARG GIT_TAG=\(.*\)/\1/p" images/$IMG/Dockerfile || echo "latest")
         fi
     fi
-    build_image $IMG $TAG
+    # decide whether or not to use docker or podman
+    if [[ -z $USE_PODMAN ]]; then
+        build_image_docker $IMG $TAG
+    else
+        build_image_podman $IMG $TAG
+    fi
 done
