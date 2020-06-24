@@ -1,54 +1,40 @@
 diff --git a/cmake_targets/build_oai b/cmake_targets/build_oai
-index e243c3d06..99f86e8a1 100755
+index 91f33ea62..ab25acaff 100755
 --- a/cmake_targets/build_oai
 +++ b/cmake_targets/build_oai
-@@ -523,13 +523,13 @@ function main() {
-           $lte_build_dir coding \
-           libcoding.so $dbin/libcoding.so
- # optional libs (used when noS1 with kernel modules 
--    compilations \
--          $lte_build_dir nasmesh \
--          CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
--    compilations \
--          $lte_build_dir rb_tool \
--          rb_tool $dbin/rb_tool
--          cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin	  
-+    # compilations \
-+    #       $lte_build_dir nasmesh \
-+    #       CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
-+    # compilations \
-+    #       $lte_build_dir rb_tool \
-+    #       rb_tool $dbin/rb_tool
-+    #       cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin	  
-   fi
- 
-   if [ "$UE" = 1  ] ; then
-@@ -546,17 +546,17 @@ function main() {
-         $lte_build_dir coding \
+@@ -637,14 +637,14 @@ function main() {
+         $build_dir coding \
          libcoding.so $dbin/libcoding.so
- # optional libs (used when noS1 with kernel modules
+ 
+-      compilations \
+-        $build_dir nasmesh \
+-        CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
+-
+-      compilations \
+-        $build_dir rb_tool \
+-        rb_tool $dbin/rb_tool
+-      cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin
++#      compilations \
++#        $build_dir nasmesh \
++#        CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
++
++#      compilations \
++#        $build_dir rb_tool \
++#        rb_tool $dbin/rb_tool
++#      cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin
+     fi
+ 
+   fi
+@@ -652,9 +652,9 @@ function main() {
+   if [ "$UE" = 1 ] ; then
+ 
+     echo_info "Compiling UE specific part"
 -    compilations \
--          $lte_build_dir nasmesh \
--          CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
--    compilations \
--          $lte_build_dir rb_tool \
--          rb_tool $dbin/rb_tool
--          cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin
--    # ue_ip driver compilation
--    compilations \
--          $lte_build_dir ue_ip \
--          CMakeFiles/ue_ip/ue_ip.ko $dbin/ue_ip.ko
-+    # compilations \
-+    #       $lte_build_dir nasmesh \
-+    #       CMakeFiles/nasmesh/nasmesh.ko $dbin/nasmesh.ko
-+    # compilations \
-+    #       $lte_build_dir rb_tool \
-+    #       rb_tool $dbin/rb_tool
-+    #       cp $OPENAIR_DIR/cmake_targets/tools/init_nas_nos1 $dbin
-+    # # ue_ip driver compilation
-+    # compilations \
-+    #       $lte_build_dir ue_ip \
-+    #       CMakeFiles/ue_ip/ue_ip.ko $dbin/ue_ip.ko
+-      $build_dir ue_ip \
+-      CMakeFiles/ue_ip/ue_ip.ko $dbin/ue_ip.ko
++#    compilations \
++#      $build_dir ue_ip \
++#      CMakeFiles/ue_ip/ue_ip.ko $dbin/ue_ip.ko
  
  #    mkdir -p $DIR/at_commands/build
  #    cd $DIR/at_commands/build
