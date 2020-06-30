@@ -1,15 +1,18 @@
 ARG REGISTRY=localhost
 FROM $REGISTRY/oai-build-base:latest.el8 AS builder
 
-ARG GIT_TAG=v1.1.1
+ARG GIT_TAG=v1.2.1
 
 WORKDIR /root
 
 RUN if [ "$EURECOM_PROXY" == true ]; then git config --global http.proxy http://:@proxy.eurecom.fr:8080; fi
 
+RUN yum install -y kernel-modules \
+    && ln -s "/lib/modules/$(rpm -q --queryformat "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-modules)/" "/lib/modules/$(uname -r)"
+
 RUN git clone --depth=1 --branch=$GIT_TAG https://gitlab.eurecom.fr/oai/openairinterface5g.git
 COPY patches patches/
-RUN patch -p1 -d openairinterface5g < patches/disable_building_nasmesh_and_rbtool.patch \
+RUN patch -p1 -d openairinterface5g < patches/enable_nasmesh_build_on_rhel8.patch \
     && patch -p1 -d openairinterface5g < patches/disable_sched_fifo_fail_exits.patch
 RUN cd openairinterface5g/cmake_targets \
     && ln -sf /usr/local/bin/asn1c_oai /usr/local/bin/asn1c \
