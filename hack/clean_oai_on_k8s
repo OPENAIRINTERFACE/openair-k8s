@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE={$NAMESPACE:-oai}
+NAMESPACE=${NAMESPACE:-oai}
 
 info() {
     local MESSAGE=$1
