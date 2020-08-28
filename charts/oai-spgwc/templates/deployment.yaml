@@ -36,26 +36,51 @@ spec:
         - containerPort: 2123
           name: s11
         env:
-          - name: PGW_SX_INTERFACE
+          - name: PID_DIRECTORY
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: pidDirectory
+          - name: PGW_INTERFACE_NAME_FOR_SX
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: pgwSxIf
-          - name: SGW_S11_INTERFACE
+          - name: SGW_INTERFACE_NAME_FOR_S11
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: sgwS11If
+          - name: SGW_IP_FOR_S5_S8_CP
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: sgwS5S8Ip
+          - name: PGW_IP_FOR_S5_S8_CP
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: pgwS5S8Ip
           - name: UE_IP_ADDRESS_POOL
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: ueIpAddressPool
-          - name: UE_DNS_SERVER
+          - name: DEFAULT_APN
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: apn
+          - name: DEFAULT_DNS_IPV4_ADDRESS
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: ueDnsServer
+          - name: DEFAULT_DNS_SEC_IPV4_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: ueDnsServerSec
       - name: tcpdump
         image: corfr/tcpdump
         command:

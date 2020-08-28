@@ -4,12 +4,13 @@
 
 replicaCount: 1
 
-namespace: "onap-helm-test"
+namespace: "oai-cn"
 
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
-  version: develop-vco3
+  repository: image-registry.openshift-image-registry.svc:5000/oai-cn/oai-spgwc
+  #version: develop-vco3
+  version: onap-test
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -46,10 +47,14 @@ service:
   gtpcPort: 2123
 
 lte:
+  pidDirectory: "/var/run"
   sgwS11If: "net2"
+  sgwS5S8Ip: "127.0.58.2/8"
+  pgwS5S8Ip: "127.0.58.1/8"
   pgwSxIf: "net1"
   ueIpAddressPool: "192.168.20.2-192.168.20.200"
   ueDnsServer: "192.168.18.129"
+  ueDnsServerSec: "192.168.18.129"
   apn: "apn.oai.svc.cluster.local"
 
 resources: {}
