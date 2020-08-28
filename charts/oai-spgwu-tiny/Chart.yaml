@@ -1,5 +1,5 @@
 apiVersion: v2
-name: oai-spgwu-tiny
+name: onap-oai-spgwu-tiny
 description: A Helm chart for SPGWU-TINY network function
 
 # A chart can be either an 'application' or a 'library' chart.
@@ -20,7 +20,7 @@ version: 0.1.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
-appVersion: develop-vco3
+appVersion: onap-test
 
 keywords:
   - Core Network

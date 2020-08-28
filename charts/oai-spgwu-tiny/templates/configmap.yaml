@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-configmap
 data:
+  pidDirectory: {{ .Values.lte.pidDirectory }}
   sgwS1uIf: {{ .Values.lte.sgwS1uIf }}
   pgwSgiIf: {{ .Values.lte.pgwSgiIf }}
   pgwuSgiGw: {{ .Values.lte.pgwuSgiGw }}

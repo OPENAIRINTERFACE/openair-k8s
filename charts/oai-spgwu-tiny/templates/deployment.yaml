@@ -31,17 +31,22 @@ spec:
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         env:
-          - name: SGW_S1U_INTERFACE
+          - name: PID_DIRECTORY
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: pidDirectory
+          - name: SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: sgwS1uIf
-          - name: SGW_SX_INTERFACE
+          - name: SGW_INTERFACE_NAME_FOR_SX
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: sgwSxIf
-          - name: PGW_SGI_INTERFACE
+          - name: PGW_INTERFACE_NAME_FOR_SGI
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
@@ -51,7 +56,7 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: netUeIp
-          - name: PGWC_SX_IP_ADDRESS
+          - name: SPGWC0_IP_ADDRESS
             valueFrom:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap

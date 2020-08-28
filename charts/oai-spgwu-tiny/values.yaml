@@ -4,12 +4,12 @@
 
 replicaCount: 1
 
-namespace: "onap-helm-test"
+namespace: "oai-cn"
 
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu
-  version: develop-vco3
+  repository: image-registry.openshift-image-registry.svc:5000/oai-cn/oai-spgwu-tiny
+  version: onap-test
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -46,6 +46,7 @@ service:
   gtpuPort: 2152
 
 lte:
+  pidDirectory: "/var/run"
   sgwS1uIf: "net2"
   sgwSxIf: "net1"
   pgwSgiIf: "net3"
