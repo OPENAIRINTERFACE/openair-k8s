@@ -1,0 +1,101 @@
+# Default values for oai-mme.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+namespace: "oai-cn"
+
+image:
+  registry: local
+  repository: image-registry.openshift-image-registry.svc:5000/oai-cn/oai-mme
+  version: onap-test
+  # pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: Always
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "oai-mme-sa"
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+
+securityContext:
+  privileged: true
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  diameterPort: 3870
+  diameterSecPort: 5870
+  peerDiameterPort: 3868
+  peerDiameterSecPort: 5868  
+  gtpcPort: 2123
+
+lte:
+  # Should use a tai list as done previously
+  instance: "0"
+  output: "CONSOLE"
+  prefix: "/openair-mme/etc"
+  pidDirectory: "/var/run"
+  mmeService: "oai-mme.oai-cn.svc.cluster.local"
+  mmeRealm: "oai-cn.svc.cluster.local"
+  mmeGid: "4"
+  mmeCode: "1"
+  nwIfS1c: "net1"
+  nwIfS11: "net2"
+  nwIfS10: "lo"
+  mcc: "208"
+  mnc: "96"
+  mnc3: "096"
+  tac_0: "1"
+  tac_0_lb: "01"
+  tac_0_hb: "00"
+  tac_1: "2"
+  tac_1_lb: "02"
+  tac_1_hb: "00"
+  tac_2: "3"
+  tac_2_lb: "03"
+  tac_2_hb: "00"
+  mmeIpS1c: "192.168.1.100"
+  mmeIpS11: "172.16.1.100"
+  mmeIpS10: "127.0.0.1"
+  sgwIpS11: "172.16.1.101"
+  hssService: "oai-hss.oai-cn.svc.cluster.local"
+  hssRealm: "oai-cn.svc.cluster.local"
+  hssHostname: "oai-hss"
+  hssIp: "oai-hss.oai-cn.svc.cluster.local"
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

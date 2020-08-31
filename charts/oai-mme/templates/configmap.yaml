@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-configmap
+data:
+  instance: {{ .Values.lte.instance | quote }}
+  output: {{ .Values.lte.output }}
+  prefix: {{ .Values.lte.prefix }}
+  pidDirectory: {{ .Values.lte.pidDirectory }}
+  mmeService: {{ .Values.lte.mmeService }}
+  mmeRealm: {{ .Values.lte.mmeRealm }}
+  mmeGid: {{ .Values.lte.mmeGid | quote }}
+  mmeCode: {{ .Values.lte.mmeCode | quote }}
+  mcc: {{ .Values.lte.mcc | quote }}
+  mnc: {{ .Values.lte.mnc | quote }}
+  mnc3: {{ .Values.lte.mnc3 | quote }}
+  tac_0: {{ .Values.lte.tac_0 | quote }}
+  tac_0_lb: {{ .Values.lte.tac_0_lb | quote }}
+  tac_0_hb: {{ .Values.lte.tac_0_hb | quote }}
+  tac_1: {{ .Values.lte.tac_1 | quote }}
+  tac_2: {{ .Values.lte.tac_2 | quote }}
+  nwIfS1c: {{ .Values.lte.nwIfS1c }}
+  nwIfS11: {{ .Values.lte.nwIfS11 }}
+  nwIfS10: {{ .Values.lte.nwIfS10 }}
+  mmeIpS1c: {{ .Values.lte.mmeIpS1c }}
+  mmeIpS11: {{ .Values.lte.mmeIpS11 }}
+  mmeIpS10: {{ .Values.lte.mmeIpS10 }}
+  sgwIpS11: {{ .Values.lte.sgwIpS11 }}
+  hssService: {{ .Values.lte.hssService }}
+  hssRealm: {{ .Values.lte.hssRealm }}
+  hssHostname: {{ .Values.lte.hssHostname }}
+  hssIp: {{ .Values.lte.hssIp }}
+  peerMme0Ipv4Address: "0.0.0.0"
+  peerMme1Ipv4Address: "0.0.0.0"
+  mcc_mme0: "000"
+  mnc3_mme0: "000"
+  mcc_mme1: "000"
+  mnc3_mme1: "000"
+  tac_lb_mme0: "00"
+  tac_hb_mme0: "00"
+  tac_lb_mme1: "00"
+  tac_hb_mme1: "00"
