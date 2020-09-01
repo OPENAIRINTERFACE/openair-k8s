@@ -39,9 +39,9 @@ spec:
           name: jmx
         - containerPort: 9081
           name: cql
-        volumeMounts:
-        - mountPath: /opt/oai-hss/certs
-          name: certs
+        # volumeMounts:
+        # - mountPath: /opt/oai-hss/certs
+        #   name: certs
         env:
           - name: PREFIX
             valueFrom:

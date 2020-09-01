@@ -4,9 +4,9 @@ metadata:
   name: {{ .Chart.Name }}-configmap
 data:
   prefix: {{ .Values.lte.prefix }}
-  identity: {{ .Values.lte.identity }}
-  realm: {{ .Values.lte.realm }}
   dbFqdn: {{ .Values.lte.dbFqdn }}
+  realm: {{ .Values.lte.realm }}
+  identity: {{ .Values.lte.identity }}
   opKey: {{ .Values.lte.opKey | quote }}
   roaming: {{ .Values.lte.roaming | quote }}
   apn1: {{ .Values.lte.apn1 }}
