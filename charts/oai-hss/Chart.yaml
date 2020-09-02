@@ -16,11 +16,16 @@ icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_fin
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 0.1.0
+version: 0.1.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
 appVersion: onap-test
+
+dependencies:
+- name: cassandra
+  version: "0.1.0"
+  repository: "https://github.com/OPENAIRINTERFACE/openair-k8s/tree/helm3.1-onap-sync-with-cn-split-repos/charts"
 
 keywords:
   - Core Network

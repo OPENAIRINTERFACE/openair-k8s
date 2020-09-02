@@ -16,7 +16,7 @@ spec:
       labels:
         {{- include "oai-hss.selectorLabels" . | nindent 8 }}
       annotations:
-        k8s.v1.cni.cncf.io/networks: hss-net1
+        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}

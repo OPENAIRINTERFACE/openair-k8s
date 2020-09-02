@@ -2,7 +2,7 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: mme-net1
+  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
 spec:
   config: '{
       "cniVersion": "0.3.0",
@@ -13,8 +13,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.1.100/24",
-                        "gateway": "192.168.1.1"
+                        "address": "192.168.211.100/24",
+                        "gateway": "192.168.211.1"
                 }
         ]
       }
@@ -23,7 +23,7 @@ spec:
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: mme-net2
+  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net2
 spec:
   config: '{
       "cniVersion": "0.3.0",
@@ -34,8 +34,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "172.16.1.100/24",
-                        "gateway": "172.16.1.1"
+                        "address": "172.16.211.100/24",
+                        "gateway": "172.16.211.1"
                 }
         ]
       }

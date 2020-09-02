@@ -1,5 +1,5 @@
 apiVersion: v2
-name: onap-oai-spgwc
+name: oai-spgwc
 description: A Helm chart for SPGWC network function
 
 # A chart can be either an 'application' or a 'library' chart.
@@ -16,11 +16,10 @@ icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_fin
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 0.1.0
+version: 0.1.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
-#appVersion: develop-vco3
 appVersion: onap-test
 
 keywords:
