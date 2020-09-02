@@ -30,6 +30,11 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+        ports:
+        - containerPort: {{ .Values.service.pfcpPort }}
+          name: oai-spgwu
+        - containerPort: {{ .Values.service.gtpuPort }}
+          name: s1u
         env:
           - name: PID_DIRECTORY
             valueFrom:

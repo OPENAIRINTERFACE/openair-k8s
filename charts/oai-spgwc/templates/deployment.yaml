@@ -31,9 +31,9 @@ spec:
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
         ports:
-        - containerPort: 8805
+        - containerPort: {{ .Values.service.pfcpPort }}
           name: oai-spgwc
-        - containerPort: 2123
+        - containerPort: {{ .Values.service.gtpcPort }}
           name: s11
         env:
           - name: PID_DIRECTORY
