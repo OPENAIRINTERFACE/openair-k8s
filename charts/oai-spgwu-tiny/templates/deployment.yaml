@@ -25,7 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-      - name: spgwu-tiny
+      - name: spgwu
         image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
