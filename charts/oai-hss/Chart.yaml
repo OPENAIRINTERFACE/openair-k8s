@@ -22,11 +22,6 @@ version: 0.1.1
 # incremented each time you make changes to the application.
 appVersion: onap-test
 
-dependencies:
-- name: cassandra
-  version: "0.1.0"
-  repository: "https://github.com/OPENAIRINTERFACE/openair-k8s/tree/helm3.1-onap-sync-with-cn-split-repos/charts"
-
 keywords:
   - Core Network
   - EPC

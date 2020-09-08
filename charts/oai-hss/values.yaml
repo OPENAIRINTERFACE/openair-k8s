@@ -45,14 +45,12 @@ service:
   diameterPort: 3868
   diameterSecPort: 5868
 
+  # Assume cassandra pod name is cassandra
 lte:
   prefix: "/openair-hss/etc"
-  realm: "${namespace}.svc.cluster.local"
-  identity: "oai-hss.${lte.realm}"
-  dbFqdn: "cassandra-0.cassandra.${lte.realm}"
+  dbFqdn: "cassandra-0.cassandra"
   opKey: "11111111111111111111111111111111"
   roaming: "true"
-  apn1: "apn.${lte.realm}"
   apn2: "internet"
   lteK: "8baf473f2f8fd09487cccbd7097c6862"
   imsi: "311480100001101"

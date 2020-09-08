@@ -4,12 +4,12 @@ metadata:
   name: {{ .Chart.Name }}-configmap
 data:
   prefix: {{ .Values.lte.prefix }}
-  dbFqdn: {{ .Values.lte.dbFqdn }}
-  realm: {{ .Values.lte.realm }}
-  identity: {{ .Values.lte.identity }}
+  dbFqdn: {{ .Values.lte.dbFqdn }}.{{ .Values.namespace }}.svc.cluster.local
+  realm: {{ .Values.namespace }}.svc.cluster.local
+  identity: oai-hss.{{ .Values.namespace }}.svc.cluster.local
   opKey: {{ .Values.lte.opKey | quote }}
   roaming: {{ .Values.lte.roaming | quote }}
-  apn1: {{ .Values.lte.apn1 }}
+  apn1: apn.{{ .Values.namespace }}.svc.cluster.local
   apn2: {{ .Values.lte.apn2 }}
   lteK: {{ .Values.lte.lteK | quote }}
   imsi: {{ .Values.lte.imsi | quote }}
