@@ -48,9 +48,12 @@ service:
   # Assume cassandra pod name is cassandra
 lte:
   prefix: "/openair-hss/etc"
-  dbFqdn: "cassandra-0.cassandra"
+  realm: "oai-cn.svc.cluster.local"
+  dbFqdn: "cassandra-0.cassandra.oai-cn.svc.cluster.local"
+  identity: "oai-hss.oai-cn.svc.cluster.local"
   opKey: "11111111111111111111111111111111"
   roaming: "true"
+  apn1: "apn.oai-cn.svc.cluster.local"
   apn2: "internet"
   lteK: "8baf473f2f8fd09487cccbd7097c6862"
   imsi: "311480100001101"
