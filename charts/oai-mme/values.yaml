@@ -54,8 +54,8 @@ lte:
   output: "CONSOLE"
   prefix: "/openair-mme/etc"
   pidDirectory: "/var/run"
-  mmeRealm: "${namespace}.svc.cluster.local"
-  mmeService: "oai-mme.${lte.mmeRealm}"
+  domainName: "oai-cn.svc.cluster.local"
+  fdMmeHostname: "oai-mme"
   mmeGid: "4"
   mmeCode: "1"
   nwIfS1c: "net1"
@@ -77,10 +77,7 @@ lte:
   mmeIpS11: "172.16.211.100"
   mmeIpS10: "127.0.0.1"
   sgwIpS11: "172.16.211.101"
-  hssRealm: "${lte.mmeRealm}"
-  hssService: "oai-hss.${lte.hssRealm}"
-  hssHostname: "oai-hss"
-  hssIp: "${lte.hssService}"
+  fdHssHostname: "oai-hss"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

@@ -7,8 +7,8 @@ data:
   output: {{ .Values.lte.output }}
   prefix: {{ .Values.lte.prefix }}
   pidDirectory: {{ .Values.lte.pidDirectory }}
-  mmeService: {{ .Values.lte.mmeService }}
-  mmeRealm: {{ .Values.lte.mmeRealm }}
+  mmeService: {{ .Values.lte.fdMmeHostname }}.{{ .Values.lte.domainName }}
+  mmeRealm: {{ .Values.lte.domainName }}
   mmeGid: {{ .Values.lte.mmeGid | quote }}
   mmeCode: {{ .Values.lte.mmeCode | quote }}
   mcc: {{ .Values.lte.mcc | quote }}
@@ -26,10 +26,10 @@ data:
   mmeIpS11: {{ .Values.lte.mmeIpS11 }}
   mmeIpS10: {{ .Values.lte.mmeIpS10 }}
   sgwIpS11: {{ .Values.lte.sgwIpS11 }}
-  hssService: {{ .Values.lte.hssService }}
-  hssRealm: {{ .Values.lte.hssRealm }}
-  hssHostname: {{ .Values.lte.hssHostname }}
-  hssIp: {{ .Values.lte.hssIp }}
+  hssService: {{ .Values.lte.fdHssHostname }}.{{ .Values.lte.domainName }}
+  hssRealm: {{ .Values.lte.domainName }}
+  hssHostname: {{ .Values.lte.fdHssHostname }}
+  hssIp: {{ .Values.lte.fdHssHostname }}.{{ .Values.lte.domainName }}
   peerMme0Ipv4Address: "0.0.0.0"
   peerMme1Ipv4Address: "0.0.0.0"
   mcc_mme0: "000"
