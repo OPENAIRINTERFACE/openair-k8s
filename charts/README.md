@@ -1,4 +1,4 @@
-# Deploy OAI CN with helm charts on Open Shift
+# Deploy OAI CN with helm charts on Open Shift (Work In Progress)
 
 ## Prerequisites
 - Assuming you are using Open Shift Server Version: 4.4.10, Kubernetes Version: v1.17.1+9d33dd3
@@ -48,6 +48,25 @@ Since the deployment uses multus for creating networks, the cluster role 'cluste
 ```bash
 helm install hss /path-to-your-openait-k8s-cloned-dir/charts/oai-hss
 ```
+
+# Deploy SPGW-C
+Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+```bash
+helm install spgwc /path-to-your-openait-k8s-cloned-dir/charts/oai-spgwc
+```
+# Deploy SPGW-U
+Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+```bash
+helm install spgwu /path-to-your-openait-k8s-cloned-dir/charts/oai-spgwu-tiny
+```
+
+# Deploy MME
+Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+```bash
+helm install mme /path-to-your-openait-k8s-cloned-dir/charts/oai-mme
 
 
 
