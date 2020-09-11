@@ -29,6 +29,7 @@ To be able to deploy cassandra on oc (step not required on k8s), logged as kubea
 oc adm policy add-scc-to-user anyuid -z default
 # THIS IS THE COMMAND OF THE MONTH!
 ```
+## Deployment
 Logged as administrator of your namespace on oc (not kubeadmin):
 ```bash
 helm install --set config.endpoint_snitch=GossipingPropertyFileSnitch,persistence.storageClass=managed-nfs-storage  cassandra incubator/cassandra
@@ -40,5 +41,13 @@ oai-cn          cassandra-0      1/1     Running     0          8m39s
 oai-cn          cassandra-1      1/1     Running     0          7m   
 oai-cn          cassandra-2      1/1     Running     0          5m13s
 ```
+
+# Deploy HSS
+Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+```bash
+helm install hss /path-to-your-openait-k8s-cloned-dir/charts/oai-hss
+```
+
 
 
