@@ -21,9 +21,13 @@ Please refer to:
 
 # Deploy Cassandra
 ## Storage class
+The envisionned storage for cassandra is nfs (provisioner example.com/nfs), storage class name is "managed-nfs-storage".
+
+## Security context permissions
 To be able to deploy cassandra on oc (step not required on k8s), logged as kubeadmin on oc:
 ```bash
 oc adm policy add-scc-to-user anyuid -z default
+# THIS IS THE COMMAND OF THE MONTH!
 ```
 Logged as administrator of your namespace on oc (not kubeadmin):
 ```bash
