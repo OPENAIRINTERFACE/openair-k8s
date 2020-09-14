@@ -24,6 +24,16 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      initContainers:
+      - name: init-db
+        image: cassandra:3.11
+        command:
+        - sh
+        - -c
+        - cqlsh cassandra-0.cassandra.{{ .Values.namespace }}.svc.cluster.local --file /root/oai_db.cql
+        volumeMounts:
+        - mountPath: /root
+          name: db-schema
       containers:
       - name: hss
         image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
@@ -103,6 +113,10 @@ spec:
         command:
           - /bin/sleep
           - infinity
+      volumes:
+      - configMap:
+          name: oai-db
+        name: db-schema
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
