@@ -22,6 +22,10 @@ spec:
       # Port to forward to inside the pod
       targetPort: {{ .Values.service.peerDiameterPortSecPort }}
       protocol: TCP
+    - name: sctpservers1ap
+      protocol: SCTP
+      port: 36413
+      targetPort: 36413
     - name: s11
       # Port accessible outside cluster
       port: {{ .Values.service.gtpcPort }}
