@@ -4,6 +4,8 @@
 - Assuming you are using Open Shift Server Version: 4.4.10, Kubernetes Version: v1.17.1+9d33dd3
 - Assuming you have installed [helm v3.1.0](https://github.com/helm/helm/releases/tag/v3.1.0)
 - Assuming SCTP protocol is [enabled on the cluster](https://docs.openshift.com/container-platform/4.4/networking/using-sctp.html#nw-sctp-enabling_using-sctp)
+  
+  You can check if SCTP is enabled by running a client/server [basic app](https://docs.openshift.com/container-platform/4.4/networking/using-sctp.html#nw-sctp-verifying_using-sctp)
 
 ### Use official cassandra image
 Add cassandra helm chart to helm repo:
