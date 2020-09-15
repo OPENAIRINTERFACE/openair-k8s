@@ -52,25 +52,25 @@ oai-cn          cassandra-2      1/1     Running     0          5m13s
 Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install hss /path-to-your-openait-k8s-cloned-dir/charts/oai-hss
+helm install hss /path-to-your-openair-k8s-cloned-dir/charts/oai-hss
 ```
 
 ## Deploy SPGW-C
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install spgwc /path-to-your-openait-k8s-cloned-dir/charts/oai-spgwc
+helm install spgwc /path-to-your-openair-k8s-cloned-dir/charts/oai-spgwc
 ```
 ## Deploy SPGW-U
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install spgwu /path-to-your-openait-k8s-cloned-dir/charts/oai-spgwu-tiny
+helm install spgwu /path-to-your-openair-k8s-cloned-dir/charts/oai-spgwu-tiny
 ```
 
 ## Deploy MME
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install mme /path-to-your-openait-k8s-cloned-dir/charts/oai-mme
+helm install mme /path-to-your-openair-k8s-cloned-dir/charts/oai-mme
 
