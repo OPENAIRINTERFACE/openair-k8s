@@ -2,7 +2,7 @@
 
 ## Prerequisites
 - Assuming you are using Open Shift Server Version: 4.4.10, Kubernetes Version: v1.17.1+9d33dd3
-- Assuming you have installed helm v3.1.0", GitCommit:"b29d20baf09943e134c2fa5e1e1cab3bf93315fa
+- Assuming you have installed [helm v3.1.0](https://github.com/helm/helm/releases/tag/v3.1.0)
 - Assuming SCTP protocol is [enabled on the cluster](https://docs.openshift.com/container-platform/4.4/networking/using-sctp.html#nw-sctp-enabling_using-sctp)
 
 ### Use official cassandra image
