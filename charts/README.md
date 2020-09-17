@@ -36,6 +36,8 @@ oc adm policy add-scc-to-user anyuid -z default
 # THIS IS THE COMMAND OF THE MONTH!
 ```
 ### Deployment
+Work is in progress, please follow the described deployment sequence (cassandra, HSS, SPGWC, SPGWU, MME).
+
 Logged as administrator of your namespace on oc (not kubeadmin):
 ```bash
 helm install --set config.endpoint_snitch=GossipingPropertyFileSnitch,persistence.storageClass=managed-nfs-storage  cassandra incubator/cassandra
