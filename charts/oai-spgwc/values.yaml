@@ -4,13 +4,12 @@
 
 replicaCount: 1
 
-namespace: "oai-cn"
+namespace: "oai"
 
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai-cn/oai-spgwc
-  #version: develop-vco3
-  version: onap-test
+  repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
+  version: onap-0.1.0
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
