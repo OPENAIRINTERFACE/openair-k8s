@@ -4,12 +4,12 @@
 
 replicaCount: 1
 
-namespace: "oai-cn"
+namespace: "oai"
 
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai-cn/oai-mme
-  version: onap-test
+  repository: image-registry.openshift-image-registry.svc:5000/oai/oai-mme
+  version: onap-0.1.0
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -73,10 +73,10 @@ lte:
   tac_2: "3"
   tac_2_lb: "03"
   tac_2_hb: "00"
-  mmeIpS1c: "192.168.211.100"
-  mmeIpS11: "172.16.211.100"
+  mmeIpS1c: "192.168.1.100"
+  mmeIpS11: "172.16.1.100"
   mmeIpS10: "127.0.0.1"
-  sgwIpS11: "172.16.211.101"
+  sgwIpS11: "172.16.1.101"
   fdHssHostname: "oai-hss"
 
 resources: {}
