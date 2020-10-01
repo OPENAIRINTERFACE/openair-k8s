@@ -13,8 +13,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.1.100/24",
-                        "gateway": "192.168.1.1"
+                        "address": "192.168.18.150/24",
+                        "gateway": "192.168.18.1"
                 }
         ]
       }
