@@ -54,7 +54,7 @@ lte:
   output: "CONSOLE"
   prefix: "/openair-mme/etc"
   pidDirectory: "/var/run"
-  domainName: "oai-cn.svc.cluster.local"
+  domainName: "oai.svc.cluster.local"
   fdMmeHostname: "oai-mme"
   mmeGid: "4"
   mmeCode: "1"
