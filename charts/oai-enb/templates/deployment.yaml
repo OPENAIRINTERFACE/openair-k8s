@@ -16,7 +16,7 @@ spec:
       labels:
         {{- include "oai-enb.selectorLabels" . | nindent 8 }}
       annotations:
-        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net1, {{ .Chart.Name }}-{{ .Values.namespace }}-net2
+        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -27,6 +27,9 @@ spec:
       containers:
       - name: enb
         image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        command:
+          - /bin/sleep
+          - infinity
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
