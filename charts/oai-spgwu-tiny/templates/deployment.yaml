@@ -61,6 +61,11 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: netUeIp
+          - name: NETWORK_UE_NAT_OPTION
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: netUeNatOption
           - name: SPGWC0_IP_ADDRESS
             valueFrom:
               configMapKeyRef:

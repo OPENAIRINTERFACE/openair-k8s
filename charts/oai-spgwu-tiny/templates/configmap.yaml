@@ -10,3 +10,4 @@ data:
   sgwSxIf: {{ .Values.lte.sgwSxIf }}
   netUeIp: {{ .Values.lte.netUeIp }}
   pgwcSxIp: {{ .Values.lte.pgwcSxIp }}
+  netUeNatOption: {{ .Values.lte.netUeNatOption | quote }}
