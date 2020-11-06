@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-namespace: "oai"
+namespace: "5geve"
 
 image:
   registry: local
@@ -51,7 +51,7 @@ lte:
   sgwSxIf: "net1"
   pgwSgiIf: "net3"
   pgwuSgiGw: "192.168.3.101"
-  netUeIp: "192.168.20.0/24"
+  netUeIp: "192.168.21.0/24"
   pgwcSxIp: "192.168.2.100"
   netUeNatOption: "yes"
 

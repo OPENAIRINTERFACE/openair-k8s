@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-namespace: "oai"
+namespace: "5geve"
 
 image:
   registry: local
@@ -54,7 +54,7 @@ lte:
   output: "CONSOLE"
   prefix: "/openair-mme/etc"
   pidDirectory: "/var/run"
-  domainName: "oai.svc.cluster.local"
+  domainName: "svc.cluster.local"
   fdMmeHostname: "oai-mme"
   mmeGid: "4"
   mmeCode: "1"
@@ -78,7 +78,7 @@ lte:
   mmeIpS10: "127.0.0.1"
   sgwIpS11: "172.16.1.101"
   fdHssHostname: "oai-hss"
-  hssDomainName: "oai.svc.cluster.local"
+  hssDomainName: "svc.cluster.local"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

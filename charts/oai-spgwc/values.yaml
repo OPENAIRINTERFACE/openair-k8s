@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-namespace: "oai"
+namespace: "5geve"
 
 image:
   registry: local
@@ -51,7 +51,7 @@ lte:
   sgwS5S8Ip: "127.0.58.2/8"
   pgwS5S8Ip: "127.0.58.1/8"
   pgwSxIf: "net1"
-  ueIpAddressPool: "192.168.20.2-192.168.20.200"
+  ueIpAddressPool: "192.168.21.2-192.168.21.200"
   ueDnsServer: "192.168.18.129"
   ueDnsServerSec: "192.168.18.129"
   apn: "apn.oai.svc.cluster.local"
