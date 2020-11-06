@@ -78,6 +78,7 @@ lte:
   mmeIpS10: "127.0.0.1"
   sgwIpS11: "172.16.1.101"
   fdHssHostname: "oai-hss"
+  hssDomainName: "oai.svc.cluster.local"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
