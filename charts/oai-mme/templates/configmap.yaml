@@ -26,10 +26,10 @@ data:
   mmeIpS11: {{ .Values.lte.mmeIpS11 }}
   mmeIpS10: {{ .Values.lte.mmeIpS10 }}
   sgwIpS11: {{ .Values.lte.sgwIpS11 }}
-  hssService: {{ .Values.lte.fdHssHostname }}.{{ .Values.namespace }}.{{ .Values.lte.hssDomainName }}
-  hssRealm: {{ .Values.namespace }}.{{ .Values.lte.hssDomainName }}
+  hssService: {{ .Values.lte.fdHssHostname }}.{{ .Values.lte.hssDomainName }}
+  hssRealm: {{ .Values.lte.hssDomainName }}
   hssHostname: {{ .Values.lte.fdHssHostname }}
-  hssIp: {{ .Values.lte.fdHssHostname }}.{{ .Values.namespace }}.{{ .Values.lte.hssDomainName }}
+  hssIp: {{ .Values.lte.fdHssHostname }}.{{ .Values.lte.hssDomainName }}
   peerMme0Ipv4Address: "0.0.0.0"
   peerMme1Ipv4Address: "0.0.0.0"
   mcc_mme0: "000"
