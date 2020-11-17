@@ -13,8 +13,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.2.101/24",
-                        "gateway": "192.168.2.1"
+                        "address": {{- cat .Values.lte.sgwSxIp "/" .Values.lte.sgwSxNetmask | nospace | quote }},
+                        "gateway": {{ .Values.lte.sgwSxGateway | quote }}
                 }
         ]
       }
@@ -34,8 +34,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.18.151/24",
-                        "gateway": "192.168.18.1"
+                        "address": {{- cat .Values.lte.sgwS1uIp "/" .Values.lte.sgwS1uNetmask | nospace | quote }},
+                        "gateway": {{ .Values.lte.sgwS1uGateway | quote }}
                 }
         ]
       }
@@ -55,8 +55,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.3.100/24",
-                        "gateway": "192.168.3.1"
+                        "address": {{- cat .Values.lte.pgwSgiIp "/" .Values.lte.pgwSgiNetmask | nospace | quote }},
+                        "gateway": {{ .Values.lte.pgwSgiGateway | quote }}
                 }
         ]
       }

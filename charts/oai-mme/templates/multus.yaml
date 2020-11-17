@@ -13,8 +13,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.18.150/24",
-                        "gateway": "192.168.18.1"
+                        "address": {{- cat .Values.lte.mmeIpS1c "/" .Values.lte.mmeNetmaskS1c | nospace | quote }},
+                        "gateway": {{ .Values.lte.mmeGatewayS1c | quote }}
                 }
         ]
       }
@@ -34,8 +34,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "172.16.1.100/24",
-                        "gateway": "172.16.1.1"
+                        "address": {{- cat .Values.lte.mmeIpS11 "/" .Values.lte.mmeNetmaskS11 | nospace | quote }},
+                        "gateway": {{ .Values.lte.mmeGatewayS11 | quote }}
                 }
         ]
       }

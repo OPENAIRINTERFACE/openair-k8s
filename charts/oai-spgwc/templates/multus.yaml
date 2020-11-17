@@ -13,8 +13,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.2.100/24",
-                        "gateway": "192.168.2.1"
+                        "address": {{- cat .Values.lte.pgwSxIP "/" .Values.lte.pgwSxNetmask | nospace | quote }},
+                        "gateway": {{ .Values.lte.pgwSxGateway | quote }}
                 }
         ]
       }
@@ -34,8 +34,8 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "172.16.1.101/24",
-                        "gateway": "172.16.1.1"
+                        "address": {{- cat .Values.lte.sgwS11IP "/" .Values.lte.sgwS11Netmask | nospace | quote }},
+                        "gateway": {{ .Values.lte.sgwS11Gateway | quote }}
                 }
         ]
       }
