@@ -81,6 +81,11 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: ueDnsServerSec
+          - name: PUSH_PROTOCOL_OPTION
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: pushProtocolOption
       - name: tcpdump
         image: corfr/tcpdump
         command:

@@ -12,3 +12,4 @@ data:
   apn: {{ .Values.lte.apn }}
   ueDnsServer: {{ .Values.lte.ueDnsServer }}
   ueDnsServerSec: {{ .Values.lte.ueDnsServerSec }}
+  pushProtocolOption: {{ .Values.lte.pushProtocolOption | quote }}
