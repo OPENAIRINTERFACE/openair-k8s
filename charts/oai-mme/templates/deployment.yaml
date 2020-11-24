@@ -246,8 +246,19 @@ spec:
       - name: tcpdump
         image: corfr/tcpdump
         command:
-          - /bin/sleep
-          - infinity
+          -  /bin/sh
+          -  -c
+       #      /bin/mkdir /pcap
+          -  /usr/sbin/tcpdump -i any port 36412 -C 100 -W 10 -w /pcap/S1_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+       #     /bin/sleep infinity
+       #   -  -i any port 36412 -C 100 -W 2 -w /pcap/S1_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap;
+        volumeMounts:
+        - mountPath: "/pcap"
+          name: {{ .Chart.Name }}-pv
+      volumes:
+      - name: {{ .Chart.Name }}-pv
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}-pvc
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

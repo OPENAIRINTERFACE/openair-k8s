@@ -16,7 +16,11 @@ spec:
       labels:
         {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 8 }}
       annotations:
-        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net1, {{ .Chart.Name }}-{{ .Values.namespace }}-net2, {{ .Chart.Name }}-{{ .Values.namespace }}-net3
+        k8s.v1.cni.cncf.io/networks: '[
+                                       { "name": {{- cat .Chart.Name "-" .Values.namespace "-net1" | nospace | quote }} }, 
+                                       { "name": {{- cat .Chart.Name "-" .Values.namespace "-net2" | nospace | quote }}, "default-route": [{{ .Values.lte.sgwS1uGateway | quote }}] }, 
+                                       { "name": {{- cat .Chart.Name "-" .Values.namespace "-net3" | nospace | quote }} }
+        ]'
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}

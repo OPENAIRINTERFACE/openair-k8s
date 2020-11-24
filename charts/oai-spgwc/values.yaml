@@ -60,7 +60,8 @@ lte:
   ueIpAddressPool: "192.168.28.2-192.168.28.200"
   ueDnsServer: "192.168.18.129"
   ueDnsServerSec: "192.168.18.129"
-  apn: "apn.oai.svc.cluster.local"
+  apn: "oai.ipv4"
+  pushProtocolOption: "yes"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
