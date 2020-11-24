@@ -86,7 +86,7 @@ lte:
 
 persistence:
   #make it true for the first time when you want to create persistance volume and then false
-  enabled: true
+  enabled: false
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
