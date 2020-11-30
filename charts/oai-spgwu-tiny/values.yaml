@@ -49,7 +49,7 @@ lte:
   pidDirectory: "/var/run"
   sgwS1uIf: "net2"
   sgwSxIf: "net1"
-  pgwSgiIf: "net3"
+  pgwSgiIf: "net2"
   pgwuSgiGw: "192.168.3.101"
   netUeIp: "192.168.20.0/24"
   pgwcSxIp: "192.168.2.100"
