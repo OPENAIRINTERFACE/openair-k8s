@@ -11,3 +11,10 @@ data:
   netUeIp: {{ .Values.lte.netUeIp }}
   pgwcSxIp: {{ .Values.lte.pgwcSxIp }}
   netUeNatOption: {{ .Values.lte.netUeNatOption | quote }}
+  threadsS1uUl: {{ .Values.lte.threadsS1uUl | quote }}
+  threadsSgiDl: {{ .Values.lte.threadsSgiDl | quote }}
+  threadsSx: {{ .Values.lte.threadsSx | quote }}
+  threadsSgiPrio: {{ .Values.lte.threadsSgiPrio | quote }}
+  threadsS1uPrio: {{ .Values.lte.threadsS1uPrio | quote }}
+  threadsSxPrio: {{ .Values.lte.threadsSxPrio | quote }}
+  bypassUlPfcpRules: {{ .Values.lte.bypassUlPfcpRules | quote }}

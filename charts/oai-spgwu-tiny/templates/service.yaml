@@ -22,5 +22,11 @@ spec:
       # Port to forward to inside the pod
       targetPort: {{ .Values.service.gtpuPort }}
       protocol: UDP
+    - name: iperf
+      # Port accessible outside cluster
+      port: 5001
+      # Port to forward to inside the pod
+      targetPort: 5001
+      protocol: UDP
   selector:
     {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 4 }}

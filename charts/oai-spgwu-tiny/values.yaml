@@ -33,6 +33,8 @@ podSecurityContext:
 
 securityContext:
   privileged: true
+  capabilities:
+    add: ["NET_ADMIN", "NET_RAW"]
   # capabilities:
   #   drop:
   #   - ALL
@@ -45,6 +47,9 @@ service:
   pfcpPort: 8805
   gtpuPort: 2152
 
+start:
+  spgwu: true
+  tcpdump: true
 lte:
   pidDirectory: "/var/run"
   sgwS1uIf: "net2"
@@ -54,17 +59,28 @@ lte:
   netUeIp: "192.168.20.0/24"
   pgwcSxIp: "192.168.2.100"
   netUeNatOption: "yes"
+  threadsS1uUl: "16"
+  threadsSgiDl: "16"
+  threadsSx: "1"
+  threadsSgiPrio: "64"
+  threadsS1uPrio: "64"
+  threadsSxPrio: "64"
+  # standart feature is no, put yes if you want less UL packet delay
+  bypassUlPfcpRules: "yes"
+
+persistence:
+  # make it true for the first time when you want to create persistance volume 
+  # and then false
+  enabled: false
+
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 6000m
-    memory: 512Mi
   requests:
-    cpu: 4000m
+    cpu: 8
     memory: 256Mi
 
 nodeSelector: {}

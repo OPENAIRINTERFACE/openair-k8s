@@ -32,8 +32,23 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
+      - name: tcpdump
+        image: corfr/tcpdump
+        command:
+          {{- if .Values.start.tcpdump}}
+          -  /bin/sh
+          -  -c
+          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          # -  /usr/sbin/tcpdump -i any port 2152 or port 8805 or port 5001 or arp or icmp -C 100 -W 10 -w /pcap/SPGWU_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          {{- else}}
+          - /bin/sleep
+          - infinity
+          {{- end}}
+        volumeMounts:
+        - mountPath: "/pcap"
+          name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
       - name: spgwu
-        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -42,6 +57,8 @@ spec:
           name: oai-spgwu
         - containerPort: {{ .Values.service.gtpuPort }}
           name: s1u
+        - containerPort: 5001
+          name: iperf
         env:
           - name: PID_DIRECTORY
             valueFrom:
@@ -83,15 +100,63 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: pgwuSgiGw
-      - name: tcpdump
-        image: corfr/tcpdump
+          - name: S1U_THREADS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: threadsS1uUl
+          - name: SGI_THREADS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: threadsSgiDl
+          - name: SX_THREADS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: threadsSx
+          - name: THREAD_SGI_PRIO
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: threadsSgiPrio
+          - name: THREAD_S1U_PRIO
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: threadsS1uPrio
+          - name: THREAD_SX_PRIO
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: threadsSxPrio
+          - name: BYPASS_UL_PFCP_RULES
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: bypassUlPfcpRules
+        {{- if .Values.start.spgwu}}
+        {{- else}}
         command:
           - /bin/sleep
           - infinity
+        {{- end}}
+        #volumeMounts:
+        #- mountPath: /dev/hugepages
+        #  name: hugepage
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+        - name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc   
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
+      terminationGracePeriodSeconds: 15
       # RT worker
       nodeName: dedale.5glab.nsa.eurecom.fr
-      terminationGracePeriodSeconds: 30
+

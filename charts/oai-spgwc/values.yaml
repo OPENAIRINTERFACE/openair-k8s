@@ -45,6 +45,9 @@ service:
   pfcpPort: 8805
   gtpcPort: 2123
 
+start:
+  spgwc: true
+  tcpdump: true
 lte:
   pidDirectory: "/var/run"
   sgwS11If: "net2"
@@ -57,9 +60,11 @@ lte:
   apn: "oai.ipv4"
   pushProtocolOption: "yes"
 
-resources: {}
+persistence:
   # We usually recommend not to specify default resources and to leave this as a conscious
+  enabled: false
   # choice for the user. This also increases chances charts run on environments with little
+resources: 
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
@@ -68,6 +73,9 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
 
 nodeSelector: {}
 
