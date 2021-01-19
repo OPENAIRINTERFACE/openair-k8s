@@ -49,23 +49,23 @@ lte:
   pidDirectory: "/var/run"
   sgwS1uIf: "net2"
   sgwSxIf: "net1"
-  pgwSgiIf: "net3"
-  pgwuSgiGw: "192.168.3.101"
+  pgwSgiIf: "net2"
+  pgwuSgiGw: "192.168.18.129"
   netUeIp: "192.168.20.0/24"
   pgwcSxIp: "192.168.2.100"
   netUeNatOption: "yes"
 
-resources: {}
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 6000m
+    memory: 512Mi
+  requests:
+    cpu: 4000m
+    memory: 256Mi
 
 nodeSelector: {}
 

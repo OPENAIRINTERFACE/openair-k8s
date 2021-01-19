@@ -85,4 +85,6 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
+      # RT worker
+      nodeName: dedale.5glab.nsa.eurecom.fr
       terminationGracePeriodSeconds: 30
