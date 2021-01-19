@@ -9,7 +9,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu-tiny
-  version: onap-0.1.0
+  version: stable
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -52,12 +52,12 @@ start:
   tcpdump: true
 lte:
   pidDirectory: "/var/run"
-  sgwS1uIf: "net2"
+  sgwS1uIf: "net1"
   sgwSxIf: "net1"
-  pgwSgiIf: "net2"
+  pgwSgiIf: "net1"
   pgwuSgiGw: "192.168.18.129"
   netUeIp: "192.168.20.0/24"
-  pgwcSxIp: "192.168.2.100"
+  pgwcSxIp: "192.168.18.156"
   netUeNatOption: "yes"
   threadsS1uUl: "16"
   threadsSgiDl: "16"

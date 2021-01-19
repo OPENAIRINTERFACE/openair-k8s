@@ -18,10 +18,7 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: >-
           [{
-                 "name": "oai-spgwu-tiny-oai-net1"
-           },
-           {
-                 "name": "oai-spgwu-tiny-oai-net2",
+                 "name": "oai-spgwu-tiny-oai-net1",
                  "default-route": ["192.168.18.129"]
           }] 
     spec:

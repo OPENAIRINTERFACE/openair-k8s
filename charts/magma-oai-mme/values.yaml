@@ -10,9 +10,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai-cn/magma-mme
-  # version: nsa-support-no-emm-info
-  # version: rel15_centos8
-  version: validated-nsa-oppo-quectel-2020-12-17
+  version: stable
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -91,12 +89,11 @@ mmeConf:
   mmeIpS1c: "192.168.18.150"
   mmeGatewayS1c: "192.168.18.1"
   mmeNetmaskS1c: "24"
-  mmeIpS11: "172.16.1.100"
-  mmeGatewayS11: "172.16.1.1"
+  mmeIpS11: "192.168.18.150"
   mmeNetmaskS11: "24"
   s1apIfaceName: "net1"
-  s11IfaceName: "net2"
-  remoteSgwIp: "172.16.1.101"
+  s11IfaceName: "net1"
+  remoteSgwIp: "192.168.18.156"
   taiList: |
      ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";});
   hssIp: "192.168.18.176"

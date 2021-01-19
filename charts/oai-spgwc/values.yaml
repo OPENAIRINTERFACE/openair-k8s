@@ -9,7 +9,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
-  version: onap-0.1.0
+  version: stable
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -46,31 +46,31 @@ service:
   gtpcPort: 2123
 
 start:
-  spgwc: true
+  spgwc: false
   tcpdump: true
 lte:
   pidDirectory: "/var/run"
-  sgwS11If: "net2"
+  sgwS11If: "net1"
   sgwS5S8Ip: "127.0.58.2/8"
   pgwS5S8Ip: "127.0.58.1/8"
   pgwSxIf: "net1"
-  ueIpAddressPool: "192.168.20.2-192.168.20.200"
+  ueIpAddressPool: "192.168.21.2-192.168.21.200"
   ueDnsServer: "192.168.18.129"
   ueDnsServerSec: "192.168.18.129"
   apn: "oai.ipv4"
   pushProtocolOption: "yes"
 
 persistence:
-  # We usually recommend not to specify default resources and to leave this as a conscious
+  # make it true for the first time when you want to create persistance volume 
+  # and then false
   enabled: false
-  # choice for the user. This also increases chances charts run on environments with little
+
 resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
   #   cpu: 100m
   #   memory: 128Mi
   requests:
