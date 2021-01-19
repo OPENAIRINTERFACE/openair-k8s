@@ -16,7 +16,14 @@ spec:
       labels:
         {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 8 }}
       annotations:
-        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net1, {{ .Chart.Name }}-{{ .Values.namespace }}-net2, {{ .Chart.Name }}-{{ .Values.namespace }}-net3
+        k8s.v1.cni.cncf.io/networks: >-
+          [{
+                 "name": "oai-spgwu-tiny-oai-net1"
+           },
+           {
+                 "name": "oai-spgwu-tiny-oai-net2",
+                 "default-route": ["192.168.18.129"]
+          }] 
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
