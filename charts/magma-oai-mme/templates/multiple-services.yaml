@@ -1,0 +1,15 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mme-services-configmap
+data:
+  mme.exe: |
+    #!/bin/sh
+    # turn on bash's job control
+    set -m
+    /magma/bin/sctpd &
+    # let create unix socket
+    sleep 7
+    /magma/scripts/entrypoint.sh /magma/bin/oai_mme -c /magma/etc/mme.conf
+

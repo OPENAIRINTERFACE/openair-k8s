@@ -1,0 +1,42 @@
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
+spec:
+  config: '{
+      "cniVersion": "0.3.0",
+      "type": "macvlan",
+      "master": "bond0",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": {{- cat .Values.mmeConf.mmeIpS1c "/" .Values.mmeConf.mmeNetmaskS1c | nospace | quote }},
+                        "gateway": {{ .Values.mmeConf.mmeGatewayS1c | quote }}
+                }
+        ]
+      }
+    }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net2
+spec:
+  config: '{
+      "cniVersion": "0.3.0",
+      "type": "macvlan",
+      "master": "bond0",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+                {
+                        "address": {{- cat .Values.mmeConf.mmeIpS11 "/" .Values.mmeConf.mmeNetmaskS11 | nospace | quote }},
+                        "gateway": {{ .Values.mmeConf.mmeGatewayS11 | quote }}
+                }
+        ]
+      }
+    }'

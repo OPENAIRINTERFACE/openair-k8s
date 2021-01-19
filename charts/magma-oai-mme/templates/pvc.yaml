@@ -1,0 +1,16 @@
+---
+{{- if .Values.persistence.enabled}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{.Chart.Name}}-{{.Values.namespace}}-pvc
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: managed-nfs-storage
+  resources:
+    requests:
+      storage: 1Gi
+{{- end}}
