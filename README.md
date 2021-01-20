@@ -116,3 +116,17 @@ To remove all resources from the 'oai' namespace plus delete the namespace itsel
 ```sh
 hack/clean_oai_on_k8s
 ```
+
+### Running with helm
+The full automation of 4G components is in progress. This is why it is still needed to follow the sequence listed bellow.
+```
+cd openair-k8s/charts
+helm install spgwc oai-spgwc; helm install mmme magma-oai-mme ; sleep 15; helm install spgwu oai-spgwu-tiny
+```
+
+### Cleaning
+To remove a component from running on the cluster, execute:
+```
+helm uninstall mme
+```
+
