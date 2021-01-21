@@ -56,7 +56,7 @@ lte:
   sgwSxIf: "net1"
   pgwSgiIf: "net1"
   pgwuSgiGw: "192.168.18.129"
-  netUeIp: "192.168.20.0/24"
+  netUeIp: "192.168.21.0/24"
   pgwcSxIp: "192.168.18.156"
   netUeNatOption: "yes"
   threadsS1uUl: "16"

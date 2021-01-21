@@ -9,7 +9,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
-  version: stable
+  version: ue-mtu-1358
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -46,7 +46,7 @@ service:
   gtpcPort: 2123
 
 start:
-  spgwc: false
+  spgwc: true
   tcpdump: true
 lte:
   pidDirectory: "/var/run"
