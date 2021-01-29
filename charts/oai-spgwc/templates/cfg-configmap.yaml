@@ -1,0 +1,85 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: spgwc-cfg-configmap
+data:
+  spgw_c.json: |
+      {
+       "timer" : {
+           "itti" : {
+               "sched_params" : {
+                   "sched_policy" : "sched_fifo", 
+                   "sched_priority" : 64
+               }
+           }
+       },
+       "gtpv2c" : {
+           "port" : 2123,
+           "n3" : 3,
+           "t3_ms" : 1000,
+           "sched_params" : {
+               "sched_policy" : "sched_fifo", 
+               "sched_priority" : 64
+           }
+       },
+       "pfcp" : {
+           "port" : 8805,
+           "n1" : 3,
+           "t1_ms" : 1000,
+           "sched_params" : {
+               "sched_policy" : "sched_fifo", 
+               "sched_priority" : 64
+           }
+       },
+       "s11" : {
+           "interface_name" : "{{ .Values.lte.spgwOneIf }}",
+           "ipv4_address" : "read"
+       },
+       "sgws5s8" : {
+           "interface_name" : "lo",
+           "ipv4_address" : "{{ .Values.lte.sgwS5S8Ip }}"
+       },
+       "pgws5s8" : {
+           "interface_name" : "lo",
+           "ipv4_address" : "{{ .Values.lte.pgwS5S8Ip }}"
+       },
+       "sx" : {
+           "interface_name" : "{{ .Values.lte.spgwOneIf }}",
+           "ipv4_address" : "read"
+       },
+       "spgw_app" : {
+           "sched_params" : {
+               "sched_policy" : "sched_fifo", 
+               "sched_priority" : 64
+           },
+           "default_dns_ipv4_address" : "{{ .Values.lte.ueDnsServer }}",
+           "default_dns_sec_ipv4_address" : "{{ .Values.lte.ueDnsServerSec }}",
+           "default_dns_ipv6_address"     : "2001:4860:4860::8888",
+           "default_dns_sec_ipv6_address" : "2001:4860:4860::8844",
+           "force_push_protocol_configuration_options" : {{ .Values.lte.pushProtocolOption }}
+       },
+       "pdns" :
+        [
+           { "apn_ni" : "oai.ipv4", "dyn_ue_ipv4_range" : "192.168.21.1 - 192.168.21.254" },
+           { "apn_ni" : "oai.ipv4", "dyn_ue_ipv4_range" : "192.168.22.1 - 192.168.22.254" }
+        ],
+        "cups" : {
+           "association_retry_period_ms" : {{ .Values.lte.associationRetryPeriodMs }},
+           "association_heartbeat_period_ms" : {{ .Values.lte.associationHeartbeatPeriodMs }},
+           "feature_overload_control" : false,
+           "feature_load_control" : false,
+           "up_nodes_selection" :
+               [
+                   { "mcc" : "208", "mnc" : "99", "tac" : 0, "pdn_idx" : 0, "id" : "gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" },
+                   { "mcc" : "208", "mnc" : "99", "tac" : 0, "pdn_idx" : 0, "id" : "gwu2.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" },
+                   { "mcc" : "208", "mnc" : "99", "tac" : 1, "pdn_idx" : 1, "id" : "gwu3.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" },
+                   { "mcc" : "208", "mnc" : "99", "tac" : 1, "pdn_idx" : 1, "id" : "gwu4.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" }
+               ]
+       },
+       "pcef" : {
+           "apn_ambr_ul_kbits" : 500000,
+           "apn_ambr_dl_kbits" : 500000
+       }
+      }
+

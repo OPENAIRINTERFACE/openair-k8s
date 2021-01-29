@@ -49,57 +49,10 @@ spec:
           name: oai-spgwc
         - containerPort: {{ .Values.service.gtpcPort }}
           name: s11
-        env:
-          - name: PID_DIRECTORY
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pidDirectory
-          - name: PGW_INTERFACE_NAME_FOR_SX
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwSxIf
-          - name: SGW_INTERFACE_NAME_FOR_S11
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwS11If
-          - name: SGW_IP_FOR_S5_S8_CP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwS5S8Ip
-          - name: PGW_IP_FOR_S5_S8_CP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwS5S8Ip
-          - name: UE_IP_ADDRESS_POOL
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: ueIpAddressPool
-          - name: DEFAULT_APN
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: apn
-          - name: DEFAULT_DNS_IPV4_ADDRESS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: ueDnsServer
-          - name: DEFAULT_DNS_SEC_IPV4_ADDRESS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: ueDnsServerSec
-          - name: PUSH_PROTOCOL_OPTION
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pushProtocolOption
+        volumeMounts:
+          - mountPath: /openair-spgwc/etc/spgw_c.json
+            name: cfg-vol
+            subPath: spgw_c.json
         {{- if .Values.start.spgwc}}
         {{- else}}
         command:
@@ -110,9 +63,12 @@ spec:
         - name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
           persistentVolumeClaim:
             claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc   
+        - configMap:
+            name: spgwc-cfg-configmap
+          name: cfg-vol
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      terminationGracePeriodSeconds: 15
+      terminationGracePeriodSeconds: 5
 
