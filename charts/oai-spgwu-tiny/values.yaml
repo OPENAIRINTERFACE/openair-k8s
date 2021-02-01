@@ -9,7 +9,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu-tiny
-  version: stable
+  version: multi-spgwu
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -49,12 +49,18 @@ service:
 
 start:
   spgwu: true
-  tcpdump: true
+  tcpdump: false
+log:
+  # Leave string empty to disable
+  stdout: " -o "
+  file: " -r "
 lte:
+  instance: 0
+  fqdn: "gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org"
   pidDirectory: "/var/run"
-  sgwS1uIf: "net1"
-  sgwSxIf: "net1"
-  pgwSgiIf: "net1"
+  spgwOneIf: "net1"
+  spgwIpOneIf: "192.168.18.151"
+  spgwNetmaskOneIf: "24"
   pgwuSgiGw: "192.168.18.129"
   netUeIp: "192.168.21.0/24"
   pgwcSxIp: "192.168.18.156"

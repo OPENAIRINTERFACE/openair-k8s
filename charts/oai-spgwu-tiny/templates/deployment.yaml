@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-{{ .Values.lte.instance }}
   labels:
     {{- include "oai-spgwu-tiny.labels" . | nindent 4 }}
 spec:
@@ -18,8 +18,8 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: >-
           [{
-                 "name": "oai-spgwu-tiny-oai-net1",
-                 "default-route": ["192.168.18.129"]
+                 "name": "{{ .Chart.Name }}-{{ .Values.lte.instance }}-{{ .Values.namespace }}-net1",
+                 "default-route": ["{{ .Values.lte.pgwuSgiGw }}"]
           }] 
     spec:
       securityContext:
@@ -35,8 +35,8 @@ spec:
           {{- if .Values.start.tcpdump}}
           -  /bin/sh
           -  -c
-          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
-          # -  /usr/sbin/tcpdump -i any port 2152 or port 8805 or port 5001 or arp or icmp -C 100 -W 10 -w /pcap/SPGWU_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          # -  /usr/sbin/tcpdump -i any port 2152 or port 8805 or port 5001 or arp or icmp -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
           {{- else}}
           - /bin/sleep
           - infinity
@@ -56,83 +56,15 @@ spec:
           name: s1u
         - containerPort: 5001
           name: iperf
-        env:
-          - name: PID_DIRECTORY
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pidDirectory
-          - name: SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwS1uIf
-          - name: SGW_INTERFACE_NAME_FOR_SX
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwSxIf
-          - name: PGW_INTERFACE_NAME_FOR_SGI
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwSgiIf
-          - name: NETWORK_UE_IP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: netUeIp
-          - name: NETWORK_UE_NAT_OPTION
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: netUeNatOption
-          - name: SPGWC0_IP_ADDRESS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwcSxIp
-          - name: PGWU_SGI_GW
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwuSgiGw
-          - name: S1U_THREADS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: threadsS1uUl
-          - name: SGI_THREADS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: threadsSgiDl
-          - name: SX_THREADS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: threadsSx
-          - name: THREAD_SGI_PRIO
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: threadsSgiPrio
-          - name: THREAD_S1U_PRIO
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: threadsS1uPrio
-          - name: THREAD_SX_PRIO
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: threadsSxPrio
-          - name: BYPASS_UL_PFCP_RULES
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: bypassUlPfcpRules
+        volumeMounts:
+          - mountPath: /openair-spgwu-tiny/etc/spgw_u.conf
+            name: cfg-vol
+            subPath: spgw_u.conf
         {{- if .Values.start.spgwu}}
+        command:
+          -  /bin/sh
+          -  -c
+          -  /openair-spgwu-tiny/bin/oai_spgwu -c /openair-spgwu-tiny/etc/spgw_u.conf {{ .Values.log.stdout }} {{ .Values.log.file }}
         {{- else}}
         command:
           - /bin/sleep
@@ -148,12 +80,15 @@ spec:
       volumes:
         - name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc   
+            claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc
+        - configMap:
+            name: spgwu{{ .Values.lte.instance }}-cfg-configmap
+          name: cfg-vol
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      terminationGracePeriodSeconds: 15
+      terminationGracePeriodSeconds: 5
       # RT worker
       nodeName: dedale.5glab.nsa.eurecom.fr
 
