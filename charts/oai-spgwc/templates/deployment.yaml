@@ -31,7 +31,7 @@ spec:
           {{- if .Values.start.tcpdump}}
           -  /bin/sh
           -  -c
-          -  /usr/sbin/tcpdump -i any port 2123 or port 8805 or arp or icmp -C 100 -W 10 -w /pcap/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          -  /usr/sbin/tcpdump -i any port {{ .Values.service.gtpcPort }} or port {{ .Values.service.pfcpPort }} or arp or icmp -C 100 -W 10 -w /pcap/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
           {{- else}}
           - /bin/sleep
           - infinity
@@ -54,6 +54,10 @@ spec:
             name: cfg-vol
             subPath: spgw_c.json
         {{- if .Values.start.spgwc}}
+        command:
+          -  /bin/sh
+          -  -c
+          -  /openair-spgwc/bin/oai_spgwc -c /openair-spgwc/etc/spgw_c.json {{ .Values.log.stdout }} {{ .Values.log.file }}
         {{- else}}
         command:
           - /bin/sleep

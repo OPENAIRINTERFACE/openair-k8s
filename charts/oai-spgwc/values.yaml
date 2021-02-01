@@ -48,7 +48,15 @@ service:
 start:
   spgwc: true
   tcpdump: false
+log:
+  # Leave string empty to disable
+  stdout: " -o "
+  file: " -r "
 lte:
+  apn: "oai.ipv4"
+  mcc: "208"
+  mnc: "99"
+  mnc3: "099"
   spgwOneIf: "net1"
   spgwIpOneIf : "192.168.18.156"
   spgwNetmaskOneIf : "24"
@@ -57,8 +65,17 @@ lte:
   ueDnsServer: "192.168.18.129"
   ueDnsServerSec: "192.168.18.129"
   pushProtocolOption: true
+  dynUeIpv4Range: "192.168.21.1 - 192.168.21.254"
   associationRetryPeriodMs : "15000"
   associationHeartbeatPeriodMs : "2000"
+  threadTimerPrio: "64"
+  threadpfcpPrio: "64"
+  threadgtpv2cPrio: "64"
+  threadSpgwAppPrio: "64"
+  n1: "3"
+  n3: "3"
+  t1MilliSec: "1000"
+  t3MilliSec: "1000"
 
 persistence:
   # make it true for the first time when you want to create persistance volume 
