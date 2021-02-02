@@ -95,7 +95,7 @@ mmeConf:
   s11IfaceName: "net1"
   remoteSgwIp: "192.168.18.156"
   taiList: |
-     ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";});
+     ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";},{ MCC="208";MNC="99";TAC="4";});
   hssIp: "192.168.18.176"
 
 resources:

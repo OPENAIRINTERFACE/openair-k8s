@@ -90,5 +90,5 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       terminationGracePeriodSeconds: 5
       # RT worker
-      nodeName: dedale.5glab.nsa.eurecom.fr
+      # nodeName: dedale.5glab.nsa.eurecom.fr
 
