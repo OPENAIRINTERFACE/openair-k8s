@@ -70,10 +70,10 @@ data:
            "feature_load_control" : false,
            "up_nodes_selection" :
                [
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 0, "pdn_idx" : 0, "id" : "gwu1.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 0, "pdn_idx" : 0, "id" : "gwu2.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "pdn_idx" : 0, "id" : "gwu3.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "pdn_idx" : 0, "id" : "gwu4.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" }
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "pdn_idx" : 0, "id" : "gwu1.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 2, "pdn_idx" : 0, "id" : "gwu2.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 3, "pdn_idx" : 0, "id" : "gwu3.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 4, "pdn_idx" : 0, "id" : "gwu4.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" }
                ]
        },
        "pcef" : {
