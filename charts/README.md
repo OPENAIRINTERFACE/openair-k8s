@@ -18,10 +18,10 @@ helm repo update
 ## Build Network functions images
 For all network functions (HSS, MME, SPGW-C, SPGW-U) you have to build an image:
 Please refer to:
-1. MME: https://github.com/OPENAIRINTERFACE/openair-mme/blob/helm3.1-onap-sync-with-cn-split-repos/openshift
+1. MME: https://github.com/magma/magma
 1. HSS: https://github.com/OPENAIRINTERFACE/openair-hss/blob/helm3.1-onap-sync-with-cn-split-repos/openshift
-1. SPGW-C: https://github.com/OPENAIRINTERFACE/openair-spgwc/tree/helm3.1-onap-sync-with-cn-split-repos/openshift
-1. SPGW-U: https://github.com/OPENAIRINTERFACE/openair-spgwu-tiny/tree/helm3.1-onap-sync-with-cn-split-repos/openshift
+1. SPGW-C: https://github.com/lionelgo/openair-spgwc/tree/multi-spgwu/openshift
+1. SPGW-U: https://github.com/lionelgo/openair-spgwu-tiny/tree/multi-spgwu/openshift
 
 On francelab cluster be aware that certificates (/etc/rhsm/ca/redhat-uep.pem) are renewed every month, so you may have to redo the "pki-entitlement" phase every month.
 
@@ -70,7 +70,7 @@ Idem: Since the deployment uses multus for creating networks, the cluster role '
 
 ```bash
 K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
-helm install mme $K8S_DIR/charts/oai-mme  --set start.tcpdump="true"
+helm install mme $K8S_DIR/charts/magma-oai-mme  --set start.tcpdump="true"
 ```
 
 ## Deploy SPGW-U *4
