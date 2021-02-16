@@ -65,7 +65,7 @@ lte:
   ueDnsServer: "192.168.18.129"
   ueDnsServerSec: "192.168.18.129"
   pushProtocolOption: true
-  dynUeIpv4Range: "192.168.21.2 - 192.168.21.254"
+  dynUeIpv4Range: "192.168.29.2 - 192.168.29.254"
   associationRetryPeriodMs : "15000"
   associationHeartbeatPeriodMs : "2000"
   threadTimerPrio: "64"
