@@ -17,7 +17,11 @@ spec:
       labels:
         {{- include "magma-oai-mme.selectorLabels" . | nindent 8}}
       annotations:
-        k8s.v1.cni.cncf.io/networks: {{.Chart.Name}}-{{.Values.namespace}}-net1
+        k8s.v1.cni.cncf.io/networks: >-
+          [{
+                 "name": "{{ .Chart.Name }}-{{ .Values.namespace }}-net1",
+                 "default-route": ["{{ .Values.mmeConf.mmeS1cGw }}"]
+          }]
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8}}
