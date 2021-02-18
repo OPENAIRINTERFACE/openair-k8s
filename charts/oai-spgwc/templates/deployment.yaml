@@ -25,20 +25,17 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
+    {{- if .Values.start.tcpdump}}
       - name: tcpdump
         image: corfr/tcpdump
         command:
-          {{- if .Values.start.tcpdump}}
           -  /bin/sh
           -  -c
           -  /usr/sbin/tcpdump -i any port {{ .Values.service.gtpcPort }} or port {{ .Values.service.pfcpPort }} or arp or icmp -C 100 -W 10 -w /pcap/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
-          {{- else}}
-          - /bin/sleep
-          - infinity
-          {{- end}}
         volumeMounts:
         - mountPath: "/pcap"
           name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
+    {{- end}}
       - name: spgwc
         image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}

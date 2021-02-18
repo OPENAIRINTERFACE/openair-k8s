@@ -17,7 +17,11 @@ spec:
       labels:
         {{- include "magma-oai-mme.selectorLabels" . | nindent 8}}
       annotations:
-        k8s.v1.cni.cncf.io/networks: {{.Chart.Name}}-{{.Values.namespace}}-net1
+        k8s.v1.cni.cncf.io/networks: >-
+          [{
+                 "name": "{{ .Chart.Name }}-{{ .Values.namespace }}-net1",
+                 "default-route": ["{{ .Values.mmeConf.mmeS1cGw }}"]
+          }]
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8}}
@@ -26,20 +30,17 @@ spec:
         {{- toYaml . | nindent 8}}
     {{- end}}
       containers:
+    {{- if .Values.start.tcpdump}}
       - name: tcpdump
         image: corfr/tcpdump
         volumeMounts:
           - mountPath: /pcap
             name: {{.Chart.Name}}-{{.Values.namespace}}-pv
         command:
-          {{- if .Values.start.tcpdump}}
           -  /bin/sh
           -  -c
           -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/magma-oai-mme_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
-          {{- else}}
-          - /bin/sleep
-          - infinity
-          {{- end}}
+    {{- end}}
       - name: redis
         image: "{{.Values.image.repository}}:{{.Values.image.version}}"
         command:
