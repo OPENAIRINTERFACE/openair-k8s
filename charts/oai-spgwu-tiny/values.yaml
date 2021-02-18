@@ -62,7 +62,7 @@ lte:
   spgwIpOneIf: "192.168.18.151"
   spgwNetmaskOneIf: "24"
   pgwuSgiGw: "192.168.18.129"
-  netUeIp: "192.168.21.0/24"
+  netUeIp: "192.168.29.0/24"
   pgwcSxIp: "192.168.18.156"
   netUeNatOption: "yes"
   threadsS1uUl: "16"
