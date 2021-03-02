@@ -52,6 +52,9 @@ spec:
           - /bin/sleep
           - infinity
           {{- end}}
+        volumeMounts:
+          - mountPath: /var/log
+            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
       - name: mme
         image: "{{.Values.image.repository}}:{{.Values.image.version}}"
         imagePullPolicy: {{.Values.image.pullPolicy}}
@@ -73,6 +76,8 @@ spec:
                 name: {{ .Chart.Name}}-{{.Values.namespace}}-configmap
                 key: mmeService
         volumeMounts:
+          - mountPath: /var/log
+            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
           - mountPath: /magma/etc/mme_fd.conf
             name: fd-vol
             subPath: mme_fd.conf
