@@ -50,11 +50,13 @@ spec:
           - mountPath: /openair-spgwc/etc/spgw_c.json
             name: cfg-vol
             subPath: spgw_c.json
+          - mountPath: "/var/crash/core"
+            name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
         {{- if .Values.start.spgwc}}
         command:
           -  /bin/sh
           -  -c
-          -  /openair-spgwc/bin/oai_spgwc -c /openair-spgwc/etc/spgw_c.json {{ .Values.log.stdout }} {{ .Values.log.file }}
+          -  echo "/var/crash/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern && /openair-spgwc/bin/oai_spgwc -c /openair-spgwc/etc/spgw_c.json {{ .Values.log.stdout }} {{ .Values.log.file }} > /var/crash/core/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.log 2>&1
         {{- else}}
         command:
           - /bin/sleep
