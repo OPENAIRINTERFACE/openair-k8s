@@ -31,7 +31,7 @@ spec:
       containers:
     {{- if .Values.start.tcpdump }}
       - name: tcpdump
-        image: corfr/tcpdump
+        image: "image-registry.openshift-image-registry.svc:5000/oai/tcpdump-internal:latest"                                                                                      
         command:
           -  /bin/sh
           -  -c
