@@ -9,8 +9,10 @@ namespace: "oai"
 
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai-cn/magma-mme
-  version: stable
+  # repository: image-registry.openshift-image-registry.svc:5000/oai-cn/magma-mme
+  repository: image-registry.openshift-image-registry.svc:5000/oai/magma-mme
+  # version: stable
+  version: master-81a44df-20210413
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -87,7 +89,7 @@ mmeConf:
     - imsiPrefix: "00101"
       apnOverride: "magma.ipv4"
   mmeIpS1c: "192.168.18.150"
-  mmeGatewayS1c: "192.168.18.1"
+  mmeS1cGw: "192.168.18.129"
   mmeNetmaskS1c: "24"
   mmeIpS11: "192.168.18.150"
   mmeNetmaskS11: "24"
@@ -95,7 +97,7 @@ mmeConf:
   s11IfaceName: "net1"
   remoteSgwIp: "192.168.18.156"
   taiList: |
-     ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";});
+     ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";},{ MCC="208";MNC="99";TAC="4";});
   hssIp: "192.168.18.176"
 
 resources:

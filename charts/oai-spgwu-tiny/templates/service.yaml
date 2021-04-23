@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-{{ .Values.lte.instance }}
   labels:
     {{- include "oai-spgwu-tiny.labels" . | nindent 4 }}
 spec:

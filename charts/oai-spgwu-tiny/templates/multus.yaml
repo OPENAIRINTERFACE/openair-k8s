@@ -2,7 +2,7 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
+  name: {{ .Chart.Name }}-{{ .Values.lte.instance }}-{{ .Values.namespace }}-net1
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
@@ -13,7 +13,7 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.18.151/24"
+                        "address": {{- cat .Values.lte.spgwIpOneIf "/" .Values.lte.spgwNetmaskOneIf | nospace | quote }}
                 }
         ]
       }

@@ -9,7 +9,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwc
-  version: ue-mtu-1358
+  version: sanitize-leak
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -47,18 +47,35 @@ service:
 
 start:
   spgwc: true
-  tcpdump: true
+  tcpdump: false
+log:
+  # Leave string empty to disable
+  stdout: " -o "
+  file: " -r "
 lte:
-  pidDirectory: "/var/run"
-  sgwS11If: "net1"
-  sgwS5S8Ip: "127.0.58.2/8"
-  pgwS5S8Ip: "127.0.58.1/8"
-  pgwSxIf: "net1"
-  ueIpAddressPool: "192.168.21.2-192.168.21.200"
+  apn: "oai.ipv4"
+  mcc: "208"
+  mnc: "99"
+  mnc3: "099"
+  spgwOneIf: "net1"
+  spgwIpOneIf : "192.168.18.156"
+  spgwNetmaskOneIf : "24"
+  sgwS5S8Ip: "127.0.58.2"
+  pgwS5S8Ip: "127.0.58.1"
   ueDnsServer: "192.168.18.129"
   ueDnsServerSec: "192.168.18.129"
-  apn: "oai.ipv4"
-  pushProtocolOption: "yes"
+  pushProtocolOption: true
+  dynUeIpv4Range: "192.168.29.2 - 192.168.29.254"
+  associationRetryPeriodMs : "15000"
+  associationHeartbeatPeriodMs : "2000"
+  threadTimerPrio: "64"
+  threadpfcpPrio: "64"
+  threadgtpv2cPrio: "64"
+  threadSpgwAppPrio: "64"
+  n1: "3"
+  n3: "3"
+  t1MilliSec: "1000"
+  t3MilliSec: "1000"
 
 persistence:
   # make it true for the first time when you want to create persistance volume 

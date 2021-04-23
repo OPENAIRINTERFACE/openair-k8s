@@ -25,20 +25,17 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
+    {{- if .Values.start.tcpdump}}
       - name: tcpdump
-        image: corfr/tcpdump
+        image: "image-registry.openshift-image-registry.svc:5000/oai/tcpdump-internal:latest"                                                                                      
         command:
-          {{- if .Values.start.tcpdump}}
           -  /bin/sh
           -  -c
-          -  /usr/sbin/tcpdump -i any port 2123 or port 8805 or arp or icmp -C 100 -W 10 -w /pcap/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
-          {{- else}}
-          - /bin/sleep
-          - infinity
-          {{- end}}
+          -  /usr/sbin/tcpdump -i any port {{ .Values.service.gtpcPort }} or port {{ .Values.service.pfcpPort }} or arp or icmp -C 100 -W 10 -w /pcap/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
         volumeMounts:
         - mountPath: "/pcap"
           name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
+    {{- end}}
       - name: spgwc
         image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -49,58 +46,17 @@ spec:
           name: oai-spgwc
         - containerPort: {{ .Values.service.gtpcPort }}
           name: s11
-        env:
-          - name: PID_DIRECTORY
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pidDirectory
-          - name: PGW_INTERFACE_NAME_FOR_SX
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwSxIf
-          - name: SGW_INTERFACE_NAME_FOR_S11
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwS11If
-          - name: SGW_IP_FOR_S5_S8_CP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwS5S8Ip
-          - name: PGW_IP_FOR_S5_S8_CP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwS5S8Ip
-          - name: UE_IP_ADDRESS_POOL
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: ueIpAddressPool
-          - name: DEFAULT_APN
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: apn
-          - name: DEFAULT_DNS_IPV4_ADDRESS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: ueDnsServer
-          - name: DEFAULT_DNS_SEC_IPV4_ADDRESS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: ueDnsServerSec
-          - name: PUSH_PROTOCOL_OPTION
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pushProtocolOption
+        volumeMounts:
+          - mountPath: /openair-spgwc/etc/spgw_c.json
+            name: cfg-vol
+            subPath: spgw_c.json
+          - mountPath: "/var/crash/core"
+            name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
         {{- if .Values.start.spgwc}}
+        command:
+          -  /bin/sh
+          -  -c
+          -  echo "/var/crash/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern && /openair-spgwc/bin/oai_spgwc -c /openair-spgwc/etc/spgw_c.json {{ .Values.log.stdout }} {{ .Values.log.file }} > /var/crash/core/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.log 2>&1
         {{- else}}
         command:
           - /bin/sleep
@@ -110,9 +66,12 @@ spec:
         - name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
           persistentVolumeClaim:
             claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc   
+        - configMap:
+            name: spgwc-cfg-configmap
+          name: cfg-vol
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      terminationGracePeriodSeconds: 15
+      terminationGracePeriodSeconds: 5
 

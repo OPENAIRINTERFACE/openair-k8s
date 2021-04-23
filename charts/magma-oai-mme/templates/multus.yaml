@@ -13,8 +13,7 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": {{- cat .Values.mmeConf.mmeIpS1c "/" .Values.mmeConf.mmeNetmaskS1c | nospace | quote }},
-                        "gateway": {{ .Values.mmeConf.mmeGatewayS1c | quote }}
+                        "address": {{- cat .Values.mmeConf.mmeIpS1c "/" .Values.mmeConf.mmeNetmaskS1c | nospace | quote }}
                 }
         ]
       }
