@@ -2,7 +2,7 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition 
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
+  name: {{ .Chart.Name }}-{{ .Values.lte.instance }}-{{ .Values.namespace }}-net1
 spec:
   config: '{ 
       "cniVersion": "0.3.0",
@@ -13,50 +13,7 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": {{- cat .Values.lte.sgwSxIp "/" .Values.lte.sgwSxNetmask | nospace | quote }},
-                        "gateway": {{ .Values.lte.sgwSxGateway | quote }}
-                }
-        ]
-      }
-    }'
----
-apiVersion: "k8s.cni.cncf.io/v1"
-kind: NetworkAttachmentDefinition 
-metadata:
-  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net2
-spec:
-  config: '{ 
-      "cniVersion": "0.3.0",
-      "type": "macvlan",
-      "master": "bond0",
-      "mode": "bridge",
-      "ipam": {
-        "type": "static",
-        "addresses": [
-                {
-                        "address": {{- cat .Values.lte.sgwS1uIp "/" .Values.lte.sgwS1uNetmask | nospace | quote }},
-                        "gateway": {{ .Values.lte.sgwS1uGateway | quote }}
-                }
-        ]
-      }
-    }'
----
-apiVersion: "k8s.cni.cncf.io/v1"
-kind: NetworkAttachmentDefinition 
-metadata:
-  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net3
-spec:
-  config: '{ 
-      "cniVersion": "0.3.0",
-      "type": "macvlan",
-      "master": "bond0",
-      "mode": "bridge",
-      "ipam": {
-        "type": "static",
-        "addresses": [
-                {
-                        "address": {{- cat .Values.lte.pgwSgiIp "/" .Values.lte.pgwSgiNetmask | nospace | quote }},
-                        "gateway": {{ .Values.lte.pgwSgiGateway | quote }}
+                        "address": {{- cat .Values.lte.spgwIpOneIf "/" .Values.lte.spgwNetmaskOneIf | nospace | quote }}
                 }
         ]
       }

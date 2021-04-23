@@ -4,12 +4,12 @@
 
 replicaCount: 1
 
-namespace: "5geve"
+namespace: "oai"
 
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-hss
-  version: onap-0.1.0
+  version: stable
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -48,9 +48,9 @@ service:
   # Assume cassandra pod name is cassandra
 lte:
   prefix: "/openair-hss/etc"
-  realm: "svc.cluster.local"
-  dbpodname: "cassandra-0.cassandra"
-  identity: "oai-hss"
+  realm: "oai.svc.cluster.local"
+  dbFqdn: "cassandra-0.cassandra.oai.svc.cluster.local"
+  identity: "oai-hss.oai.svc.cluster.local"
   opKey: "1006020f0a478bf6b699f15c062e42b3"
   roaming: "true"
   apn1: "oai.ipv4"

@@ -7,8 +7,8 @@ data:
   output: {{ .Values.lte.output }}
   prefix: {{ .Values.lte.prefix }}
   pidDirectory: {{ .Values.lte.pidDirectory }}
-  mmeService: {{ .Values.lte.fdMmeHostname }}.{{ .Values.namespace }}.{{ .Values.lte.domainName }}
-  mmeRealm: {{ .Values.namespace }}.{{ .Values.lte.domainName }}
+  mmeService: {{ .Values.lte.fdMmeHostname }}.{{ .Values.lte.domainName }}
+  mmeRealm: {{ .Values.lte.domainName }}
   mmeGid: {{ .Values.lte.mmeGid | quote }}
   mmeCode: {{ .Values.lte.mmeCode | quote }}
   mcc: {{ .Values.lte.mcc | quote }}

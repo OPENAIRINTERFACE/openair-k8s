@@ -1,0 +1,122 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Chart.Name}}
+  labels:
+    {{- include "magma-oai-mme.labels" . | nindent 4}}
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      {{- include "magma-oai-mme.selectorLabels" . | nindent 6}}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "magma-oai-mme.selectorLabels" . | nindent 8}}
+      annotations:
+        k8s.v1.cni.cncf.io/networks: >-
+          [{
+                 "name": "{{ .Chart.Name }}-{{ .Values.namespace }}-net1",
+                 "default-route": ["{{ .Values.mmeConf.mmeS1cGw }}"]
+          }]
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8}}
+    {{- if .Values.imagePullSecrets}}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8}}
+    {{- end}}
+      containers:
+    {{- if .Values.start.tcpdump}}
+      - name: tcpdump
+        image: "image-registry.openshift-image-registry.svc:5000/oai/tcpdump-internal:latest"
+        volumeMounts:
+          - mountPath: /pcap
+            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+        command:
+          -  /bin/sh
+          -  -c
+          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/magma-oai-mme_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+    {{- end}}
+      - name: redis
+        image: "{{.Values.image.repository}}:{{.Values.image.version}}"
+        command:
+          {{- if .Values.start.redis}}
+          -  /bin/sh
+          -  -c
+          - mkdir /var/opt/magma;/usr/bin/redis-server /usr/local/etc/redis/redis.conf; sleep infinity
+          {{- else}}
+          - /bin/sleep
+          - infinity
+          {{- end}}
+        volumeMounts:
+          - mountPath: /var/log
+            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+      - name: mme
+        image: "{{.Values.image.repository}}:{{.Values.image.version}}"
+        imagePullPolicy: {{.Values.image.pullPolicy}}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12}}
+        ports:
+        - containerPort: {{.Values.service.diameterPort}}
+          name: magma-oai-mme
+        - containerPort: {{.Values.service.diameterSecPort}}
+          name: oai-mme-sec
+        - containerPort: {{.Values.service.gtpcPort}}
+          name: s11
+        env:
+          - name: PREFIX
+            value: {{.Values.mmeConf.prefix}}
+          - name: MME_FQDN
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name}}-{{.Values.namespace}}-configmap
+                key: mmeService
+        volumeMounts:
+          - mountPath: /var/log
+            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+          - mountPath: /magma/etc/mme_fd.conf
+            name: fd-vol
+            subPath: mme_fd.conf
+          - mountPath: /magma/etc/mme.conf
+            name: cfg-vol
+            subPath: mme.conf
+          - mountPath: /magma/bin/mme.exe
+            name: svc-vol
+            subPath: mme.exe
+        {{- with .Values.resources}}
+        resources:
+        {{- toYaml . | nindent 10}}
+        {{- end}}
+        command:
+          {{- if .Values.start.mme}}
+          -  /bin/sh
+          -  -c
+          -  /magma/bin/mme.exe
+          {{- else}}
+          - /bin/sleep
+          - infinity
+          {{- end}}
+      volumes:
+        - name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+          persistentVolumeClaim:
+            claimName: {{.Chart.Name}}-{{.Values.namespace}}-pvc
+        - configMap:
+            name: mme-cfg-configmap
+          name: cfg-vol
+        - configMap:
+            name: mme-fd-configmap
+          name: fd-vol
+        - configMap:
+            name: mme-services-configmap
+            defaultMode: 0777
+          name: svc-vol
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: {{.Values.serviceAccount.name}}
+      terminationGracePeriodSeconds: 15
+      nodeName: perse.5glab.nsa.eurecom.fr

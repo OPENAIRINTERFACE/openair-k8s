@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Chart.Name}}-{{.Values.namespace}}-configmap
+data:
+  mmeService: {{.Values.mmeConf.fdMmeHostname}}.{{.Values.namespace}}.{{.Values.mmeConf.domainName}}

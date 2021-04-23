@@ -3,13 +3,3 @@ kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-configmap
 data:
-  pidDirectory: {{ .Values.lte.pidDirectory }}
-  sgwS11If: {{ .Values.lte.sgwS11If }}
-  sgwS5S8Ip: {{ .Values.lte.sgwS5S8Ip }}
-  pgwS5S8Ip: {{ .Values.lte.pgwS5S8Ip }}
-  pgwSxIf: {{ .Values.lte.pgwSxIf }}
-  ueIpAddressPool: {{ .Values.lte.ueIpAddressPool }}
-  apn: {{ .Values.lte.apn }}
-  ueDnsServer: {{ .Values.lte.ueDnsServer }}
-  ueDnsServerSec: {{ .Values.lte.ueDnsServerSec }}
-  pushProtocolOption: {{ .Values.lte.pushProtocolOption | quote }}

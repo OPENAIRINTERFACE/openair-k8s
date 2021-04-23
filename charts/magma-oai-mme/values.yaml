@@ -1,0 +1,117 @@
+---
+# Default values for magma-oai-mme.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+namespace: "oai"
+
+image:
+  registry: local
+  repository: image-registry.openshift-image-registry.svc:5000/oai/magma-mme
+  version: master-81a44df-20210413
+  # pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: Always
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname
+  # template
+  name: "magma-oai-mme-sa"
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+
+securityContext:
+  privileged: true
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+persistence:
+  # make it true for the first time when you want to create persistance volume
+  # and then false
+  enabled: false
+
+service:
+  type: ClusterIP
+  diameterPort: 3870
+  diameterSecPort: 5870
+  peerDiameterPort: 3868
+  peerDiameterSecPort: 5868
+  gtpcPort: 2123
+
+start:
+  mme: true
+  redis: true
+  tcpdump: true
+  
+mmeConf:
+  # source file folder
+  magma_root: /magma
+  # contains etc, bin subdirs
+  # May be not always same as magma_root
+  prefix: /magma
+  domainName: "svc.cluster.local"
+  fdMmeHostname: "magma-oai-mme"
+  fdHssHostname: "oai-hss"
+  hssDomainName: "oai.svc.cluster.local"
+  useStateless: "true"
+  logLevel: "TRACE"
+  oaiLogLevel: "TRACE"
+  mcc: &mcc "208"
+  mnc: &mnc "99"
+  tac: "1"
+  mmeGid: "4"
+  mmeCode: "1"
+  nonEpsServiceControl: "null"
+  csfbMcc: "001"
+  csfbMnc: "01"
+  lac: "1"
+  enableApnCorrection: "false"
+  apnCorrectionMapList:
+    - imsiPrefix: "00101"
+      apnOverride: "magma.ipv4"
+  mmeIpS1c: "192.168.18.150"
+  mmeS1cGw: "192.168.18.129"
+  mmeNetmaskS1c: "24"
+  mmeIpS11: "192.168.18.150"
+  mmeNetmaskS11: "24"
+  s1apIfaceName: "net1"
+  s11IfaceName: "net1"
+  remoteSgwIp: "192.168.18.156"
+  taiList: |
+     ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";},{ MCC="208";MNC="99";TAC="4";});
+  hssIp: "192.168.18.176"
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a
+  # conscious choice for the user. This also increases chances charts run on
+  # environments with little resources, such as Minikube. If you do want to
+  # specify resources, uncomment the following lines, adjust them as necessary,
+  # and remove the curly braces after 'resources:'
+  # limits:
+  #  cpu: 4
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

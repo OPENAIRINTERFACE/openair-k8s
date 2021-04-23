@@ -1,0 +1,26 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mme-services-configmap
+data:
+  mme.exe: |
+    #!/bin/sh
+    # turn on bash's job control
+    set -m
+    # move core dumps to OC persistent volume
+    echo "/var/log.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+    # Configured mme.log in already available persistent volume
+    # Rename previously generated mme.log with its creation time
+    pushd /var/log
+    for f in MME.magma-oai-mme*
+    do
+      fb=$(basename "$f")
+      mv "$fb" "$(date -r "$f" +"%Y-%m-%d_%H-%M-%S")_$fb"
+    done
+    popd
+    /magma/bin/sctpd &
+    # let create unix socket
+    sleep 7
+    /magma/scripts/entrypoint.sh /magma/bin/oai_mme -c /magma/etc/mme.conf
+

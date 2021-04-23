@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-{{ .Values.lte.instance }}
   labels:
     {{- include "oai-spgwu-tiny.labels" . | nindent 4 }}
 spec:
@@ -16,11 +16,11 @@ spec:
       labels:
         {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 8 }}
       annotations:
-        k8s.v1.cni.cncf.io/networks: '[
-                                       { "name": {{- cat .Chart.Name "-" .Values.namespace "-net1" | nospace | quote }} }, 
-                                       { "name": {{- cat .Chart.Name "-" .Values.namespace "-net2" | nospace | quote }}, "default-route": [{{ .Values.lte.sgwS1uGateway | quote }}] }, 
-                                       { "name": {{- cat .Chart.Name "-" .Values.namespace "-net3" | nospace | quote }} }
-        ]'
+        k8s.v1.cni.cncf.io/networks: >-
+          [{
+                 "name": "{{ .Chart.Name }}-{{ .Values.lte.instance }}-{{ .Values.namespace }}-net1",
+                 "default-route": ["{{ .Values.lte.pgwuSgiGw }}"]
+          }] 
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -29,8 +29,20 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
+    {{- if .Values.start.tcpdump }}
+      - name: tcpdump
+        image: "image-registry.openshift-image-registry.svc:5000/oai/tcpdump-internal:latest"                                                                                      
+        command:
+          -  /bin/sh
+          -  -c
+          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          # -  /usr/sbin/tcpdump -i any port 2152 or port 8805 or port 5001 or arp or icmp -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+        volumeMounts:
+        - mountPath: "/pcap"
+          name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
+    {{- end }}
       - name: spgwu
-        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -39,54 +51,41 @@ spec:
           name: oai-spgwu
         - containerPort: {{ .Values.service.gtpuPort }}
           name: s1u
-        env:
-          - name: PID_DIRECTORY
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pidDirectory
-          - name: SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwS1uIf
-          - name: SGW_INTERFACE_NAME_FOR_SX
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: sgwSxIf
-          - name: PGW_INTERFACE_NAME_FOR_SGI
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwSgiIf
-          - name: NETWORK_UE_IP
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: netUeIp
-          - name: NETWORK_UE_NAT_OPTION
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: netUeNatOption
-          - name: SPGWC0_IP_ADDRESS
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwcSxIp
-          - name: PGWU_SGI_GW
-            valueFrom:
-              configMapKeyRef:
-                name: {{ .Chart.Name }}-configmap
-                key: pgwuSgiGw
-      - name: tcpdump
-        image: corfr/tcpdump
+        - containerPort: 5001
+          name: iperf
+        volumeMounts:
+          - mountPath: /openair-spgwu-tiny/etc/spgw_u.conf
+            name: cfg-vol
+            subPath: spgw_u.conf
+        {{- if .Values.start.spgwu}}
+        command:
+          -  /bin/sh
+          -  -c
+          -  /openair-spgwu-tiny/bin/oai_spgwu -c /openair-spgwu-tiny/etc/spgw_u.conf {{ .Values.log.stdout }} {{ .Values.log.file }}
+        {{- else}}
         command:
           - /bin/sleep
           - infinity
+        {{- end}}
+        #volumeMounts:
+        #- mountPath: /dev/hugepages
+        #  name: hugepage
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+        - name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc
+        - configMap:
+            name: spgwu{{ .Values.lte.instance }}-cfg-configmap
+          name: cfg-vol
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 5
+      # RT worker
+      # nodeName: dedale.5glab.nsa.eurecom.fr
+

@@ -18,10 +18,10 @@ helm repo update
 ## Build Network functions images
 For all network functions (HSS, MME, SPGW-C, SPGW-U) you have to build an image:
 Please refer to:
-1. MME: https://github.com/OPENAIRINTERFACE/openair-mme/blob/helm3.1-onap-sync-with-cn-split-repos/openshift
+1. MME: https://github.com/magma/magma
 1. HSS: https://github.com/OPENAIRINTERFACE/openair-hss/blob/helm3.1-onap-sync-with-cn-split-repos/openshift
-1. SPGW-C: https://github.com/OPENAIRINTERFACE/openair-spgwc/tree/helm3.1-onap-sync-with-cn-split-repos/openshift
-1. SPGW-U: https://github.com/OPENAIRINTERFACE/openair-spgwu-tiny/tree/helm3.1-onap-sync-with-cn-split-repos/openshift
+1. SPGW-C: https://github.com/lionelgo/openair-spgwc/tree/sanitize-leak/openshift
+1. SPGW-U: https://github.com/lionelgo/openair-spgwu-tiny/tree/multi-spgwu/openshift
 
 On francelab cluster be aware that certificates (/etc/rhsm/ca/redhat-uep.pem) are renewed every month, so you may have to redo the "pki-entitlement" phase every month.
 
@@ -54,25 +54,56 @@ oai-cn          cassandra-2      1/1     Running     0          5m13s
 Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install hss /path-to-your-openair-k8s-cloned-dir/charts/oai-hss
+K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
+helm install hss $K8S_DIR/charts/oai-hss
 ```
 
 ## Deploy SPGW-C
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install spgwc /path-to-your-openair-k8s-cloned-dir/charts/oai-spgwc
+K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
+helm install spgwc $K8S_DIR/charts/oai-spgwc --set start.tcpdump="true"
 ```
-## Deploy SPGW-U
-Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
-
-```bash
-helm install spgwu /path-to-your-openair-k8s-cloned-dir/charts/oai-spgwu-tiny
-```
-
 ## Deploy MME
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
 ```bash
-helm install mme /path-to-your-openair-k8s-cloned-dir/charts/oai-mme
+K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
+helm install mme $K8S_DIR/charts/magma-oai-mme  --set start.tcpdump="true"
+```
+
+## Deploy SPGW-U at EURECOM (eNB located at EURECOM should be in TAC = 1, 2)
+Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+```bash
+K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
+helm install spgwu1 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu1-tiny-sa" --set lte.instance="0" --set lte.fqdn="gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.151" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
+helm install spgwu2 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu2-tiny-sa" --set lte.instance="1" --set lte.fqdn="gwu2.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.165" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
+```
+
+## Deploy a SPGW-U not at EURECOM (eNB should be in TAC = 3, 4, can be extended)
+Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+```bash
+helm install spgwu3 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu3-tiny-sa" --set lte.instance="2" --set lte.fqdn="gwu3.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.168" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
+
+helm install spgwu4 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu4-tiny-sa" --set lte.instance="3" --set lte.fqdn="gwu4.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.170" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
+
+```
+
+## Un-deploy NFs at EURECOM
+Upon your needs:
+
+```
+helm uninstall mme spgwc spgwu1 spgwu2
+```
+
+## Un-deploy NFs not at EURECOM
+Upon your needs:
+
+```
+helm uninstall spgwu3 spgwu4
+```
+
 

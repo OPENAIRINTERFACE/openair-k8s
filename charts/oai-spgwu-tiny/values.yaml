@@ -4,12 +4,12 @@
 
 replicaCount: 1
 
-namespace: "5geve"
+namespace: "oai"
 
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu-tiny
-  version: onap-0.1.0
+  version: multi-spgwu
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -33,6 +33,8 @@ podSecurityContext:
 
 securityContext:
   privileged: true
+  capabilities:
+    add: ["NET_ADMIN", "NET_RAW"]
   # capabilities:
   #   drop:
   #   - ALL
@@ -45,36 +47,47 @@ service:
   pfcpPort: 8805
   gtpuPort: 2152
 
+start:
+  spgwu: true
+  tcpdump: false
+log:
+  # Leave string empty to disable
+  stdout: " -o "
+  file: " -r "
 lte:
+  instance: 0
+  fqdn: "gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org"
   pidDirectory: "/var/run"
-  sgwS1uIf: "net2"
-  sgwS1uIp: "192.168.18.161"
-  sgwS1uGateway: "192.168.18.1"
-  sgwS1uNetmask: "24"
-  pgwSgiIf: "net3"
-  pgwSgiIp: "192.168.3.110"
-  pgwSgiGateway: "192.168.3.1"
-  pgwSgiNetmask: "24"
-  pgwuSgiGw: "192.168.3.111"
-  netUeIp: "192.168.28.0/24"
-  pgwcSxIp: "192.168.2.110"
-  sgwSxIf: "net1"
-  sgwSxIp: "192.168.2.111"
-  sgwSxGateway: "192.168.2.1"
-  sgwSxNetmask: "24"
+  spgwOneIf: "net1"
+  spgwIpOneIf: "192.168.18.151"
+  spgwNetmaskOneIf: "24"
+  pgwuSgiGw: "192.168.18.129"
+  netUeIp: "192.168.29.0/24"
+  pgwcSxIp: "192.168.18.156"
   netUeNatOption: "yes"
+  threadsS1uUl: "16"
+  threadsSgiDl: "16"
+  threadsSx: "1"
+  threadsSgiPrio: "64"
+  threadsS1uPrio: "64"
+  threadsSxPrio: "64"
+  # standart feature is no, put yes if you want less UL packet delay
+  bypassUlPfcpRules: "yes"
 
-resources: {}
+persistence:
+  # make it true for the first time when you want to create persistance volume 
+  # and then false
+  enabled: false
+
+
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  requests:
+    cpu: 8
+    memory: 256Mi
 
 nodeSelector: {}
 

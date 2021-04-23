@@ -1,10 +1,10 @@
 ---
 apiVersion: "k8s.cni.cncf.io/v1"
-kind: NetworkAttachmentDefinition 
+kind: NetworkAttachmentDefinition
 metadata:
   name: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
 spec:
-  config: '{ 
+  config: '{
       "cniVersion": "0.3.0",
       "type": "macvlan",
       "master": "bond0",
@@ -13,7 +13,7 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": {{- cat .Values.lte.spgwIpOneIf "/" .Values.lte.spgwNetmaskOneIf | nospace | quote }}
+                        "address": {{- cat .Values.mmeConf.mmeIpS1c "/" .Values.mmeConf.mmeNetmaskS1c | nospace | quote }}
                 }
         ]
       }
