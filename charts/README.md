@@ -73,8 +73,12 @@ K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
 helm install mme $K8S_DIR/charts/magma-oai-mme  --set start.tcpdump="true"
 ```
 
-## Deploy SPGW-U at EURECOM (eNB located at EURECOM should be in TAC = 1, 2)
+## Deploy SPGW-U at EURECOM (eNB located at EURECOM should be in TAC = 1, 2, 3, 4)
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+UE traffic from 209.99 TAC 1, 2 will be forwarded to gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org
+
+UE traffic from 209.99 TAC 3, 4 will be forwarded to gwu2.spgw.node.epc.mnc099.mcc208.3gppnetwork.org
 
 ```bash
 K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
@@ -82,8 +86,12 @@ helm install spgwu1 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oa
 helm install spgwu2 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu2-tiny-sa" --set lte.instance="1" --set lte.fqdn="gwu2.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.165" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
 ```
 
-## Deploy a SPGW-U not at EURECOM (eNB should be in TAC = 3, 4, can be extended)
+## Deploy a SPGW-U not at EURECOM (eNB should be in TAC = 5, 6, 7, 8, can be extended)
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
+
+UE traffic from 209.99 TAC 5, 6 will be forwarded to gwu3.spgw.node.epc.mnc099.mcc208.3gppnetwork.org
+
+UE traffic from 209.99 TAC 7, 8 will be forwarded to gwu4.spgw.node.epc.mnc099.mcc208.3gppnetwork.org
 
 ```bash
 helm install spgwu3 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu3-tiny-sa" --set lte.instance="2" --set lte.fqdn="gwu3.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.168" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
