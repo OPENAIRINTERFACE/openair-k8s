@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-namespace: "oai"
+namespace: "5geve"
 
 image:
   registry: local
@@ -59,11 +59,11 @@ lte:
   fqdn: "gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org"
   pidDirectory: "/var/run"
   spgwOneIf: "net1"
-  spgwIpOneIf: "192.168.18.151"
+  spgwIpOneIf: "192.168.18.161"
   spgwNetmaskOneIf: "24"
   pgwuSgiGw: "192.168.18.129"
   netUeIp: "192.168.29.0/24"
-  pgwcSxIp: "192.168.18.156"
+  pgwcSxIp: "192.168.18.170"
   netUeNatOption: "yes"
   threadsS1uUl: "16"
   threadsSgiDl: "16"

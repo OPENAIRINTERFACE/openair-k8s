@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-namespace: "oai"
+namespace: "5geve"
 
 image:
   registry: local
@@ -58,7 +58,7 @@ lte:
   mnc: "99"
   mnc3: "099"
   spgwOneIf: "net1"
-  spgwIpOneIf : "192.168.18.156"
+  spgwIpOneIf : "192.168.18.170"
   spgwNetmaskOneIf : "24"
   sgwS5S8Ip: "127.0.58.2"
   pgwS5S8Ip: "127.0.58.1"

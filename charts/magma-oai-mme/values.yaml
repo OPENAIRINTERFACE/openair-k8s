@@ -86,7 +86,7 @@ mmeConf:
   apnCorrectionMapList:
     - imsiPrefix: "00101"
       apnOverride: "magma.ipv4"
-  mmeIpS1c: "192.168.18.150"
+  mmeIpS1c: "192.168.18.160"
   mmeS1cGw: "192.168.18.129"
   mmeNetmaskS1c: "24"
   mmeIpS11: "192.168.18.150"
