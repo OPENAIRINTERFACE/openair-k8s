@@ -38,7 +38,7 @@ UE traffic from 209.99 TAC 1, 2, 3, 4 will be forwarded to gwu1.spgw.node.epc.mn
 
 ```bash
 K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
-helm install spgwu1 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu1-tiny-sa" --set lte.instance="0" --set lte.fqdn="gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.151" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
+helm install spgwu1 $K8S_DIR/charts/oai-spgwu-tiny --set lte.instance="0" --set lte.fqdn="gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.170" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
 ```
 
 ## Optional: Deploy a SPGW-U not at EURECOM (eNB should be in TAC = 5, 6, 7, 8, can be extended)
