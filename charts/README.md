@@ -55,8 +55,12 @@ helm install spgwu2 $K8S_DIR/charts/oai-spgwu-tiny  --set lte.instance="1" --set
 ## Deploy MME
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
 
+Since readyness probes are not yet functional on 5geve, you have to give some delay to the SPGW-U to connect to the SPGW-C for starting the MME.
+
+
 ```bash
-K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
+K8S_DIR="/path-to-your-openair-k8s-cloned-dir";
+sleep 15;
 helm install mme $K8S_DIR/charts/magma-oai-mme  --set start.tcpdump="true"
 ```
 
