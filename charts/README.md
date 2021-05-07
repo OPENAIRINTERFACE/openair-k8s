@@ -48,7 +48,7 @@ UE traffic from 209.99 TAC 5, 6, 7, 8 will be forwarded to gwu2.spgw.node.epc.mn
 
 
 ```bash
-helm install spgwu2 $K8S_DIR/charts/oai-spgwu-tiny --set serviceAccount.name="oai-spgwu2-tiny-sa" --set lte.instance="1" --set lte.fqdn="gwu2.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.168" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
+helm install spgwu2 $K8S_DIR/charts/oai-spgwu-tiny  --set lte.instance="1" --set lte.fqdn="gwu2.spgw.node.epc.mnc099.mcc208.3gppnetwork.org" --set lte.spgwIpOneIf="192.168.18.161" --set lte.netUeIp="192.168.21.0/24" --set start.tcpdump="false"
 
 ```
 
