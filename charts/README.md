@@ -1,4 +1,4 @@
-# Deploy OAI CN with helm charts on Open Shift (Work In Progress)
+# Deploy OAI CN with helm charts on Open Shift in the scope of 5geve project
 
 ## Prerequisites
 - Assuming you are using Open Shift Server Version: 4.4.10, Kubernetes Version: v1.17.1+9d33dd3
@@ -8,56 +8,19 @@
   
   You can check if SCTP is enabled by running a client/server [basic app](https://docs.openshift.com/container-platform/4.4/networking/using-sctp.html#nw-sctp-verifying_using-sctp)
 
-### Use official cassandra image
-Add cassandra helm chart to helm repo:
-```bash
-helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com
-helm repo update
-```
 
 ## Build Network functions images
-For all network functions (HSS, MME, SPGW-C, SPGW-U) you have to build an image:
+
+In the context of 5geve project the network function HSS is common for all 4G CN deployments, it is already setup and should not be deployed or re-deployed.
+
+For all network functions (MME, SPGW-C, SPGW-U) you have to build an image:
 Please refer to:
 1. MME: https://github.com/magma/magma
-1. HSS: https://github.com/OPENAIRINTERFACE/openair-hss/blob/helm3.1-onap-sync-with-cn-split-repos/openshift
-1. SPGW-C: https://github.com/lionelgo/openair-spgwc/tree/sanitize-leak/openshift
-1. SPGW-U: https://github.com/lionelgo/openair-spgwu-tiny/tree/multi-spgwu/openshift
+2. SPGW-C: https://github.com/lionelgo/openair-spgwc/tree/sanitize-leak/openshift
+3. SPGW-U: https://github.com/lionelgo/openair-spgwu-tiny/tree/multi-spgwu/openshift
 
 On francelab cluster be aware that certificates (/etc/rhsm/ca/redhat-uep.pem) are renewed every month, so you may have to redo the "pki-entitlement" phase every month.
 
-## Deploy Cassandra
-### Storage class
-The envisionned storage for cassandra is nfs (provisioner example.com/nfs), storage class name is "managed-nfs-storage".
-
-### Security context permissions
-To be able to deploy cassandra on oc (step not required on k8s), logged as kubeadmin on oc:
-```bash
-oc adm policy add-scc-to-user anyuid -z default
-```
-### Deployment
-Work is in progress, please follow the described deployment sequence (cassandra, HSS, SPGWC, SPGWU, MME).
-
-Logged as administrator of your namespace on oc (not kubeadmin):
-```bash
-helm install --set config.endpoint_snitch=GossipingPropertyFileSnitch,persistence.storageClass=managed-nfs-storage  cassandra incubator/cassandra
-```
-This will create 3 pods (namespace is 'oai' here)
-
-```bash
-oai          cassandra-0      1/1     Running     0          8m39s
-oai          cassandra-1      1/1     Running     0          7m   
-oai          cassandra-2      1/1     Running     0          5m13s
-```
-
-## Deploy HSS
-Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
-
-```bash
-K8S_DIR="/path-to-your-openair-k8s-cloned-dir"
-helm install hss $K8S_DIR/charts/oai-hss
-```
-
-Note: At EURECOM this network function is always available for all other LTE projects, so do not stop it.
 
 ## Deploy SPGW-C
 Idem: Since the deployment uses multus for creating networks, the cluster role 'cluster-admin' is required, so you have to log on oc with a user having this role.
