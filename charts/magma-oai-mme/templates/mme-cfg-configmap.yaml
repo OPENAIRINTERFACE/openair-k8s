@@ -22,8 +22,21 @@ data:
         EPS_NETWORK_FEATURE_SUPPORT_LOCATION_SERVICES_VIA_EPC            = "no";    # DO NOT CHANGE
         EPS_NETWORK_FEATURE_SUPPORT_EXTENDED_SERVICE_REQUEST             = "no";    # DO NOT CHANGE
         # Display statistics about whole system (expressed in seconds)
-        MME_STATISTIC_TIMER                       = 10;
+        STATS_TIMER_SEC                       = 6;
+        
         USE_STATELESS = "{{ .Values.mmeConf.useStateless }}";
+        USE_HA = "{{ .Values.mmeConf.useHa }}";
+        ENABLE_GTPU_PRIVATE_IP_CORRECTION = "{{ .Values.mmeConf.enableGtpuPrivateIpCorrection }}";
+        ENABLE_CONVERGED_CORE = "{{ .Values.mmeConf.enableConvergedCore }}";
+
+        # Congestion control configuration parameters
+        CONGESTION_CONTROL_ENABLED = "{{ .Values.mmeConf.congestionControlEnabled }}";
+        # Congestion control thresholds (expressed in microseconds)
+        S1AP_ZMQ_TH = {{ .Values.mmeConf.s1apZmqThUs }};
+        MME_APP_ZMQ_CONGEST_TH = {{ .Values.mmeConf.mmeAppZmqCongestThUs }};
+        MME_APP_ZMQ_AUTH_TH = {{ .Values.mmeConf.mmeAppZmqAuthThUs }};
+        MME_APP_ZMQ_IDENT_TH = {{ .Values.mmeConf.mmeAppZmqIdentThUs }};
+        MME_APP_ZMQ_SMC_TH = {{ .Values.mmeConf.mmeAppZmqSmcThUs }};
         
         INTERTASK_INTERFACE :
         {
@@ -67,6 +80,19 @@ data:
         
         TAI_LIST = {{ .Values.mmeConf.taiList }} 
         
+        TAC_LIST = ();
+        
+        # List of restricted PLMNs
+        # By default this list is empty
+        # Max number of restricted plmn is 10
+        RESTRICTED_PLMN_LIST = ();
+ 
+        # List of blocked IMEIs
+        # By default this list is empty
+        # Stored in a hash table on mme side
+        # Length of IMEI=15 digits, length of IMEISV=16 digits
+        BLOCKED_IMEI_LIST = ();
+           
         CSFB :
         {
             NON_EPS_SERVICE_CONTROL = "{{ .Values.mmeConf.nonEpsServiceControl }}";
@@ -212,5 +238,13 @@ data:
         # S-GW binded interface for S11 communication (GTPV2-C), if none selected the ITTI message interface is used
           SGW_IPV4_ADDRESS_FOR_S11              = "{{ .Values.mmeConf.remoteSgwIp }}";
         };
+        
+ 
+        FEDERATED_MODE_MAP = (
+          # ModeMapItem values can be found at magma/lte/protos/mconfig/mconfigs.proto
+          );
+
+        SRVC_AREA_CODE_2_TACS_MAP = ();
+        SENTRY_CONFIG = {};
     };
 

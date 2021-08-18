@@ -73,6 +73,15 @@ mmeConf:
   fdHssHostname: "oai-hss"
   hssDomainName: "oai.svc.cluster.local"
   useStateless: "true"
+  useHa: "false"
+  enableGtpuPrivateIpCorrection: "false"
+  enableConvergedCore: "false"
+  congestionControlEnabled: "false"
+  s1apZmqThUs: 2000000  # delay threshold used for dropping initial UE message
+  mmeAppZmqCongestThUs: 100000  # delay threshold used for rejecting attach requests
+  mmeAppZmqAuthThUs: 200000  # delay threshold used for dropping Authentication Complete
+  mmeAppZmqIdentThUs: 400000  # delay threshold used for dropping Identification Complete
+  mmeAppZmqSmcThUs: 1000000  # delay threshold used for dropping SMC Complete
   logLevel: "TRACE"
   oaiLogLevel: "TRACE"
   mcc: &mcc "208"
