@@ -10,7 +10,7 @@ namespace: "oai"
 image:
   registry: local
   repository: image-registry.openshift-image-registry.svc:5000/oai/magma-mme
-  version: master-81a44df-20210413
+  version: gtpv2c-fteid-rhel8
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 

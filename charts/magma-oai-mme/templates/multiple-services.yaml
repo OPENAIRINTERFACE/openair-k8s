@@ -19,8 +19,9 @@ data:
       mv "$fb" "$(date -r "$f" +"%Y-%m-%d_%H-%M-%S")_$fb"
     done
     popd
+    /magma/scripts/check_mme_s6a_certificate $PREFIX/etc $MME_FQDN
     /magma/bin/sctpd &
     # let create unix socket
     sleep 7
-    /magma/scripts/entrypoint.sh /magma/bin/oai_mme -c /magma/etc/mme.conf
+    /magma/bin/oai_mme -c /magma/etc/mme.conf
 

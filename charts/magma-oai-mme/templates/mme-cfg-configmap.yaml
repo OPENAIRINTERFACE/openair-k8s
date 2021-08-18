@@ -22,7 +22,7 @@ data:
         EPS_NETWORK_FEATURE_SUPPORT_LOCATION_SERVICES_VIA_EPC            = "no";    # DO NOT CHANGE
         EPS_NETWORK_FEATURE_SUPPORT_EXTENDED_SERVICE_REQUEST             = "no";    # DO NOT CHANGE
         # Display statistics about whole system (expressed in seconds)
-        STATS_TIMER_SEC                       = 6;
+        STATS_TIMER_SEC                       = 60;
         
         USE_STATELESS = "{{ .Values.mmeConf.useStateless }}";
         USE_HA = "{{ .Values.mmeConf.useHa }}";
