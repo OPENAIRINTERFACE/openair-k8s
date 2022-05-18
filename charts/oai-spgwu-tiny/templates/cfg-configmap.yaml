@@ -69,5 +69,28 @@ data:
           {
               BYPASS_UL_PFCP_RULES = "{{ .Values.lte.bypassUlPfcpRules }}"; # 'no' for standart features, yes for enhancing UL throughput
           };
+          
+          SUPPORT_5G_FEATURES:  
+          {
+             # STRING, {"yes", "no"},
+             ENABLE_5G_FEATURES = "no" # Set to 'yes' to support 5G Features
+             REGISTER_NRF = "no";  # Set to 'yes' if UPF resgisters to an NRF
+             USE_FQDN_NRF = "no"; # Set to 'yes' if UPF relies on a DNS/FQDN service to resolve NRF's FQDN
+             UPF_FQDN_5G  = "oai-spgwu-tiny-svc";  #Set FQDN of UPF 
+      
+             NRF :
+             {
+                IPV4_ADDRESS = "127.0.0.1";  # YOUR NRF CONFIG HERE
+                PORT         = 80;            # YOUR NRF CONFIG HERE (default: 80)
+                HTTP_VERSION = 1;   #Set HTTP version for NRF (1 or 2)Default 1
+                API_VERSION  = "v1";   # YOUR NRF API VERSION HERE
+                FQDN = "gw.openairinterface.org";
+             };
+      
+             # Additional info to be sent to NRF for supporting Network Slicing 
+             UPF_INFO = (
+                { NSSAI_SST = 1; NSSAI_SD = "2";  DNN_LIST = ({DNN = "default";}); }
+             );  
+          } 
       };
 

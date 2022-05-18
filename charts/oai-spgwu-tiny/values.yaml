@@ -4,12 +4,12 @@
 
 replicaCount: 1
 
-namespace: "oai"
+namespace: "oai4g"
 
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai/oai-spgwu-tiny
-  version: multi-spgwu
+  repository: image-registry.openshift-image-registry.svc:5000/oai4g/oai-spgwu-tiny
+  version: oai-oc
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
@@ -59,9 +59,9 @@ lte:
   fqdn: "gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org"
   pidDirectory: "/var/run"
   spgwOneIf: "net1"
-  spgwIpOneIf: "192.168.18.151"
-  spgwNetmaskOneIf: "24"
-  pgwuSgiGw: "192.168.18.129"
+  spgwIpOneIf: "172.21.6.183"
+  spgwNetmaskOneIf: "22"
+  pgwuSgiGw: "172.21.7.254"
   netUeIp: "192.168.29.0/24"
   pgwcSxIp: "192.168.18.156"
   netUeNatOption: "yes"

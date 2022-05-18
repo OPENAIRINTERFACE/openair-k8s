@@ -16,7 +16,7 @@ spec:
       labels:
         {{- include "oai-hss.selectorLabels" . | nindent 8 }}
       annotations:
-        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net6
+        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -26,7 +26,7 @@ spec:
     {{- end }}
       initContainers:
       - name: init-db
-        image: image-registry.openshift-image-registry.svc:5000/oai/cassandra:3.11
+        image: image-registry.openshift-image-registry.svc:5000/oai4g/cassandra:3.11.6-ubi7
         command:
         - sh
         - -c
@@ -109,7 +109,7 @@ spec:
                 name: {{ .Chart.Name }}-configmap
                 key: numSubscribers
       - name: tcpdump
-        image: "image-registry.openshift-image-registry.svc:5000/oai/tcpdump-internal:latest"
+        image: "network-tools-rhel8:v4.10.0-202205022327.p0.gbcfec9c.assembly.stream"                                                                                      
         command:
           - /bin/sleep
           - infinity

@@ -31,7 +31,7 @@ spec:
       containers:
     {{- if .Values.start.tcpdump }}
       - name: tcpdump
-        image: "image-registry.openshift-image-registry.svc:5000/oai/tcpdump-internal:latest"                                                                                      
+        image: "network-tools-rhel8:v4.10.0-202205022327.p0.gbcfec9c.assembly.stream"                                                                                      
         command:
           -  /bin/sh
           -  -c
