@@ -8,8 +8,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: managed-nfs-storage
+  storageClassName: {{ .Values.persistent.volumeName }}
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.persistent.size }}
 {{- end }}

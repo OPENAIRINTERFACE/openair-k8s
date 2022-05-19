@@ -4,14 +4,31 @@
 
 replicaCount: 1
 
-namespace: "oai4g"
-
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai4g/oai-spgwu-tiny
+  repository: oai-spgwu-tiny
   version: oai-oc
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
+
+tcpdumpimage:
+  registry: local
+  repository: network-tools-rhel8
+  version: v4.10.0-202205022327.p0.gbcfec9c.assembly.stream
+  #pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: IfNotPresent
+
+
+
+persistence:
+  # make it true for the first time when you want to create persistance volume
+  # and then false
+  enabled: true
+  volumeName: managed-nfs-storage
+  size: 1Gi
+
+multus:
+  hostInterface: "bond0"      # Interface of the host machine on which this pod will be scheduled
 
 imagePullSecrets: []
 
@@ -63,7 +80,7 @@ lte:
   spgwNetmaskOneIf: "22"
   pgwuSgiGw: "172.21.7.254"
   netUeIp: "192.168.29.0/24"
-  pgwcSxIp: "192.168.18.156"
+  pgwcSxIp: "172.21.6.181"
   netUeNatOption: "yes"
   threadsS1uUl: "16"
   threadsSgiDl: "16"
@@ -73,12 +90,6 @@ lte:
   threadsSxPrio: "64"
   # standart feature is no, put yes if you want less UL packet delay
   bypassUlPfcpRules: "yes"
-
-persistence:
-  # make it true for the first time when you want to create persistance volume 
-  # and then false
-  enabled: false
-
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -94,3 +105,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+terminationGracePeriodSeconds: 30
+
+nodeName: 
+

@@ -3,14 +3,15 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{.Chart.Name}}-{{.Values.namespace}}-pvc
+   name: cn5g-pvc
+#  name: {{.Chart.Name}}-{{ .Release.Namespace }}-pvc
   annotations:
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: managed-nfs-storage
+  storageClassName: {{ .Values.persistence.volumeName }}
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.persistence.size }}
 {{- end}}

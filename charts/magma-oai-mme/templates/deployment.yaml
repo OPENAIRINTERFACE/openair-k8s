@@ -19,7 +19,7 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: >-
           [{
-                 "name": "{{ .Chart.Name }}-{{ .Values.namespace }}-net1",
+                 "name": "{{ .Chart.Name }}-net1",
                  "default-route": ["{{ .Values.mmeConf.mmeS1cGw }}"]
           }]
     spec:
@@ -30,17 +30,26 @@ spec:
         {{- toYaml . | nindent 8}}
     {{- end}}
       containers:
-    {{- if .Values.start.tcpdump}}
       - name: tcpdump
-        image: "network-tools-rhel8:v4.10.0-202205022327.p0.gbcfec9c.assembly.stream"                                                                                      
-        volumeMounts:
-          - mountPath: /pcap
-            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+        image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"
+        imagePullPolicy: {{ .Values.tcpdumpimage.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- if .Values.start.tcpdump}}
         command:
-          -  /bin/sh
-          -  -c
-          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/magma-oai-mme_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
-    {{- end}}
+          - /bin/sh
+          - -c
+          - /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/magma-oai-mme_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+        {{- else}}
+        command:
+          - /bin/sleep
+          - infinity
+        {{- end}}
+        {{- if .Values.persistence.enabled}}
+        volumeMounts:
+        - mountPath: "/pcap"
+          name: cn4g-pv
+        {{- end}}
       - name: redis
         image: "{{.Values.image.repository}}:{{.Values.image.version}}"
         command:
@@ -54,7 +63,7 @@ spec:
           {{- end}}
         volumeMounts:
           - mountPath: /var/log
-            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+            name: {{.Chart.Name}}-pv
       - name: mme
         image: "{{.Values.image.repository}}:{{.Values.image.version}}"
         imagePullPolicy: {{.Values.image.pullPolicy}}
@@ -73,11 +82,11 @@ spec:
           - name: MME_FQDN
             valueFrom:
               configMapKeyRef:
-                name: {{ .Chart.Name}}-{{.Values.namespace}}-configmap
+                name: {{ .Chart.Name}}-{{ .Release.Namespace }}-configmap
                 key: mmeService
         volumeMounts:
           - mountPath: /var/log
-            name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+            name: {{.Chart.Name}}-pv
           - mountPath: /magma/etc/mme_fd.conf
             name: fd-vol
             subPath: mme_fd.conf
@@ -101,9 +110,11 @@ spec:
           - infinity
           {{- end}}
       volumes:
-        - name: {{.Chart.Name}}-{{.Values.namespace}}-pv
+        {{- if .Values.persistence.enabled}}
+        - name: cn4g-pv
           persistentVolumeClaim:
-            claimName: {{.Chart.Name}}-{{.Values.namespace}}-pvc
+            claimName: cn4g-pvc
+        {{- end }}
         - configMap:
             name: mme-cfg-configmap
           name: cfg-vol
@@ -118,5 +129,11 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{.Values.serviceAccount.name}}
-      terminationGracePeriodSeconds: 15
-      nodeName: perse.5glab.nsa.eurecom.fr
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.nodeSelector}}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 4 }}
+      {{- end }}
+      {{- if .Values.nodeName}}
+      nodeName: {{ .Values.nodeName }}
+      {{- end }}
+

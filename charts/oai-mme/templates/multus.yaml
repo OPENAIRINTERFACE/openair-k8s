@@ -1,20 +1,21 @@
 ---
+{{- if .Values.multus.create }}
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net1
+  name: {{ .Chart.Name }}-net1
 spec:
   config: '{
       "cniVersion": "0.3.0",
       "type": "macvlan",
-      "master": "bond0",
+      "master": {{- cat .Values.multus.hostInterface | nospace | quote }},
       "mode": "bridge",
       "ipam": {
         "type": "static",
         "addresses": [
                 {
-                        "address": "192.168.18.150/24",
-                        "gateway": "192.168.18.1"
+                        "address":  {{- cat .Values.multus.s1cIPadd "/" .Values.multus.s1cNetmask | nospace | quote }},
+                        "gateway":  {{- cat .Values.multus.s1cGateway | nospace | quote }}
                 }
         ]
       }
@@ -23,20 +24,21 @@ spec:
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.namespace }}-net2
+  name: {{ .Chart.Name }}-net2
 spec:
   config: '{
       "cniVersion": "0.3.0",
       "type": "macvlan",
-      "master": "bond0",
+      "master": {{- cat .Values.multus.hostInterface | nospace | quote }},
       "mode": "bridge",
       "ipam": {
         "type": "static",
         "addresses": [
                 {
-                        "address": "172.16.1.100/24",
-                        "gateway": "172.16.1.1"
+                        "address": {{- cat .Values.multus.s11IPadd "/" .Values.multus.s11Netmask | nospace | quote }},
+                        "gateway": {{- cat .Values.multus.s11Gateway | nospace | quote }}
                 }
         ]
       }
     }'
+{{- end }}

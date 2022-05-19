@@ -7,7 +7,7 @@ data:
   mme.conf: |
     MME :
     {
-        REALM                                     = "{{ .Values.namespace }}.{{ .Values.mmeConf.domainName }}"
+        REALM                                     = "{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}"
         PID_DIRECTORY                             = "/var/run";
         # Define the limits of the system in terms of served eNB and served UE.
         # When the limits will be reached, overload procedure will take place.

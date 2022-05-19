@@ -4,14 +4,19 @@
 
 replicaCount: 1
 
-namespace: "oai"
-
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai/oai-mme
-  version: onap-0.1.0
+  repository: magma-oai-mme
+  version: oai-oc
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
+
+tcpdumpimage:
+  registry: local
+  repository: network-tools-rhel8
+  version: v4.10.0-202205022327.p0.gbcfec9c.assembly.stream
+  #pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 
@@ -39,6 +44,20 @@ securityContext:
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+
+multus:
+  create: false
+  s1cIPadd: "172.21.10.6"
+  s1cNetmask: "22"
+  s1cGateway: "172.21.11.254"
+  hostInterface: "bond0"      # Interface of the host machine on which this pod will be scheduled
+  s11IPadd: "172.21.10.6"
+  s11Netmask: "22"
+  s11Gateway: "172.21.11.254"
+
+start:
+  mme: true
+  tcpdump: false # WARNING: start tcpdump collection to analyse but beware it will take a lot of space in the container/persistent volume
 
 service:
   type: ClusterIP
@@ -83,6 +102,8 @@ lte:
 persistence:
   #make it true for the first time when you want to create persistance volume and then false
   enabled: false
+  volumneName: managed-nfs-storage
+  size: 1Gi
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -101,3 +122,5 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+nodeName: 

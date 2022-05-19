@@ -17,8 +17,8 @@ data:
     ################################################################################
     # -------- Local ---------
     # Uncomment if the framework cannot resolv it.
-    Identity = "{{ .Values.mmeConf.fdMmeHostname }}.{{ .Values.namespace }}.{{ .Values.mmeConf.domainName }}";
-    Realm = "{{ .Values.namespace }}.{{ .Values.mmeConf.domainName }}";
+    Identity = "{{ .Values.mmeConf.fdMmeHostname }}.{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}";
+    Realm = "{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}";
     # TLS configuration (see previous section)
     TLS_Cred = "{{ .Values.mmeConf.prefix }}/etc/mme.cert.pem",
               "{{ .Values.mmeConf.prefix }}/etc/mme.key.pem";

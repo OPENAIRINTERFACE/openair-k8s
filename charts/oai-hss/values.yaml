@@ -4,14 +4,30 @@
 
 replicaCount: 1
 
-namespace: "oai4g"
-
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai4g/oai-hss
-  version: stable
+  repository: oai-hss
+  version: develop
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
+
+tcpdumpimage:
+  registry: local
+  repository: network-tools-rhel8
+  version: v4.10.0-202205022327.p0.gbcfec9c.assembly.stream
+  #pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: IfNotPresent
+
+cassandra:
+  registry: local
+  repository: bitnami/cassandra
+  version: 4.0.3-debian-10-r68
+  #pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: IfNotPresent
+  url: cassandra
+  username: cassandra
+  password: cassandra
+
 
 imagePullSecrets: []
 
@@ -31,6 +47,17 @@ podSecurityContext:
   runAsUser: 0
   runAsGroup: 0
 
+
+start:
+  tcpdump: false # WARNING: start tcpdump collection to analyse but beware it will take a lot of space in the container/persistent volume
+
+persistence:
+  # make it true for the first time when you want to create persistance volume
+  # and then false
+  enabled: false
+  volumeName: managed-nfs-storage
+  size: 1Gi
+
 securityContext:
   privileged: true
   # capabilities:
@@ -39,6 +66,14 @@ securityContext:
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+
+
+multus:
+  create: false
+  s6IPadd: "172.21.6.180"
+  s6Netmask: "22"
+  s6Gateway: "172.21.7.254"
+  hostInterface: "bond0"      # Interface of the host machine on which this pod will be scheduled
 
 service:
   type: ClusterIP
@@ -79,3 +114,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+terminationGracePeriodSeconds: 30
+
+nodeName: perse
+

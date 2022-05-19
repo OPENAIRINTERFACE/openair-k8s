@@ -5,15 +5,21 @@
 
 replicaCount: 1
 
-namespace: "oai4g"
-
 image:
   registry: local
-  repository: image-registry.openshift-image-registry.svc:5000/oai4g/magma-oai-mme
+  repository: magma-oai-mme
   # version: stable
   version: oai-oc
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
+
+tcpdumpimage:
+  registry: local
+  repository: network-tools-rhel8
+  version: v4.10.0-202205022327.p0.gbcfec9c.assembly.stream
+  #pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: IfNotPresent
+
 
 imagePullSecrets: []
 
@@ -47,6 +53,12 @@ persistence:
   # make it true for the first time when you want to create persistance volume
   # and then false
   enabled: false
+  volumeName: managed-nfs-storage
+  size: 1Gi
+
+
+multus:
+  hostInterface: "bond0"      # Interface of the host machine on which this pod will be scheduled
 
 service:
   type: ClusterIP
@@ -59,7 +71,7 @@ service:
 start:
   mme: true
   redis: true
-  tcpdump: true
+  tcpdump: false
   
 mmeConf:
   # source file folder
@@ -96,17 +108,17 @@ mmeConf:
   apnCorrectionMapList:
     - imsiPrefix: "00101"
       apnOverride: "magma.ipv4"
-  mmeIpS1c: "192.168.18.150"
-  mmeS1cGw: "192.168.18.129"
-  mmeNetmaskS1c: "24"
-  mmeIpS11: "192.168.18.150"
-  mmeNetmaskS11: "24"
+  mmeIpS1c: "172.21.6.182"
+  mmeS1cGw: "172.21.7.254"
+  mmeNetmaskS1c: "22"
+  mmeIpS11: "172.21.6.182"
+  mmeNetmaskS11: "22"
   s1apIfaceName: "net1"
   s11IfaceName: "net1"
-  remoteSgwIp: "192.168.18.156"
+  remoteSgwIp: "172.21.6.181"
   taiList: |
      ({ MCC="208";MNC="99";TAC="1";},{ MCC="208";MNC="99";TAC="2";},{ MCC="208";MNC="99";TAC="3";},{ MCC="208";MNC="99";TAC="4";});
-  hssIp: "192.168.18.176"
+  hssIp: "172.21.6.180"
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a
@@ -125,3 +137,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+terminationGracePeriodSeconds: 30
+
+nodeName: 
+

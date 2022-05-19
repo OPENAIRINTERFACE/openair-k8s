@@ -18,7 +18,7 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: >-
           [{
-                 "name": "{{ .Chart.Name }}-{{ .Values.lte.instance }}-{{ .Values.namespace }}-net1",
+                 "name": "{{ .Chart.Name }}-{{ .Values.lte.instance }}-net1",
                  "default-route": ["{{ .Values.lte.pgwuSgiGw }}"]
           }] 
     spec:
@@ -29,18 +29,26 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-    {{- if .Values.start.tcpdump }}
       - name: tcpdump
-        image: "network-tools-rhel8:v4.10.0-202205022327.p0.gbcfec9c.assembly.stream"                                                                                      
+        image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"
+        imagePullPolicy: {{ .Values.tcpdumpimage.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- if .Values.start.tcpdump}}
         command:
-          -  /bin/sh
-          -  -c
-          -  /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
-          # -  /usr/sbin/tcpdump -i any port 2152 or port 8805 or port 5001 or arp or icmp -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+          - /bin/sh
+          - -c
+          - /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+        {{- else}}
+        command:
+          - /bin/sleep
+          - infinity
+        {{- end}}
+        {{- if .Values.persistence.enabled}}
         volumeMounts:
         - mountPath: "/pcap"
-          name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
-    {{- end }}
+          name: cn4g-pv
+        {{- end}}
       - name: spgwu
         image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -67,17 +75,16 @@ spec:
           - /bin/sleep
           - infinity
         {{- end}}
-        #volumeMounts:
-        #- mountPath: /dev/hugepages
-        #  name: hugepage
         {{- with .Values.resources }}
         resources:
         {{- toYaml . | nindent 10 }}
         {{- end }}
       volumes:
-        - name: {{ .Chart.Name }}-{{ .Values.namespace }}-pv
+      {{- if .Values.persistence.enabled}}
+        - name: cn4g-pv
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-{{ .Values.namespace }}-pvc
+            claimName: cn4g-pvc
+      {{- end }}
         - configMap:
             name: spgwu{{ .Values.lte.instance }}-cfg-configmap
           name: cfg-vol
@@ -85,7 +92,10 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      terminationGracePeriodSeconds: 5
-      # RT worker
-      # nodeName: dedale.5glab.nsa.eurecom.fr
-
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.nodeSelector}}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 4 }}
+      {{- end }}
+      {{- if .Values.nodeName}}
+      nodeName: {{ .Values.nodeName }}
+      {{- end }}
