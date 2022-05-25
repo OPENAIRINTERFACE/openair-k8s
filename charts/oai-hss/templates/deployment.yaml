@@ -30,7 +30,7 @@ spec:
         command:
         - sh
         - -c
-        - cqlsh cassandra -u cassandra -p cassandra --file /root/oai_db.cql
+        - cqlsh cassandra --file /root/oai_db.cql
         volumeMounts:
         - mountPath: /root
           name: db-schema
@@ -108,6 +108,16 @@ spec:
               configMapKeyRef:
                 name: {{ .Chart.Name }}-configmap
                 key: numSubscribers
+          - name: CASS_LOGIN
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: dbUser
+          - name: CASS_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Chart.Name }}-configmap
+                key: dbPassword
       - name: tcpdump
         image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"
         imagePullPolicy: {{ .Values.tcpdumpimage.pullPolicy }}
