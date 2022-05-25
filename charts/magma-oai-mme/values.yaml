@@ -52,8 +52,8 @@ securityContext:
 persistence:
   # make it true for the first time when you want to create persistance volume
   # and then false
-  enabled: false
-  volumeName: managed-nfs-storage
+  enabled: true
+  volumeName: nfs-client
   size: 1Gi
 
 
@@ -79,10 +79,10 @@ mmeConf:
   # contains etc, bin subdirs
   # May be not always same as magma_root
   prefix: /magma
-  domainName: "svc.cluster.local"
+  domainName: "oai4g.svc.cluster.local"
   fdMmeHostname: "magma-oai-mme"
   fdHssHostname: "oai-hss"
-  hssDomainName: "oai.svc.cluster.local"
+  hssDomainName: "oai4g.svc.cluster.local"
   useStateless: "true"
   useHa: "false"
   enableGtpuPrivateIpCorrection: "false"
