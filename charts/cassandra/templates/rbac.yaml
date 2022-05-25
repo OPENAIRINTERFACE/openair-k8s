@@ -1,17 +1,13 @@
----
-#apiVersion: rbac.authorization.k8s.io/v1beta1
-#kind: ClusterRoleBinding
-#metadata:
-#  name: {{.Chart.Name}}-rbac
-#roleRef:
-#  apiGroup: rbac.authorization.k8s.io
-#  kind: ClusterRole
-#  name: cluster-admin
-#subjects:
-#  - kind: ServiceAccount
-#    name: {{.Values.serviceAccount.name}}
-#    namespace: {{.Values.namespace}}
----
+{{- if .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ template "cassandra.serviceAccountName" . }}
+  labels:
+    app: {{ template "cassandra.name" . }}
+    chart: {{ template "cassandra.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -33,10 +29,10 @@ metadata:
   name: {{ .Chart.Name }}-{{ .Release.Namespace }}-binding
 subjects:
 - kind: ServiceAccount
-  name: {{ include "cassandra.serviceAccountName" . }}
+  name: {{ .Values.serviceAccount.name }}
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: {{ .Chart.Name }}-{{ .Release.Namespace }}-role
   apiGroup: rbac.authorization.k8s.io
-
+{{- end }}

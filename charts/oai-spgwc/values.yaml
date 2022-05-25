@@ -51,7 +51,7 @@ service:
   gtpcPort: 2123
 
 start:
-  spgwc: true
+  spgwc: false
   tcpdump: false
 
 
@@ -87,8 +87,8 @@ lte:
 persistence:
   # make it true for the first time when you want to create persistance volume
   # and then false
-  enabled: false
-  volumeName: managed-nfs-storage
+  enabled: true
+  volumeName: nfs-client
   size: 1Gi
 
 multus:
@@ -106,7 +106,8 @@ resources:
     cpu: 100m
     memory: 256Mi
 
-nodeSelector: {}
+nodeSelector: 
+  worker: telco
 
 tolerations: []
 

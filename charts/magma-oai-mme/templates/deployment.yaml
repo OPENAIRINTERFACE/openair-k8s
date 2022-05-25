@@ -63,7 +63,7 @@ spec:
           {{- end}}
         volumeMounts:
           - mountPath: /var/log
-            name: {{.Chart.Name}}-pv
+            name: cn4g-pv
       - name: mme
         image: "{{.Values.image.repository}}:{{.Values.image.version}}"
         imagePullPolicy: {{.Values.image.pullPolicy}}
@@ -86,7 +86,7 @@ spec:
                 key: mmeService
         volumeMounts:
           - mountPath: /var/log
-            name: {{.Chart.Name}}-pv
+            name: cn4g-pv
           - mountPath: /magma/etc/mme_fd.conf
             name: fd-vol
             subPath: mme_fd.conf
@@ -131,7 +131,8 @@ spec:
       serviceAccountName: {{.Values.serviceAccount.name}}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.nodeSelector}}
-      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 4 }}
+      nodeSelector:
+         {{- toYaml .Values.nodeSelector | nindent 12 }}
       {{- end }}
       {{- if .Values.nodeName}}
       nodeName: {{ .Values.nodeName }}

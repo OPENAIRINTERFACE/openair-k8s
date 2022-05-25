@@ -54,8 +54,8 @@ start:
 persistence:
   # make it true for the first time when you want to create persistance volume
   # and then false
-  enabled: false
-  volumeName: managed-nfs-storage
+  enabled: true
+  volumeName: nfs-client
   size: 1Gi
 
 securityContext:

@@ -132,7 +132,8 @@ resources:
     cpu: 200m
     memory: 256Mi
 
-nodeSelector: {}
+nodeSelector:
+  worker: "telco"
 
 tolerations: []
 

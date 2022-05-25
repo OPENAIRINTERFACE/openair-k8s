@@ -1,454 +1,227 @@
-<!--- app-name: Apache Cassandra -->
+# ⚠️ Repo Archive Notice
 
-# Apache Cassandra packaged by Bitnami
+As of Nov 13, 2020, charts in this repo will no longer be updated.
+For more information, see the Helm Charts [Deprecation and Archive Notice](https://github.com/helm/charts#%EF%B8%8F-deprecation-and-archive-notice), and [Update](https://helm.sh/blog/charts-repo-deprecation/).
 
-Apache Cassandra is an open source distributed database management system designed to handle large amounts of data across many servers, providing high availability with no single point of failure.
+# Cassandra
+A Cassandra Chart for Kubernetes
 
-[Overview of Apache Cassandra](http://cassandra.apache.org/)
+## DEPRECATION NOTICE
 
-Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
-                           
-## TL;DR
+This chart is deprecated and no longer supported.
 
-```console
-$ helm repo add bitnami https://charts.bitnami.com/bitnami
-$ helm install my-release bitnami/cassandra
+## Install Chart
+To install the Cassandra Chart into your Kubernetes cluster (This Chart requires persistent volume by default, you may need to create a storage class before install chart. To create storage class, see [Persist data](#persist_data) section)
+
+```bash
+helm install --namespace "cassandra" -n "cassandra" incubator/cassandra
 ```
 
-## Introduction
+After installation succeeds, you can get a status of Chart
 
-This chart bootstraps an [Apache Cassandra](https://github.com/bitnami/bitnami-docker-cassandra) deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
-
-Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment and management of Helm Charts in clusters. This Helm chart has been tested on top of [Bitnami Kubernetes Production Runtime](https://kubeprod.io/) (BKPR). Deploy BKPR to get automated TLS certificates, logging and monitoring for your applications.
-
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.2.0+
-- PV provisioner support in the underlying infrastructure
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```console
-$ helm repo add bitnami https://charts.bitnami.com/bitnami
-$ helm install my-release bitnami/cassandra
+```bash
+helm status "cassandra"
 ```
 
-These commands deploy one node with Apache Cassandra on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-> **Tip**: List all releases using `helm list`
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` release:
-
-```console
-$ helm delete my-release
+If you want to delete your Chart, use this command
+```bash
+helm delete  --purge "cassandra"
 ```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
-
-## Parameters
-
-### Global parameters
-
-| Name                      | Description                                     | Value |
-| ------------------------- | ----------------------------------------------- | ----- |
-| `global.imageRegistry`    | Global Docker image registry                    | `""`  |
-| `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
-| `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
-
-
-### Common parameters
-
-| Name                     | Description                                                                             | Value           |
-| ------------------------ | --------------------------------------------------------------------------------------- | --------------- |
-| `nameOverride`           | String to partially override common.names.fullname                                      | `""`            |
-| `fullnameOverride`       | String to fully override common.names.fullname                                          | `""`            |
-| `kubeVersion`            | Force target Kubernetes version (using Helm capabilities if not set)                    | `""`            |
-| `commonLabels`           | Labels to add to all deployed objects (sub-charts are not considered)                   | `{}`            |
-| `commonAnnotations`      | Annotations to add to all deployed objects                                              | `{}`            |
-| `clusterDomain`          | Kubernetes cluster domain name                                                          | `cluster.local` |
-| `extraDeploy`            | Array of extra objects to deploy with the release                                       | `[]`            |
-| `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
-| `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
-| `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["infinity"]`  |
-
-
-### Cassandra parameters
-
-| Name                          | Description                                                                                                            | Value                 |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| `image.registry`              | Cassandra image registry                                                                                               | `docker.io`           |
-| `image.repository`            | Cassandra image repository                                                                                             | `bitnami/cassandra`   |
-| `image.tag`                   | Cassandra image tag (immutable tags are recommended)                                                                   | `4.0.3-debian-10-r59` |
-| `image.pullPolicy`            | image pull policy                                                                                                      | `IfNotPresent`        |
-| `image.pullSecrets`           | Cassandra image pull secrets                                                                                           | `[]`                  |
-| `image.debug`                 | Enable image debug mode                                                                                                | `false`               |
-| `dbUser.user`                 | Cassandra admin user                                                                                                   | `cassandra`           |
-| `dbUser.forcePassword`        | Force the user to provide a non                                                                                        | `false`               |
-| `dbUser.password`             | Password for `dbUser.user`. Randomly generated if empty                                                                | `""`                  |
-| `dbUser.existingSecret`       | Use an existing secret object for `dbUser.user` password (will ignore `dbUser.password`)                               | `""`                  |
-| `initDBConfigMap`             | ConfigMap with cql scripts. Useful for creating a keyspace and pre-populating data                                     | `""`                  |
-| `initDBSecret`                | Secret with cql script (with sensitive data). Useful for creating a keyspace and pre-populating data                   | `""`                  |
-| `existingConfiguration`       | ConfigMap with custom cassandra configuration files. This overrides any other Cassandra configuration set in the chart | `""`                  |
-| `cluster.name`                | Cassandra cluster name                                                                                                 | `cassandra`           |
-| `cluster.seedCount`           | Number of seed nodes                                                                                                   | `1`                   |
-| `cluster.numTokens`           | Number of tokens for each node                                                                                         | `256`                 |
-| `cluster.datacenter`          | Datacenter name                                                                                                        | `dc1`                 |
-| `cluster.rack`                | Rack name                                                                                                              | `rack1`               |
-| `cluster.endpointSnitch`      | Endpoint Snitch                                                                                                        | `SimpleSnitch`        |
-| `cluster.internodeEncryption` | DEPRECATED: use tls.internode and tls.client instead. Encryption values.                                               | `none`                |
-| `cluster.clientEncryption`    | Client Encryption                                                                                                      | `false`               |
-| `cluster.extraSeeds`          | For an external/second cassandra ring.                                                                                 | `[]`                  |
-| `cluster.enableUDF`           | Enable User defined functions                                                                                          | `false`               |
-| `jvm.extraOpts`               | Set the value for Java Virtual Machine extra options                                                                   | `""`                  |
-| `jvm.maxHeapSize`             | Set Java Virtual Machine maximum heap size (MAX_HEAP_SIZE). Calculated automatically if `nil`                          | `""`                  |
-| `jvm.newHeapSize`             | Set Java Virtual Machine new heap size (HEAP_NEWSIZE). Calculated automatically if `nil`                               | `""`                  |
-| `command`                     | Command for running the container (set to default if not set). Use array form                                          | `[]`                  |
-| `args`                        | Args for running the container (set to default if not set). Use array form                                             | `[]`                  |
-| `extraEnvVars`                | Extra environment variables to be set on cassandra container                                                           | `[]`                  |
-| `extraEnvVarsCM`              | Name of existing ConfigMap containing extra env vars                                                                   | `""`                  |
-| `extraEnvVarsSecret`          | Name of existing Secret containing extra env vars                                                                      | `""`                  |
-
-
-### Statefulset parameters
-
-| Name                                    | Description                                                                               | Value           |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- | --------------- |
-| `replicaCount`                          | Number of Cassandra replicas                                                              | `1`             |
-| `updateStrategy.type`                   | updateStrategy for Cassandra statefulset                                                  | `RollingUpdate` |
-| `hostAliases`                           | Add deployment host aliases                                                               | `[]`            |
-| `podManagementPolicy`                   | StatefulSet pod management policy                                                         | `OrderedReady`  |
-| `priorityClassName`                     | Cassandra pods' priority.                                                                 | `""`            |
-| `podAnnotations`                        | Additional pod annotations                                                                | `{}`            |
-| `podLabels`                             | Additional pod labels                                                                     | `{}`            |
-| `podAffinityPreset`                     | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`       | `""`            |
-| `podAntiAffinityPreset`                 | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`  | `soft`          |
-| `nodeAffinityPreset.type`               | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `""`            |
-| `nodeAffinityPreset.key`                | Node label key to match. Ignored if `affinity` is set                                     | `""`            |
-| `nodeAffinityPreset.values`             | Node label values to match. Ignored if `affinity` is set                                  | `[]`            |
-| `affinity`                              | Affinity for pod assignment                                                               | `{}`            |
-| `nodeSelector`                          | Node labels for pod assignment                                                            | `{}`            |
-| `tolerations`                           | Tolerations for pod assignment                                                            | `[]`            |
-| `topologySpreadConstraints`             | Topology Spread Constraints for pod assignment                                            | `[]`            |
-| `podSecurityContext.enabled`            | Enabled Cassandra pods' Security Context                                                  | `true`          |
-| `podSecurityContext.fsGroup`            | Set Cassandra pod's Security Context fsGroup                                              | `1001`          |
-| `containerSecurityContext.enabled`      | Enabled Cassandra containers' Security Context                                            | `true`          |
-| `containerSecurityContext.runAsUser`    | Set Cassandra container's Security Context runAsUser                                      | `1001`          |
-| `containerSecurityContext.runAsNonRoot` | Force the container to be run as non root                                                 | `true`          |
-| `resources.limits`                      | The resources limits for Cassandra containers                                             | `{}`            |
-| `resources.requests`                    | The requested resources for Cassandra containers                                          | `{}`            |
-| `livenessProbe.enabled`                 | Enable livenessProbe                                                                      | `true`          |
-| `livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                   | `60`            |
-| `livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                          | `30`            |
-| `livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                         | `5`             |
-| `livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                       | `5`             |
-| `livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                       | `1`             |
-| `readinessProbe.enabled`                | Enable readinessProbe                                                                     | `true`          |
-| `readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                  | `60`            |
-| `readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                         | `10`            |
-| `readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                        | `5`             |
-| `readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                      | `5`             |
-| `readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                      | `1`             |
-| `startupProbe.enabled`                  | Enable startupProbe                                                                       | `false`         |
-| `startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                    | `0`             |
-| `startupProbe.periodSeconds`            | Period seconds for startupProbe                                                           | `10`            |
-| `startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                          | `5`             |
-| `startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                        | `60`            |
-| `startupProbe.successThreshold`         | Success threshold for startupProbe                                                        | `1`             |
-| `customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                       | `{}`            |
-| `customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                      | `{}`            |
-| `customStartupProbe`                    | Override default startup probe                                                            | `{}`            |
-| `lifecycleHooks`                        | Override default etcd container hooks                                                     | `{}`            |
-| `schedulerName`                         | Alternative scheduler                                                                     | `""`            |
-| `extraVolumes`                          | Optionally specify extra list of additional volumes for cassandra container               | `[]`            |
-| `extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for cassandra container          | `[]`            |
-| `initContainers`                        | Add additional init containers to the cassandra pods                                      | `[]`            |
-| `sidecars`                              | Add additional sidecar containers to the cassandra pods                                   | `[]`            |
-| `pdb.create`                            | Enable/disable a Pod Disruption Budget creation                                           | `false`         |
-| `pdb.minAvailable`                      | Mininimum number of pods that must still be available after the eviction                  | `1`             |
-| `pdb.maxUnavailable`                    | Max number of pods that can be unavailable after the eviction                             | `""`            |
-| `hostNetwork`                           | Enable HOST Network                                                                       | `false`         |
-| `containerPorts.intra`                  | Intra Port on the Host and Container                                                      | `7000`          |
-| `containerPorts.tls`                    | TLS Port on the Host and Container                                                        | `7001`          |
-| `containerPorts.jmx`                    | JMX Port on the Host and Container                                                        | `7199`          |
-| `containerPorts.cql`                    | CQL Port on the Host and Container                                                        | `9042`          |
-
-
-### RBAC parameters
-
-| Name                                          | Description                                                | Value  |
-| --------------------------------------------- | ---------------------------------------------------------- | ------ |
-| `serviceAccount.create`                       | Enable the creation of a ServiceAccount for Cassandra pods | `true` |
-| `serviceAccount.name`                         | The name of the ServiceAccount to use.                     | `""`   |
-| `serviceAccount.annotations`                  | Annotations for Cassandra Service Account                  | `{}`   |
-| `serviceAccount.automountServiceAccountToken` | Automount API credentials for a service account.           | `true` |
-
-
-### Traffic Exposure Parameters
-
-| Name                               | Description                                                                   | Value       |
-| ---------------------------------- | ----------------------------------------------------------------------------- | ----------- |
-| `service.type`                     | Cassandra service type                                                        | `ClusterIP` |
-| `service.ports.cql`                | Cassandra service CQL Port                                                    | `9042`      |
-| `service.ports.metrics`            | Cassandra service metrics port                                                | `8080`      |
-| `service.nodePorts.cql`            | Node port for CQL                                                             | `""`        |
-| `service.nodePorts.metrics`        | Node port for metrics                                                         | `""`        |
-| `service.extraPorts`               | Extra ports to expose in the service (normally used with the `sidecar` value) | `[]`        |
-| `service.loadBalancerIP`           | LoadBalancerIP if service type is `LoadBalancer`                              | `""`        |
-| `service.loadBalancerSourceRanges` | Service Load Balancer sources                                                 | `[]`        |
-| `service.clusterIP`                | Service Cluster IP                                                            | `""`        |
-| `service.externalTrafficPolicy`    | Service external traffic policy                                               | `Cluster`   |
-| `service.annotations`              | Provide any additional annotations which may be required.                     | `{}`        |
-| `networkPolicy.enabled`            | Specifies whether a NetworkPolicy should be created                           | `false`     |
-| `networkPolicy.allowExternal`      | Don't require client label for connections                                    | `true`      |
-
-
-### Persistence parameters
-
-| Name                             | Description                                                                                        | Value                |
-| -------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------- |
-| `persistence.enabled`            | Enable Cassandra data persistence using PVC, use a Persistent Volume Claim, If false, use emptyDir | `true`               |
-| `persistence.storageClass`       | PVC Storage Class for Cassandra data volume                                                        | `""`                 |
-| `persistence.commitStorageClass` | PVC Storage Class for Cassandra Commit Log volume                                                  | `""`                 |
-| `persistence.annotations`        | Persistent Volume Claim annotations                                                                | `{}`                 |
-| `persistence.accessModes`        | Persistent Volume Access Mode                                                                      | `["ReadWriteOnce"]`  |
-| `persistence.size`               | PVC Storage Request for Cassandra data volume                                                      | `8Gi`                |
-| `persistence.mountPath`          | The path the data volume will be mounted at                                                        | `/bitnami/cassandra` |
-
-
-### Volume Permissions parameters
-
-| Name                                          | Description                                                                     | Value                   |
-| --------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------- |
-| `volumePermissions.enabled`                   | Enable init container that changes the owner and group of the persistent volume | `false`                 |
-| `volumePermissions.image.registry`            | Init container volume                                                           | `docker.io`             |
-| `volumePermissions.image.repository`          | Init container volume                                                           | `bitnami/bitnami-shell` |
-| `volumePermissions.image.tag`                 | Init container volume                                                           | `10-debian-10-r400`     |
-| `volumePermissions.image.pullPolicy`          | Init container volume                                                           | `IfNotPresent`          |
-| `volumePermissions.image.pullSecrets`         | Specify docker-registry secret names as an array                                | `[]`                    |
-| `volumePermissions.resources.limits`          | The resources limits for the container                                          | `{}`                    |
-| `volumePermissions.resources.requests`        | The requested resources for the container                                       | `{}`                    |
-| `volumePermissions.securityContext.runAsUser` | User ID for the init container                                                  | `0`                     |
-
-
-### Metrics parameters
-
-| Name                                       | Description                                                                                            | Value                        |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ---------------------------- |
-| `metrics.enabled`                          | Start a side-car prometheus exporter                                                                   | `false`                      |
-| `metrics.image.registry`                   | Cassandra exporter image registry                                                                      | `docker.io`                  |
-| `metrics.image.repository`                 | Cassandra exporter image name                                                                          | `bitnami/cassandra-exporter` |
-| `metrics.image.tag`                        | Cassandra exporter image tag                                                                           | `2.3.8-debian-10-r23`        |
-| `metrics.image.pullPolicy`                 | image pull policy                                                                                      | `IfNotPresent`               |
-| `metrics.image.pullSecrets`                | Specify docker-registry secret names as an array                                                       | `[]`                         |
-| `metrics.resources.limits`                 | The resources limits for the container                                                                 | `{}`                         |
-| `metrics.resources.requests`               | The requested resources for the container                                                              | `{}`                         |
-| `metrics.podAnnotations`                   | Metrics exporter pod Annotation and Labels                                                             | `{}`                         |
-| `metrics.serviceMonitor.enabled`           | If `true`, creates a Prometheus Operator ServiceMonitor (also requires `metrics.enabled` to be `true`) | `false`                      |
-| `metrics.serviceMonitor.namespace`         | Namespace in which Prometheus is running                                                               | `monitoring`                 |
-| `metrics.serviceMonitor.interval`          | Interval at which metrics should be scraped.                                                           | `""`                         |
-| `metrics.serviceMonitor.scrapeTimeout`     | Timeout after which the scrape is ended                                                                | `""`                         |
-| `metrics.serviceMonitor.selector`          | Prometheus instance selector labels                                                                    | `{}`                         |
-| `metrics.serviceMonitor.metricRelabelings` | Specify Metric Relabelings to add to the scrape endpoint                                               | `[]`                         |
-| `metrics.serviceMonitor.honorLabels`       | Specify honorLabels parameter to add the scrape endpoint                                               | `false`                      |
-| `metrics.serviceMonitor.jobLabel`          | The name of the label on the target service to use as the job name in prometheus.                      | `""`                         |
-| `metrics.serviceMonitor.additionalLabels`  | Used to pass Labels that are required by the installed Prometheus Operator                             | `{}`                         |
-| `metrics.containerPorts.http`              | HTTP Port on the Host and Container                                                                    | `8080`                       |
-| `metrics.containerPorts.jmx`               | JMX Port on the Host and Container                                                                     | `5555`                       |
-
-
-### TLS/SSL parameters
-
-| Name                          | Description                                                                                   | Value   |
-| ----------------------------- | --------------------------------------------------------------------------------------------- | ------- |
-| `tls.internodeEncryption`     | Set internode encryption                                                                      | `none`  |
-| `tls.clientEncryption`        | Set client-server encryption                                                                  | `false` |
-| `tls.autoGenerated`           | Generate automatically self-signed TLS certificates. Currently only supports PEM certificates | `false` |
-| `tls.existingSecret`          | Existing secret that contains Cassandra Keystore and truststore                               | `""`    |
-| `tls.passwordsSecret`         | Secret containing the Keystore and Truststore passwords if needed                             | `""`    |
-| `tls.keystorePassword`        | Password for the keystore, if needed.                                                         | `""`    |
-| `tls.truststorePassword`      | Password for the truststore, if needed.                                                       | `""`    |
-| `tls.resources.limits`        | The resources limits for the TLS init container                                               | `{}`    |
-| `tls.resources.requests`      | The requested resources for the TLS init container                                            | `{}`    |
-| `tls.certificatesSecret`      | Secret with the TLS certificates.                                                             | `""`    |
-| `tls.tlsEncryptionSecretName` | Secret with the encryption of the TLS certificates                                            | `""`    |
-
-
-The above parameters map to the env variables defined in [bitnami/cassandra](https://github.com/bitnami/bitnami-docker-cassandra). For more information please refer to the [bitnami/cassandra](https://github.com/bitnami/bitnami-docker-cassandra) image documentation.
-
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
-
-```console
-helm install my-release \
-    --set dbUser.user=admin,dbUser.password=password \
-    bitnami/cassandra
-```
-
-Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
-
-```console
-helm install my-release -f values.yaml bitnami/cassandra
-```
-
-> **Tip**: You can use the default [values.yaml](values.yaml)
-
-## Configuration and installation details
-
-### [Rolling vs Immutable tags](https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/)
-
-It is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not change automatically if the same tag is updated with a different image.
-
-Bitnami will release a new chart updating its containers if a new version of the main container, significant changes, or critical vulnerabilities exist.
-
-### Enable TLS
-
-This chart supports TLS between client and server and between nodes, as explained below:
-
-* For internode cluster encryption, set the `tls.internodeEncryption` chart parameter to a value different from `none`. Available values are `all`, `dc` or `rack`.
-* For client-server encryption, set the `tls.clientEncryption` chart parameter to `true`.
-
-In both cases, it is also necessary to create a secret containing the keystore and truststore certificates and their corresponding protection passwords. This secret is to be passed to the chart via the `tls.existingSecret` parameter at deployment-time.
-
-Refer to the chart documentation for more [information on creating the secret and a TLS deployment example](https://docs.bitnami.com/kubernetes/infrastructure/cassandra/administration/enable-tls/).
-
-### Use a custom configuration file
-
-This chart also supports mounting custom configuration file(s) for Apache Cassandra. This is achieved by setting the `existingConfiguration` parameter with the name of a ConfigMap that includes the custom configuration file(s).
-
-> NOTE: This ConfigMap will override other Apache Cassandra configuration variables set in the chart.
-
-Refer to the chart documentation for more [information on customizing an Apache Cassandra deployment](https://docs.bitnami.com/kubernetes/infrastructure/cassandra/configuration/customize-new-instance/).
-
-### Initialize the database
-
-The [Bitnami Apache Cassandra image](https://github.com/bitnami/bitnami-docker-cassandra) image supports the use of custom scripts to initialize a fresh instance. This may be done by creating a Kubernetes ConfigMap that includes the necessary *sh* or *cql* scripts and passing this ConfigMap to the chart via the *initDBConfigMap* parameter.
-
-Refer to the chart documentation for more [information on customizing an Apache Cassandra deployment](https://docs.bitnami.com/kubernetes/infrastructure/cassandra/configuration/customize-new-instance/).
-
-### Set pod affinity
-
-This chart allows you to set custom pod affinity using the `XXX.affinity` parameter(s). Find more information about pod affinity in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
-
-As an alternative, you can use the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the `XXX.podAffinityPreset`, `XXX.podAntiAffinityPreset`, or `XXX.nodeAffinityPreset` parameters.
-
-## Persistence
-
-The [Bitnami Apache Cassandra](https://github.com/bitnami/bitnami-docker-cassandra) image stores the Apache Cassandra data at the `/bitnami/cassandra` path of the container.
-
-Persistent Volume Claims are used to keep the data across deployments. This is known to work in GCE, AWS, and minikube.
-See the [Parameters](#parameters) section to configure the PVC or to disable persistence.
-
-If you encounter errors when working with persistent volumes, refer to our [troubleshooting guide for persistent volumes](https://docs.bitnami.com/kubernetes/faq/troubleshooting/troubleshooting-persistence-volumes/).
-
-### Adjust permissions of persistent volume mountpoint
-
-As the image run as non-root by default, it is necessary to adjust the ownership of the persistent volume so that the container can write data into it. There are two approaches to achieve this:
-
-* Use Kubernetes SecurityContexts by setting the `podSecurityContext.enabled` and `containerSecurityContext.enabled` to `true`. This option is enabled by default in the chart. However, this feature does not work in all Kubernetes distributions.
-* Use an init container to change the ownership of the volume before mounting it in the final destination. Enable this container by setting the `volumePermissions.enabled` parameter to `true`.
-
-## Backup and restore
-
-Refer to our detailed tutorial on [backing up and restoring Bitnami Apache Cassandra deployments on Kubernetes](https://docs.bitnami.com/tutorials/backup-restore-data-cassandra-kubernetes/).
-
-## Troubleshooting
-
-Find more information about how to deal with common errors related to Bitnami's Helm charts in [this troubleshooting guide](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues).
 
 ## Upgrading
 
-It's necessary to set the `dbUser.password` parameter when upgrading for readiness/liveness probes to work properly. When you install this chart for the first time, some notes will be displayed providing the credentials you must use. Please note down the password and run the command below to upgrade your chart:
+To upgrade your Cassandra release, simply run
 
 ```bash
-$ helm upgrade my-release bitnami/cassandra --set dbUser.password=[PASSWORD]
+helm upgrade "cassandra" incubator/cassandra
 ```
 
-| Note: you need to substitute the placeholder _[PASSWORD]_ with the value obtained in the installation notes.
+### 0.12.0
 
-### To 9.0.0
-This major release renames several values in this chart and adds missing features, in order to be inline with the rest of assets in the Bitnami charts repository.
+This version fixes https://github.com/helm/charts/issues/7803 by removing mutable labels in `spec.VolumeClaimTemplate.metadata.labels` so that it is upgradable.
 
-Affected values:
+Until this version, in order to upgrade, you have to delete the Cassandra StatefulSet before upgrading:
+```bash
+$ kubectl delete statefulset --cascade=false my-cassandra-release
+```
 
-- `serviceMonitor.labels` renamed as `serviceMonitor.selector`.
-- `service.port` renamed as `service.ports.cql`.
-- `service.metricsPort` renamed as `service.ports.metrics`.
-- `service.nodePort` renamed as `service.nodePorts.cql`.
-- `updateStrategy` changed from String type (previously default to 'rollingUpdate') to Object type, allowing users to configure other updateStrategy parameters, similar to other charts.
-- Removed value `rollingUpdatePartition`, now configured using `updateStrategy` setting `updateStrategy.rollingUpdate.partition`.
 
-### To 8.0.0
-
-Cassandra's version was bumped to `4.0`, [the new major](https://cassandra.apache.org/_/blog/Apache-Cassandra-4.0-is-Here.html) considered LTS. Among other features, this release removes support for [Thrift](https://issues.apache.org/jira/browse/CASSANDRA-11115), which means that the following properties of the chart will no longer be available:
-
-  - `cluster.enableRPC`
-  - `service.thriftPort`
-  - `service.nodePorts.thrift`
-  - `containerPorts.thrift`
-
-For this version, there have been [intensive efforts](https://cwiki.apache.org/confluence/display/CASSANDRA/4.0+Quality%3A+Components+and+Test+Plans) from Apache to ensure that a safe cluster upgrade can be performed. Nevertheless, a backup creation prior to undergoing the upgrade process is recommended. Please, refer to the [official guide](https://cassandra.apache.org/doc/latest/operating/backups.html#snapshots) for further information.
-
-### To 7.0.0
-
-[On November 13, 2020, Helm v2 support was formally finished](https://github.com/helm/charts#status-of-the-project), this major version is the result of the required changes applied to the Helm Chart to be able to incorporate the different features added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.
-
-[Learn more about this change and related upgrade considerations](https://docs.bitnami.com/kubernetes/infrastructure/cassandra/administration/upgrade-helm3/).
-
-### To 6.0.0
-
-- Several parameters were renamed or disappeared in favor of new ones on this major version:
-  - `securityContext.*` is deprecated in favor of `podSecurityContext` and `containerSecurityContext`.
-  - Parameters prefixed with `statefulset.` were renamed removing the prefix. E.g. `statefulset.rollingUpdatePartition` -> renamed to `rollingUpdatePartition`.
-  - `cluster.replicaCount` is renamed to `replicaCount`.
-  - `cluster.domain` is renamed to `clusterDomain`.
-- Chart labels were adapted to follow the [Helm charts standard labels](https://helm.sh/docs/chart_best_practices/labels/#standard-labels).
-- This version also introduces `bitnami/common`, a [library chart](https://helm.sh/docs/topics/library_charts/#helm) as a dependency. More documentation about this new utility could be found [here](https://github.com/bitnami/charts/tree/master/bitnami/common#bitnami-common-library-chart). Please, make sure that you have updated the chart dependencies before executing any upgrade.
-
-Consequences:
-
-- Backwards compatibility is not guaranteed. To upgrade to `6.0.0`, install a new release of the Cassandra chart, and migrate the data from your previous release. To do so, create an snapshot of the database, and restore it on the new database. Check [this guide](https://cassandra.apache.org/doc/latest/operating/backups.html#snapshots) for more information.
-
-### To 5.4.0
-
-The `minimumAvailable` option has been renamed to `minAvailable` for consistency with other charts. This is not a breaking change as `minimumAvailable` never worked before because of an error in chart templates.
-
-### To 5.0.0
-
-An issue in StatefulSet manifest of the 4.x chart series rendered chart upgrades to be broken. The 5.0.0 series fixes this issue. To upgrade to the 5.x series you need to manually delete the Cassandra StatefulSet before executing the `helm upgrade` command.
+## Persist data
+You need to create `StorageClass` before able to persist data in persistent volume.
+To create a `StorageClass` on Google Cloud, run the following
 
 ```bash
-kubectl delete sts -l release=<RELEASE_NAME>
-helm upgrade <RELEASE_NAME> ...
+kubectl create -f sample/create-storage-gce.yaml
 ```
 
-### To 4.0.0
+And set the following values in `values.yaml`
 
-This release changes uses Bitnami Cassandra container `3.11.4-debian-9-r188`, based on Bash.
+```yaml
+persistence:
+  enabled: true
+```
 
-### To 2.0.0
+If you want to create a `StorageClass` on other platform, please see documentation here [https://kubernetes.io/docs/user-guide/persistent-volumes/](https://kubernetes.io/docs/user-guide/persistent-volumes/)
 
-This release make it possible to specify custom initialization scripts in both cql and sh files.
+When running a cluster without persistence, the termination of a pod will first initiate a decommissioning of that pod.
+Depending on the amount of data stored inside the cluster this may take a while. In order to complete a graceful
+termination, pods need to get more time for it. Set the following values in `values.yaml`:
 
-#### Breaking changes
+```yaml
+podSettings:
+  terminationGracePeriodSeconds: 1800
+```
 
-- `startupCQL` has been removed. Instead, for initializing the database, see [this section](#initializing-the-database).
+## Install Chart with specific cluster size
+By default, this Chart will create a cassandra with 3 nodes. If you want to change the cluster size during installation, you can use `--set config.cluster_size={value}` argument. Or edit `values.yaml`
 
-## License
+For example:
+Set cluster size to 5
 
-Copyright &copy; 2022 Bitnami
+```bash
+helm install --namespace "cassandra" -n "cassandra" --set config.cluster_size=5 incubator/cassandra/
+```
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## Install Chart with specific resource size
+By default, this Chart will create a cassandra with CPU 2 vCPU and 4Gi of memory which is suitable for development environment.
+If you want to use this Chart for production, I would recommend to update the CPU to 4 vCPU and 16Gi. Also increase size of `max_heap_size` and `heap_new_size`.
+To update the settings, edit `values.yaml`
 
-    http://www.apache.org/licenses/LICENSE-2.0
+## Install Chart with specific node
+Sometime you may need to deploy your cassandra to specific nodes to allocate resources. You can use node selector by edit `nodes.enabled=true` in `values.yaml`
+For example, you have 6 vms in node pools and you want to deploy cassandra to node which labeled as `cloud.google.com/gke-nodepool: pool-db`
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Set the following values in `values.yaml`
+
+```yaml
+nodes:
+  enabled: true
+  selector:
+    nodeSelector:
+      cloud.google.com/gke-nodepool: pool-db
+```
+
+## Configuration
+
+The following table lists the configurable parameters of the Cassandra chart and their default values.
+
+| Parameter                  | Description                                     | Default                                                    |
+| -----------------------    | ---------------------------------------------   | ---------------------------------------------------------- |
+| `image.repo`                         | `cassandra` image repository                    | `cassandra`                                                |
+| `image.tag`                          | `cassandra` image tag                           | `3.11.5`                                                   |
+| `image.pullPolicy`                   | Image pull policy                               | `Always` if `imageTag` is `latest`, else `IfNotPresent`    |
+| `image.pullSecrets`                  | Image pull secrets                              | `nil`                                                      |
+| `config.cluster_domain`              | The name of the cluster domain.                 | `cluster.local`                                            |
+| `config.cluster_name`                | The name of the cluster.                        | `cassandra`                                                |
+| `config.cluster_size`                | The number of nodes in the cluster.             | `3`                                                        |
+| `config.seed_size`                   | The number of seed nodes used to bootstrap new clients joining the cluster.                            | `2` |
+| `config.seeds`                       | The comma-separated list of seed nodes.         | Automatically generated according to `.Release.Name` and `config.seed_size` |
+| `config.num_tokens`                  | Initdb Arguments                                | `256`                                                      |
+| `config.dc_name`                     | Initdb Arguments                                | `DC1`                                                      |
+| `config.rack_name`                   | Initdb Arguments                                | `RAC1`                                                     |
+| `config.endpoint_snitch`             | Initdb Arguments                                | `SimpleSnitch`                                             |
+| `config.max_heap_size`               | Initdb Arguments                                | `2048M`                                                    |
+| `config.heap_new_size`               | Initdb Arguments                                | `512M`                                                     |
+| `config.ports.cql`                   | Initdb Arguments                                | `9042`                                                     |
+| `config.ports.thrift`                | Initdb Arguments                                | `9160`                                                     |
+| `config.ports.agent`                 | The port of the JVM Agent (if any)              | `nil`                                                      |
+| `config.start_rpc`                   | Initdb Arguments                                | `false`                                                    |
+| `configOverrides`                    | Overrides config files in /etc/cassandra dir    | `{}`                                                       |
+| `commandOverrides`                   | Overrides default docker command                | `[]`                                                       |
+| `argsOverrides`                      | Overrides default docker args                   | `[]`                                                       |
+| `env`                                | Custom env variables                            | `{}`                                                       |
+| `schedulerName`                      | Name of k8s scheduler (other than the default)  | `nil`                                                      |
+| `persistence.enabled`                | Use a PVC to persist data                       | `true`                                                     |
+| `persistence.storageClass`           | Storage class of backing PVC                    | `nil` (uses alpha storage class annotation)                |
+| `persistence.accessMode`             | Use volume as ReadOnly or ReadWrite             | `ReadWriteOnce`                                            |
+| `persistence.size`                   | Size of data volume                             | `10Gi`                                                     |
+| `resources`                          | CPU/Memory resource requests/limits             | Memory: `4Gi`, CPU: `2`                                    |
+| `service.type`                       | k8s service type exposing ports, e.g. `NodePort`| `ClusterIP`                                                |
+| `service.annotations`                | Annotations to apply to cassandra service       | `""`                                                       |
+| `podManagementPolicy`                | podManagementPolicy of the StatefulSet          | `OrderedReady`                                             |
+| `podDisruptionBudget`                | Pod distruption budget                          | `{}`                                                       |
+| `podAnnotations`                     | pod annotations for the StatefulSet             | `{}`                                                       |
+| `updateStrategy.type`                | UpdateStrategy of the StatefulSet               | `OnDelete`                                                 |
+| `livenessProbe.initialDelaySeconds`  | Delay before liveness probe is initiated        | `90`                                                       |
+| `livenessProbe.periodSeconds`        | How often to perform the probe                  | `30`                                                       |
+| `livenessProbe.timeoutSeconds`       | When the probe times out                        | `5`                                                        |
+| `livenessProbe.successThreshold`     | Minimum consecutive successes for the probe to be considered successful after having failed.           | `1` |
+| `livenessProbe.failureThreshold`     | Minimum consecutive failures for the probe to be considered failed after having succeeded.             | `3` |
+| `readinessProbe.initialDelaySeconds` | Delay before readiness probe is initiated       | `90`                                                       |
+| `readinessProbe.periodSeconds`       | How often to perform the probe                  | `30`                                                       |
+| `readinessProbe.timeoutSeconds`      | When the probe times out                        | `5`                                                        |
+| `readinessProbe.successThreshold`    | Minimum consecutive successes for the probe to be considered successful after having failed.           | `1` |
+| `readinessProbe.failureThreshold`    | Minimum consecutive failures for the probe to be considered failed after having succeeded.             | `3` |
+| `readinessProbe.address`             | Address to use for checking node has joined the cluster and is ready.                          | `${POD_IP}` |
+| `rbac.create`                        | Specifies whether RBAC resources should be created                                                  | `true` |
+| `serviceAccount.create`              | Specifies whether a ServiceAccount should be created                                                | `true` |
+| `serviceAccount.name`                | The name of the ServiceAccount to use           |                                                            |
+| `backup.enabled`                     | Enable backup on chart installation             | `false`                                                    |
+| `backup.schedule`                    | Keyspaces to backup, each with cron time        |                                                            |
+| `backup.annotations`                 | Backup pod annotations                          | iam.amazonaws.com/role: `cain`                             |
+| `backup.image.repository`            | Backup image repository                         | `maorfr/cain`                                              |
+| `backup.image.tag`                   | Backup image tag                                | `0.6.0`                                                    |
+| `backup.extraArgs`                   | Additional arguments for cain                   | `[]`                                                       |
+| `backup.env`                         | Backup environment variables                    | AWS_REGION: `us-east-1`                                    |
+| `backup.resources`                   | Backup CPU/Memory resource requests/limits      | Memory: `1Gi`, CPU: `1`                                    |
+| `backup.destination`                 | Destination to store backup artifacts           | `s3://bucket/cassandra`                                    |
+| `backup.google.serviceAccountSecret` | Secret containing credentials if GCS is used as destination |                                                |
+| `exporter.enabled`                   | Enable Cassandra exporter                       | `false`                                                    |
+| `exporter.servicemonitor.enabled`    | Enable ServiceMonitor for exporter              | `true`                                                    |
+| `exporter.servicemonitor.additionalLabels`| Additional labels for Service Monitor           | `{}`                                                       |
+| `exporter.image.repo`                | Exporter image repository                       | `criteord/cassandra_exporter`                              |
+| `exporter.image.tag`                 | Exporter image tag                              | `2.0.2`                                                    |
+| `exporter.port`                      | Exporter port                                   | `5556`                                                     |
+| `exporter.jvmOpts`                   | Exporter additional JVM options                 |                                                            |
+| `exporter.resources`                 | Exporter CPU/Memory resource requests/limits    | `{}`                                                       |
+| `extraContainers`                    | Sidecar containers for the pods                 | `[]`                                                       |
+| `extraVolumes`                       | Additional volumes for the pods                 | `[]`                                                       |
+| `extraVolumeMounts`                  | Extra volume mounts for the pods                | `[]`                                                       |
+| `affinity`                           | Kubernetes node affinity                        | `{}`                                                       |
+| `tolerations`                        | Kubernetes node tolerations                     | `[]`                                                       |
+
+
+## Scale cassandra
+When you want to change the cluster size of your cassandra, you can use the helm upgrade command.
+
+```bash
+helm upgrade --set config.cluster_size=5 cassandra incubator/cassandra
+```
+
+## Get cassandra status
+You can get your cassandra cluster status by running the command
+
+```bash
+kubectl exec -it --namespace cassandra $(kubectl get pods --namespace cassandra -l app=cassandra-cassandra -o jsonpath='{.items[0].metadata.name}') nodetool status
+```
+
+Output
+```bash
+Datacenter: asia-east1
+======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address    Load       Tokens       Owns (effective)  Host ID                               Rack
+UN  10.8.1.11  108.45 KiB  256          66.1%             410cc9da-8993-4dc2-9026-1dd381874c54  a
+UN  10.8.4.12  84.08 KiB  256          68.7%             96e159e1-ef94-406e-a0be-e58fbd32a830  c
+UN  10.8.3.6   103.07 KiB  256          65.2%             1a42b953-8728-4139-b070-b855b8fff326  b
+```
+
+## Benchmark
+You can use [cassandra-stress](https://docs.datastax.com/en/cassandra/3.0/cassandra/tools/toolsCStress.html) tool to run the benchmark on the cluster by the following command
+
+```bash
+kubectl exec -it --namespace cassandra $(kubectl get pods --namespace cassandra -l app=cassandra-cassandra -o jsonpath='{.items[0].metadata.name}') cassandra-stress
+```
+
+Example of `cassandra-stress` argument
+ - Run both read and write with ration 9:1
+ - Operator total 1 million keys with uniform distribution
+ - Use QUORUM for read/write
+ - Generate 50 threads
+ - Generate result in graph
+ - Use NetworkTopologyStrategy with replica factor 2
+
+```bash
+cassandra-stress mixed ratio\(write=1,read=9\) n=1000000 cl=QUORUM -pop dist=UNIFORM\(1..1000000\) -mode native cql3 -rate threads=50 -log file=~/mixed_autorate_r9w1_1M.log -graph file=test2.html title=test revision=test2 -schema "replication(strategy=NetworkTopologyStrategy, factor=2)"
+```

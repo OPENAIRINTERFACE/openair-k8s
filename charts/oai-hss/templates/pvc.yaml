@@ -3,10 +3,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-   name: cn5g-pvc
-#  name: {{.Chart.Name}}-{{ .Release.Namespace }}-pvc
-  annotations:
-    "helm.sh/resource-policy": keep
+   name: cn4g-pvc
 spec:
   accessModes:
     - ReadWriteOnce
