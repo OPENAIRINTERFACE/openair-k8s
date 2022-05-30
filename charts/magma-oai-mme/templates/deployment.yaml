@@ -96,6 +96,9 @@ spec:
           - mountPath: /magma/bin/mme.exe
             name: svc-vol
             subPath: mme.exe
+          - mountPath: /magma/bin/make_certs.sh
+            name: svc-vol
+            subPath: make_certs.sh
         {{- with .Values.resources}}
         resources:
         {{- toYaml . | nindent 10}}

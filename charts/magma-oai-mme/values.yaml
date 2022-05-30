@@ -8,7 +8,7 @@ replicaCount: 1
 image:
   registry: local
   repository: magma-oai-mme
-  # version: stable
+  #repository: image-registry.openshift-image-registry.svc:5000/oai4g/magma-oai-mme-base-builder
   version: oai-oc
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
@@ -69,8 +69,8 @@ service:
   gtpcPort: 2123
 
 start:
-  mme: true
-  redis: true
+  mme: false
+  redis: false
   tcpdump: false
   
 mmeConf:
@@ -79,11 +79,11 @@ mmeConf:
   # contains etc, bin subdirs
   # May be not always same as magma_root
   prefix: /magma
-  domainName: "oai4g.svc.cluster.local"
+  domainName: "svc.cluster.local"
   fdMmeHostname: "magma-oai-mme"
   fdHssHostname: "oai-hss"
   hssDomainName: "oai4g.svc.cluster.local"
-  useStateless: "true"
+  useStateless: "false"
   useHa: "false"
   enableGtpuPrivateIpCorrection: "false"
   enableConvergedCore: "false"

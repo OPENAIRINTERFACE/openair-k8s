@@ -20,9 +20,9 @@ data:
     Identity = "{{ .Values.mmeConf.fdMmeHostname }}.{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}";
     Realm = "{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}";
     # TLS configuration (see previous section)
-    TLS_Cred = "{{ .Values.mmeConf.prefix }}/etc/mme.cert.pem",
-              "{{ .Values.mmeConf.prefix }}/etc/mme.key.pem";
-    TLS_CA   = "{{ .Values.mmeConf.prefix }}/etc/mme.cacert.pem";
+    TLS_Cred = "{{ .Values.mmeConf.prefix }}/etc/{{ .Values.mmeConf.fdMmeHostname }}.cert.pem",
+              "{{ .Values.mmeConf.prefix }}/etc/{{ .Values.mmeConf.fdMmeHostname }}.key.pem";
+    TLS_CA   = "{{ .Values.mmeConf.prefix }}/etc/cacert.pem";
     # Disable use of TCP protocol (only listen and connect in SCTP)
     # Default : TCP enabled
     No_SCTP;
@@ -161,5 +161,5 @@ data:
     # incoming connection from this peer will be rejected. If you want to accept
     # incoming connections from other peers, see the acl_wl.fdx? extension which
     # allows exactly this.
-    ConnectPeer= "{{ .Values.mmeConf.fdHssHostname }}.{{ .Values.mmeConf.hssDomainName }}" { ConnectTo = "{{ .Values.mmeConf.hssIp }}"; No_SCTP ; No_IPv6; Prefer_TCP; No_TLS; port = {{ .Values.service.peerDiameterPort }};};
+    ConnectPeer = "{{ .Values.mmeConf.fdHssHostname }}.{{ .Values.mmeConf.hssDomainName }}" { ConnectTo = "{{ .Values.mmeConf.hssIp }}"; No_SCTP ; No_IPv6; Prefer_TCP; No_TLS; port = {{ .Values.service.peerDiameterPort }};};
   
