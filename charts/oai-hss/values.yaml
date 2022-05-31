@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   registry: local
   repository: oai-hss
-  version: develop
+  version: oai-oc
   # pullPolicy: IfNotPresent or Never or Always
   pullPolicy: Always
 
