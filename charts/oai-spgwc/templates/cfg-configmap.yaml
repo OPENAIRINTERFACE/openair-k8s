@@ -6,6 +6,7 @@ metadata:
 data:
   spgw_c.json: |
       {
+       "rest_port" : 9081,
        "timer" : {
            "itti" : {
                "sched_params" : {
@@ -57,7 +58,8 @@ data:
            "default_dns_sec_ipv4_address" : "{{ .Values.lte.ueDnsServerSec }}",
            "default_dns_ipv6_address"     : "2001:4860:4860::8888",
            "default_dns_sec_ipv6_address" : "2001:4860:4860::8844",
-           "force_push_protocol_configuration_options" : {{ .Values.lte.pushProtocolOption }}
+           "force_push_protocol_configuration_options" : {{ .Values.lte.pushProtocolOption }},
+           "ue_mtu_ipv4": {{ .Values.lte.ueMtuIpv4 }}
        },
        "pdns" :
         [
@@ -68,6 +70,7 @@ data:
            "association_heartbeat_period_ms" : {{ .Values.lte.associationHeartbeatPeriodMs }},
            "feature_overload_control" : false,
            "feature_load_control" : false,
+           "trigger_association" : true,
            "up_nodes_selection" :
                [
                    { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "pdn_idx" : 0, "id" : "gwu1.spgw.node.epc.mnc{{ .Values.lte.mnc3 }}.mcc{{ .Values.lte.mcc }}.3gppnetwork.org" },

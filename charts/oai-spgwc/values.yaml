@@ -83,7 +83,8 @@ lte:
   n3: "3"
   t1MilliSec: "1000"
   t3MilliSec: "1000"
-
+  ueMtuIpv4: "1500"
+  
 persistence:
   # make it true for the first time when you want to create persistance volume
   # and then false
