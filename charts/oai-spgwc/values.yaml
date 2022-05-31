@@ -51,7 +51,7 @@ service:
   gtpcPort: 2123
 
 start:
-  spgwc: false
+  spgwc: true
   tcpdump: false
 
 
@@ -64,9 +64,10 @@ lte:
   mcc: "208"
   mnc: "99"
   mnc3: "099"
-  spgwOneIf: "net1"
-  spgwIpOneIf : "172.21.6.181"
-  spgwNetmaskOneIf : "22"
+  spgwS11If: "net1"
+  spgwS11Ip : "172.21.6.181"
+  spgwSxIf: "eth0"
+  spgwNetmaskS11 : "22"
   sgwS5S8Ip: "127.0.58.2"
   pgwS5S8Ip: "127.0.58.1"
   ueDnsServer: "172.21.3.100"

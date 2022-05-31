@@ -73,11 +73,13 @@ log:
   file: " -r "
 lte:
   instance: 0
-  fqdn: "gwu1.spgw.node.epc.mnc099.mcc208.3gppnetwork.org"
+  fqdn: "oai-spgwu-tiny-0"
   pidDirectory: "/var/run"
-  spgwOneIf: "net1"
-  spgwIpOneIf: "172.21.6.183"
-  spgwNetmaskOneIf: "22"
+  spgwSxIf: "eth0"
+  pgwuS1uIf: "net1"
+  pgwuSgiIf: "net1"
+  spgwS1uIp: "172.21.6.183"
+  spgwNetmaskS1u: "22"
   pgwuSgiGw: "172.21.7.254"
   netUeIp: "192.168.29.0/24"
   pgwcSxIp: "172.21.6.181"

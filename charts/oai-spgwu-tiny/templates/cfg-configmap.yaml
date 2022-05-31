@@ -16,7 +16,7 @@ data:
               S1U_S12_S4_UP :
               {
                   # S-GW binded interface for S1-U communication (GTPV1-U) can be ethernet interface, virtual ethernet interface, we don't advise wireless interfaces
-                  INTERFACE_NAME         = "{{ .Values.lte.spgwOneIf }}";  # STRING, interface name, YOUR NETWORK CONFIG HERE
+                  INTERFACE_NAME         = "{{ .Values.lte.pgwuS1uIf }}";  # STRING, interface name, YOUR NETWORK CONFIG HERE
                   IPV4_ADDRESS           = "read";                                    # STRING, CIDR or "read to let app read interface configured IP address
                   #PORT                   = 2152;                                     # Default is 2152
                   SCHED_PARAMS :
@@ -30,7 +30,7 @@ data:
               SX :
               {
                   # S/P-GW binded interface for SX communication
-                  INTERFACE_NAME         = "{{ .Values.lte.spgwOneIf }}"; # STRING, interface name
+                  INTERFACE_NAME         = "{{ .Values.lte.spgwSxIf }}"; # STRING, interface name
                   IPV4_ADDRESS           = "read";                        # STRING, CIDR or "read" to let app read interface configured IP address
                   #PORT                   = 8805;                         # Default is 8805
                   SCHED_PARAMS :
@@ -44,7 +44,7 @@ data:
               SGI :
               {
                  # No config to set, the software will set the SGi interface to the interface used for the default route.
-                  INTERFACE_NAME         = "{{ .Values.lte.spgwOneIf }}"; # STRING, interface name or "default_gateway"
+                  INTERFACE_NAME         = "{{ .Values.lte.pgwuSgiIf }}"; # STRING, interface name or "default_gateway"
                   IPV4_ADDRESS           = "read";                         # STRING, CIDR or "read" to let app read interface configured IP address
                   SCHED_PARAMS :
                   {

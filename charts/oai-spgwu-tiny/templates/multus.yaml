@@ -13,7 +13,7 @@ spec:
         "type": "static",
         "addresses": [
                 {
-                        "address": {{- cat .Values.lte.spgwIpOneIf "/" .Values.lte.spgwNetmaskOneIf | nospace | quote }}
+                        "address": {{- cat .Values.lte.spgwS1uIp "/" .Values.lte.spgwNetmaskS1u | nospace | quote }}
                 }
         ]
       }
