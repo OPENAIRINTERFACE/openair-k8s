@@ -5,6 +5,14 @@
 
 replicaCount: 1
 
+provisionning:
+  image:
+   registry: local
+   repository: oai-hss
+   #repository: image-registry.openshift-image-registry.svc:5000/oai4g/magma-oai-mme-base-builder
+   version: oai-oc
+  db_url: cassandra
+
 image:
   registry: local
   repository: magma-oai-mme
@@ -69,7 +77,7 @@ service:
   gtpcPort: 2123
 
 start:
-  mme: false
+  mme: true
   redis: false
   tcpdump: false
   

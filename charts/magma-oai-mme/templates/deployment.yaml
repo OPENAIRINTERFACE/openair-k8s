@@ -29,6 +29,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8}}
     {{- end}}
+      initContainers:
+      - name: prov-mme-db
+        image: "{{ .Values.provisionning.image.repository }}:{{ .Values.provisionning.image.version }}"
+        command:
+        - sh
+        - -c
+        - /openair-hss/scripts/data_provisioning_mme -C {{ .Values.provisionning.db_url }} --id 4 --mme-identity {{ .Values.mmeConf.fdMmeHostname }}.{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }} --realm "{{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}" --verbose true 
       containers:
       - name: tcpdump
         image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"
