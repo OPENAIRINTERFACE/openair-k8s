@@ -10,7 +10,7 @@ data:
            "itti" : {
                "sched_params" : {
                    "sched_policy" : "sched_fifo", 
-               "sched_priority" : {{ .Values.lte.threadTimerPrio }}
+                   "sched_priority" : {{ .Values.lte.threadTimerPrio }}
                }
            }
        },
