@@ -73,10 +73,10 @@ data:
            "trigger_association" : true,
            "up_nodes_selection" :
                [
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 2, "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 3, "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
-                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 4, "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" }
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 2, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 3, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 4, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" }
                ]
        },
        "pcef" : {
