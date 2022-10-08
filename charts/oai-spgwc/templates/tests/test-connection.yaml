@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "oai-spgwc.fullname" . }}-test-connection"
+  labels:
+    {{- include "oai-spgwc.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: ping
+      image: busybox
+      command: ['ping']
+      args: ['-c' , '1', {{ include "oai-spgwc.fullname" . }} ]
+  restartPolicy: Never

@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "magma-oai-mme.fullname" . }}-test-connection"
+  labels:
+    {{- include "magma-oai-mme.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: ping
+      image: busybox
+      command: ['ping']
+      args: ['-c' , '1', {{ include "magma-oai-mme.fullname" . }} ]
+  restartPolicy: Never

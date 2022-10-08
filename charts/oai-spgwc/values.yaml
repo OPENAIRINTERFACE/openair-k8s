@@ -1,0 +1,119 @@
+# Default values for oai-spgwc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  registry: local
+  repository: oai-spgwc-dev
+  version: oai-oc
+  # pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: Always
+
+tcpdumpimage:
+  registry: local
+  repository: network-tools-rhel8
+  version: v4.10.0-202205022327.p0.gbcfec9c.assembly.stream
+  #pullPolicy: IfNotPresent or Never or Always
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "oai-spgwc-sa"
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+
+securityContext:
+  privileged: true
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  pfcpPort: 8805
+  gtpcPort: 2123
+
+start:
+  spgwc: true
+  tcpdump: false
+
+
+log:
+  # Leave string empty to disable
+  stdout: " -o "
+  file: " -r "
+lte:
+  apn: "oai.ipv4"
+  mcc: "208"
+  mnc: "99"
+  mnc3: "099"
+  spgwS11If: "net1"
+  spgwS11Ip : "172.21.6.181"
+  spgwSxIf: "eth0"
+  spgwNetmaskS11 : "22"
+  sgwS5S8Ip: "127.0.58.2"
+  pgwS5S8Ip: "127.0.58.1"
+  ueDnsServer: "172.21.3.100"
+  ueDnsServerSec: "172.21.3.100"
+  pushProtocolOption: true
+  dynUeIpv4Range: "192.168.29.2 - 192.168.29.254"
+  associationRetryPeriodMs : "15000"
+  associationHeartbeatPeriodMs : "2000"
+  threadTimerPrio: "64"
+  threadpfcpPrio: "64"
+  threadgtpv2cPrio: "64"
+  threadSpgwAppPrio: "64"
+  n1: "3"
+  n3: "3"
+  t1MilliSec: "1000"
+  t3MilliSec: "1000"
+  ueMtuIpv4: "1500"
+  
+persistence:
+  # make it true for the first time when you want to create persistance volume
+  # and then false
+  enabled: true
+  volumeName: nfs-client
+  size: 1Gi
+
+multus:
+  hostInterface: "bond0"      # Interface of the host machine on which this pod will be scheduled
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+nodeSelector: 
+  worker: telco
+
+tolerations: []
+
+affinity: {}
+
+nodeName:
+

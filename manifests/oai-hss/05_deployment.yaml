@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: hss
-        image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss:develop-vco3
+        image: image-registry.openshift-image-registry.svc:5000/oai/oai-hss:onap-0.1.0
         imagePullPolicy: Always
         #command: ['sh', '-c', 'sleep infinity']
         ports:
@@ -86,7 +86,7 @@ spec:
         - sh
         - -c
         - cqlsh cassandra-0.cassandra.oai.svc.cluster.local --file /root/oai_db.cql
-        image: cassandra:3.11
+        image: image-registry.openshift-image-registry.svc:5000/oai/cassandra:3.11
         name: init-db
         restartPolicy: Never
         volumeMounts:

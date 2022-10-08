@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.lte.instance }}
+  labels:
+    {{- include "oai-spgwu-tiny.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "oai-spgwu-tiny.selectorLabels" . | nindent 8 }}
+      annotations:
+        k8s.v1.cni.cncf.io/networks: >-
+          [{
+                 "name": "{{ .Chart.Name }}-{{ .Values.lte.instance }}-net1",
+                 "default-route": ["{{ .Values.lte.pgwuSgiGw }}"]
+          }] 
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+      - name: tcpdump
+        image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"
+        imagePullPolicy: {{ .Values.tcpdumpimage.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- if .Values.start.tcpdump}}
+        command:
+          - /bin/sh
+          - -c
+          - /usr/sbin/tcpdump -i any -C 100 -W 10 -w /pcap/SPGWU{{ .Values.lte.instance }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+        {{- else}}
+        command:
+          - /bin/sleep
+          - infinity
+        {{- end}}
+        {{- if .Values.persistence.enabled}}
+        volumeMounts:
+        - mountPath: "/pcap"
+          name: cn4g-pv
+        {{- end}}
+      - name: spgwu
+        image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        ports:
+        - containerPort: {{ .Values.service.pfcpPort }}
+          name: oai-spgwu
+        - containerPort: {{ .Values.service.gtpuPort }}
+          name: s1u
+        - containerPort: 5001
+          name: iperf
+        volumeMounts:
+          - mountPath: /openair-spgwu-tiny/etc/spgw_u.conf
+            name: cfg-vol
+            subPath: spgw_u.conf
+        {{- if .Values.start.spgwu}}
+        command:
+          -  /bin/sh
+          -  -c
+          -  /openair-spgwu-tiny/bin/oai_spgwu -c /openair-spgwu-tiny/etc/spgw_u.conf {{ .Values.log.stdout }} {{ .Values.log.file }}
+        {{- else}}
+        command:
+          - /bin/sleep
+          - infinity
+        {{- end}}
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      {{- if .Values.persistence.enabled}}
+        - name: cn4g-pv
+          persistentVolumeClaim:
+            claimName: cn4g-pvc
+      {{- end }}
+        - configMap:
+            name: spgwu{{ .Values.lte.instance }}-cfg-configmap
+          name: cfg-vol
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.nodeSelector}}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 4 }}
+      {{- end }}
+      {{- if .Values.nodeName}}
+      nodeName: {{ .Values.nodeName }}
+      {{- end }}

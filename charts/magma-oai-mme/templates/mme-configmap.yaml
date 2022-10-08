@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Chart.Name}}-{{ .Release.Namespace }}-configmap
+data:
+  mmeService: {{.Values.mmeConf.fdMmeHostname}}.{{ .Release.Namespace }}.{{.Values.mmeConf.domainName}}
+  realm: {{ .Release.Namespace }}.{{ .Values.mmeConf.domainName }}
+  

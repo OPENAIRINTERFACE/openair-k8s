@@ -1,0 +1,87 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: spgwc-cfg-configmap
+data:
+  spgw_c.json: |
+      {
+       "rest_port" : 9081,
+       "timer" : {
+           "itti" : {
+               "sched_params" : {
+                   "sched_policy" : "sched_fifo", 
+                   "sched_priority" : {{ .Values.lte.threadTimerPrio }}
+               }
+           }
+       },
+       "gtpv2c" : {
+           "port" : 2123,
+           "n3" : {{ .Values.lte.n3 }},
+           "t3_ms" : {{ .Values.lte.t3MilliSec }},
+           "sched_params" : {
+               "sched_policy" : "sched_fifo", 
+               "sched_priority" : {{ .Values.lte.threadgtpv2cPrio }}
+           }
+       },
+       "pfcp" : {
+           "port" : 8805,
+           "n1" : {{ .Values.lte.n1 }},
+           "t1_ms" : {{ .Values.lte.t1MilliSec }},
+           "sched_params" : {
+               "sched_policy" : "sched_fifo", 
+               "sched_priority" : {{ .Values.lte.threadpfcpPrio }}
+           }
+       },
+       "s11" : {
+           "interface_name" : "{{ .Values.lte.spgwS11If }}",
+           "ipv4_address" : "read"
+       },
+       "sgws5s8" : {
+           "interface_name" : "lo",
+           "ipv4_address" : "{{ .Values.lte.sgwS5S8Ip }}"
+       },
+       "pgws5s8" : {
+           "interface_name" : "lo",
+           "ipv4_address" : "{{ .Values.lte.pgwS5S8Ip }}"
+       },
+       "sx" : {
+           "interface_name" : "{{ .Values.lte.spgwSxIf }}",
+           "ipv4_address" : "read"
+       },
+       "spgw_app" : {
+           "sched_params" : {
+               "sched_policy" : "sched_fifo", 
+               "sched_priority" : {{ .Values.lte.threadSpgwAppPrio }}
+           },
+           "default_dns_ipv4_address" : "{{ .Values.lte.ueDnsServer }}",
+           "default_dns_sec_ipv4_address" : "{{ .Values.lte.ueDnsServerSec }}",
+           "default_dns_ipv6_address"     : "2001:4860:4860::8888",
+           "default_dns_sec_ipv6_address" : "2001:4860:4860::8844",
+           "force_push_protocol_configuration_options" : {{ .Values.lte.pushProtocolOption }},
+           "ue_mtu_ipv4": {{ .Values.lte.ueMtuIpv4 }}
+       },
+       "pdns" :
+        [
+           { "apn_ni" : "{{ .Values.lte.apn }}", "dyn_ue_ipv4_range" : "{{ .Values.lte.dynUeIpv4Range }}" }
+        ],
+        "cups" : {
+           "association_retry_period_ms" : {{ .Values.lte.associationRetryPeriodMs }},
+           "association_heartbeat_period_ms" : {{ .Values.lte.associationHeartbeatPeriodMs }},
+           "feature_overload_control" : false,
+           "feature_load_control" : false,
+           "trigger_association" : true,
+           "up_nodes_selection" :
+               [
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 1, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 2, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 3, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" },
+                   { "mcc" : "{{ .Values.lte.mcc }}", "mnc" : "{{ .Values.lte.mnc }}", "tac" : 4, "apn_ni" : "{{ .Values.lte.apn }}", "pdn_idx" : 0, "id" : "oai-spgwu-tiny-0" }
+               ]
+       },
+       "pcef" : {
+           "apn_ambr_ul_kbits" : 500000,
+           "apn_ambr_dl_kbits" : 500000
+       }
+      }
+

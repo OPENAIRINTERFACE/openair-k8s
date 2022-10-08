@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "oai-mme.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+{{- if  contains "ClusterIP" .Values.service.type }}
+  clusterIP: None
+{{- end }}
+  ports:
+    - name: oai-mme
+      # Port accessible outside cluster
+      port: {{ .Values.service.diameterPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.peerDiameterPort }}
+      protocol: TCP
+    - name: oai-mme-secure
+      # Port accessible outside cluster
+      port: {{ .Values.service.diameterSecPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.peerDiameterPortSecPort }}
+      protocol: TCP
+    - name: sctpservers1ap
+      protocol: SCTP
+      port: 36413
+      targetPort: 36413
+    - name: s11
+      # Port accessible outside cluster
+      port: {{ .Values.service.gtpcPort }}
+      # Port to forward to inside the pod
+      targetPort: {{ .Values.service.gtpcPort }}
+      protocol: UDP
+  selector:
+    {{- include "oai-mme.selectorLabels" . | nindent 4 }}

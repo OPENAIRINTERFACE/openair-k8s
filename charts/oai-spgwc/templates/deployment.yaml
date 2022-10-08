@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "oai-spgwc.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "oai-spgwc.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "oai-spgwc.selectorLabels" . | nindent 8 }}
+      annotations:
+        k8s.v1.cni.cncf.io/networks: {{ .Chart.Name }}-net1
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+      - name: tcpdump
+        image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"
+        imagePullPolicy: {{ .Values.tcpdumpimage.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- if .Values.start.tcpdump}}
+        command:
+          - /bin/sh
+          - -c
+          - /usr/sbin/tcpdump -i any port {{ .Values.service.gtpcPort }} or port {{ .Values.service.pfcpPort }} or arp or icmp -C 100 -W 10 -w /pcap/{{ .Chart.Name }}_`date +%Y-%m-%d_%H_%M-%S-%Z`.pcap
+        {{- else}}
+        command:
+          - /bin/sleep
+          - infinity
+        {{- end}}
+        {{- if .Values.persistence.enabled}}
+        volumeMounts:
+        - mountPath: "/pcap"
+          name: cn4g-pv
+        {{- end}}
+      - name: spgwc
+        image: "{{ .Values.image.repository }}:{{ .Values.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        ports:
+        - containerPort: {{ .Values.service.pfcpPort }}
+          name: oai-spgwc
+        - containerPort: {{ .Values.service.gtpcPort }}
+          name: s11
+        volumeMounts:
+          - mountPath: /openair-spgwc/etc/spgw_c.json
+            name: cfg-vol
+            subPath: spgw_c.json
+          - mountPath: "/var/crash/core"
+            name: cn4g-pv
+        {{- if .Values.start.spgwc}}
+        command:
+          -  /bin/sh
+          -  -c
+          -  echo "/var/crash/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern && /openair-spgwc/bin/oai_spgwc -c /openair-spgwc/etc/spgw_c.json {{ .Values.log.stdout }} {{ .Values.log.file }} > /var/crash/core/SPGWC_`date +%Y-%m-%d_%H_%M-%S-%Z`.log 2>&1
+        {{- else}}
+        command:
+          - /bin/sleep
+          - infinity
+        {{- end}}
+      volumes:
+      {{- if .Values.persistence.enabled}}
+        - name: cn4g-pv
+          persistentVolumeClaim:
+            claimName: cn4g-pvc
+      {{- end }}
+        - configMap:
+            name: spgwc-cfg-configmap
+          name: cfg-vol
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.nodeSelector}}
+      nodeSelector:
+         {{- toYaml .Values.nodeSelector | nindent 12 }}
+      {{- end }}
+      {{- if .Values.nodeName}}
+      nodeName: {{ .Values.nodeName }}
+      {{- end }}
+
